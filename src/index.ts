@@ -1,7 +1,4 @@
 import Vue from "vue";
-import Index = require("./Index.vue");
+import ConnectionManager = require("./components/ConnectionManager.vue");
 
-new Vue({
-    ...Index,
-    el: "#root"
-});
+new ConnectionManager().$mount("#root");
