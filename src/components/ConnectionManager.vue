@@ -1,11 +1,11 @@
 <template>
     <div>
         <div v-if="!connected" class="full-screen-msg">
-            Connecting...
+            <span class="msg">Connecting...</span>
         </div>
 
-        <div v-else="" class="full-screen-msg">
-            Connected!
+        <div v-else="">
+            <lobby></lobby>
             <invites></invites>
         </div>
     </div>
@@ -16,10 +16,12 @@
     import Component from "vue-class-component";
 
     import InviteManager = require("./InviteManager.vue");
+    import LobbyManager = require("./LobbyManager.vue");
 
     @Component({
         components: {
-            invites: InviteManager
+            invites: InviteManager,
+            lobby: LobbyManager
         }
     })
     export default class ConnectionManager extends Vue {
@@ -36,13 +38,16 @@
 
         observe(path: string, handler: (status: number, body: any) => void) {
             this.observers[path] = handler;
+
+            // Make initial request to populate the handler.
+            this.request(path).then(({ status, content }) => handler(status, content));
         }
 
         unobserve(path: string) {
             delete this.observers[path];
         }
 
-        request(path: string, method: string = "GET", body?: string): Promise<{ status: number, content: string }> {
+        request(path: string, method: string = "GET", body?: string): Promise<{ status: number, content: any }> {
             return new Promise(resolve => {
                 const id = this.requestId++;
                 this.socket.send(JSON.stringify([id, path, method, body]));
@@ -99,6 +104,8 @@
         display flex
         justify-content center
         align-items center
+
+    .msg
         color white
         font-size 100px
         font-family "Droid Sans"

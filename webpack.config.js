@@ -19,9 +19,7 @@ module.exports = function(env) {
             rules: [{
                 test: /\.tsx?$/,
                 loader: "ts-loader",
-                options: {
-                    transpileOnly: true
-                }
+                options: { appendTsSuffixTo: [/\.vue$/] }
             }, {
                 test: /\.vue$/,
                 loader: "vue-loader"
