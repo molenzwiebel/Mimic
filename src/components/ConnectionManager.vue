@@ -6,6 +6,7 @@
 
         <div v-else="" class="full-screen-msg">
             Connected!
+            <invites></invites>
         </div>
     </div>
 </template>
@@ -14,26 +15,54 @@
     import Vue from "vue";
     import Component from "vue-class-component";
 
+    import InviteManager = require("./InviteManager.vue");
+
     @Component({
-        provide: ["observe"]
+        components: {
+            invites: InviteManager
+        }
     })
     export default class ConnectionManager extends Vue {
         connected: boolean = false;
         socket: WebSocket;
+
         observers: { [key: string]: (status: number, body: any) => void } = {};
+        requests: { [key: number]: Function } = {};
+        requestId = 0;
 
         created() {
             this.connect();
         }
 
-        observe = (path: string, handler: (status: number, body: any) => void) => {
+        observe(path: string, handler: (status: number, body: any) => void) {
             this.observers[path] = handler;
-        };
+        }
+
+        unobserve(path: string) {
+            delete this.observers[path];
+        }
+
+        request(path: string, method: string = "GET", body?: string): Promise<{ status: number, content: string }> {
+            return new Promise(resolve => {
+                const id = this.requestId++;
+                this.socket.send(JSON.stringify([id, path, method, body]));
+                this.requests[id] = resolve;
+            });
+        }
 
         handleMessage = (msg: MessageEvent) => {
-            const data: [string, number, any] = JSON.parse(msg.data);
-            if (this.observers[data[0]]) {
-                this.observers[data[0]](data[1], data[2]);
+            // [1, path, status, content]
+            // OR
+            // [2, id, status, content]
+
+            const data: any = JSON.parse(msg.data);
+            if (data[0] === 1 && this.observers[data[1]]) {
+                this.observers[data[1]](data[2], data[3]);
+            }
+
+            if (data[0] === 2 && this.requests[data[1]]) {
+                this.requests[data[1]]({ status: data[2], content: data[3] });
+                delete this.requests[data[1]];
             }
         };
 
@@ -62,7 +91,7 @@
         position absolute
         margin 0
         padding 0
-        background-color blue
+        background-image url(https://lolstatic-a.akamaihd.net/frontpage/apps/prod/lcu_alpha_website/en_US/c0dcb26e1ba53437859331627d5e2f01dfda818e/assets/img/bgs/magic-repeater.jpg)
         left 0
         top 0
         right 0
