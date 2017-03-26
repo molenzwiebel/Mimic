@@ -5,6 +5,7 @@
         </div>
 
         <div v-else="" style="display: flex; flex-direction: column; height: 100%">
+            <ready></ready>
             <queue></queue>
             <lobby></lobby>
             <invites></invites>
@@ -19,9 +20,11 @@
     import InviteManager = require("./InviteManager.vue");
     import LobbyManager = require("./LobbyManager.vue");
     import QueueManager = require("./QueueManager.vue");
+    import ReadyCheckManager = require("./ReadyCheckManager.vue");
 
     @Component({
         components: {
+            ready: ReadyCheckManager,
             invites: InviteManager,
             queue: QueueManager,
             lobby: LobbyManager
