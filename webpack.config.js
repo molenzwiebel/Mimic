@@ -32,6 +32,9 @@ module.exports = function(env) {
             }, {
                 test: /\.css$/,
                 use: ["style-loader", "css-loader"]
+            }, {
+                test: /\.mp3$/,
+                loader: "file-loader"
             }]
         },
         resolve: {

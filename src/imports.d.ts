@@ -12,3 +12,8 @@ declare module "*.png" {
     const path: string;
     export = path;
 }
+
+declare module "*.mp3" {
+    const path: string;
+    export = path;
+}

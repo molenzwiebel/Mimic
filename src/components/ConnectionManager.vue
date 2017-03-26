@@ -22,6 +22,8 @@
     import QueueManager = require("./QueueManager.vue");
     import ReadyCheckManager = require("./ReadyCheckManager.vue");
 
+    import path = require("../static/queue-pop.mp3");
+
     @Component({
         components: {
             ready: ReadyCheckManager,

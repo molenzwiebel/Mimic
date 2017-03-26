@@ -1,5 +1,5 @@
 <template>
-    <div class="queue" :class="isInQueue ? '' : 'hidden'">
+    <div class="queue" :class="isInQueue && queueData.isCurrentlyInQueue ? '' : 'hidden'">
         <div class="left">
             <i class="ion-android-search"></i>
             <div class="text">
@@ -58,7 +58,7 @@
         }
 
         formatSeconds(secs: number) {
-            return (Math.floor(secs / 60)) + ":" + ("00" + (secs % 60)).slice(-2);
+            return (Math.floor(secs / 60)) + ":" + ("00" + (secs % 60).toFixed(0)).slice(-2);
         }
     }
 </script>
