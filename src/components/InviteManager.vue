@@ -1,33 +1,35 @@
 <template>
-    <div class="invites-overlay">
-        <div v-for="invite in pendingInvites" class="invite">
+    <transition-group tag="div" class="invites-overlay" enter-active-class="slideInLeft" leave-active-class="slideOutRight">
+        <div v-for="invite in pendingInvites" class="invite" :key="invite.id">
             <div class="left">
                 <img :src="inviteImage(invite)">
                 <div class="text">
                     <span class="header">Invite</span>
-                    <span class="content">{{ invite.fromSummoner.displayName }} - {{ invite.invitationMetaData.gameMode }}</span>
+                    <span class="content">{{ invite.fromSummoner.displayName }}</span>
+                    <span class="content">{{ inviteSubtext(invite) }}</span>
                 </div>
             </div>
 
             <div class="right">
-                <i @click="acceptInvite(invite)" v-if="invite.eligibility.eligible" class="fa fa-check" aria-hidden="true"></i>
-                <i @click="declineInvite(invite)" class="fa fa-times"></i>
+                <i @click="acceptInvite(invite)" v-if="invite.eligibility.eligible" class="ion-checkmark"></i>
+                <i @click="declineInvite(invite)" class="ion-close"></i>
             </div>
         </div>
-    </div>
+    </transition-group>
 </template>
 
 
 <script lang="ts">
     import Vue from "vue";
     import Component from "vue-class-component";
+    import { MAPS, QUEUES } from "../constants";
 
     interface Invite {
         id: string;
         eligibility: { eligible: boolean };
         fromSummonerId: number;
         fromSummoner: { displayName: string, profileIconId: number };
-        invitationMetaData: { gameMode: string, isRanked: boolean };
+        invitationMetaData: { gameMode: string, isRanked: boolean, mapId: number, queueId: number };
         state: "Pending" | "Declined";
     }
 
@@ -65,6 +67,10 @@
             return `http://ddragon.leagueoflegends.com/cdn/7.5.2/img/profileicon/${invite.fromSummoner.profileIconId}.png`;
         }
 
+        inviteSubtext(invite: Invite) {
+            return (QUEUES[invite.invitationMetaData.queueId] || "Queue " + invite.invitationMetaData.queueId) + " - " + (MAPS[invite.invitationMetaData.mapId] || "Map " + invite.invitationMetaData.mapId);
+        }
+
         acceptInvite(invite: Invite) {
             this.$root.request("/lol-lobby/v1/received-invitations/" + invite.id + "/accept", "POST");
         }
@@ -76,6 +82,9 @@
 </script>
 
 <style lang="stylus" scoped>
+    .slideInLeft, .slideOutRight
+        animation-duration 0.4s !important
+
     .invites-overlay
         position absolute
         left 0
@@ -87,8 +96,10 @@
         display flex
         flex-direction column
         justify-content flex-end
+        pointer-events none
 
     .invite
+        pointer-events all
         background linear-gradient(to right, #0e213b, #0c2e49)
         padding 10px
         display flex
@@ -104,11 +115,11 @@
             align-items center
 
             img
-                width 100px
-                height 100px
+                width 140px
+                height 140px
 
         .left .text
-            padding-left 10px
+            padding-left 20px
             display flex
             flex-direction column
 

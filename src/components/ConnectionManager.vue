@@ -94,8 +94,6 @@
 <style lang="stylus" scoped>
     .full-screen-msg
         position absolute
-        margin 0
-        padding 0
         background-image url(https://lolstatic-a.akamaihd.net/frontpage/apps/prod/lcu_alpha_website/en_US/c0dcb26e1ba53437859331627d5e2f01dfda818e/assets/img/bgs/magic-repeater.jpg)
         left 0
         top 0

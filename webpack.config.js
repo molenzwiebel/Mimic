@@ -25,7 +25,13 @@ module.exports = function(env) {
                 loader: "vue-loader"
             }, {
                 test: /\.png$/,
-                loader: "url-loader"
+                loader: "file-loader"
+            }, {
+                test: /\.jpg$/,
+                loader: "file-loader"
+            }, {
+                test: /\.css$/,
+                use: ["style-loader", "css-loader"]
             }]
         },
         resolve: {
