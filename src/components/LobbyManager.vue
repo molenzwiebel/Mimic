@@ -71,7 +71,7 @@
         </div>
 
         <div class="bottom">
-            <div class="button" :disabled="!(lobbyData.canStartMatchmaking && lobbyData.localMember.isOwner)">
+            <div class="button" @click="joinQueue()" :disabled="!(lobbyData.canStartMatchmaking && lobbyData.localMember.isOwner)">
                 <div class="button-border" :style="buttonCSS"></div>
                 Find Match
             </div>
@@ -250,6 +250,10 @@
             if (confirm("Kick " + member.summoner.displayName + " from the lobby?")) {
                 this.$root.request("/lol-lobby/v1/lobby/members/" + member.id + "/kick", "POST");
             }
+        }
+
+        joinQueue() {
+            this.$root.request("/lol-matchmaking/v1/search", "POST");
         }
     }
 </script>
