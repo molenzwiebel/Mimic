@@ -1,5 +1,8 @@
 <template>
     <div v-if="hasLobby" class="lobby" :style="backgroundImage">
+        <!-- This overlays the lobby if we are currently in queue -->
+        <div class="queue-overlay"></div>
+
         <transition name="bounce" enter-active-class="fadeInUp" leave-active-class="fadeOutDown">
             <div v-show="displayingRolePicker" class="role-picker">
                 <i class="ion-android-close close" @click="displayingRolePicker = false"></i>
@@ -258,14 +261,27 @@
     }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
     .slideInLeft, .slideOutRight, .fadeInUp, .fadeOutDown
         animation-duration 0.4s !important
+
+    body:not(.in-queue) .queue-overlay
+        display none
+
+    body.in-queue .queue-overlay
+        position absolute
+        left 0
+        top 0
+        width 100%
+        height 100%
+        z-index 100
+        background-color rgba(0, 0, 0, 0.5)
 
     .lobby
         background-image url(https://lolstatic-a.akamaihd.net/frontpage/apps/prod/lcu_alpha_website/en_US/c0dcb26e1ba53437859331627d5e2f01dfda818e/assets/img/bgs/magic-repeater.jpg)
         background-size cover
         background-position center
+        position relative
         flex 1
         transition background-image 0.3s ease // Not a standard, but most mobile browsers support it.
         font-size 50px

@@ -82,9 +82,6 @@
 </script>
 
 <style lang="stylus" scoped>
-    .slideInLeft, .slideOutRight
-        animation-duration 0.4s !important
-
     .invites-overlay
         position absolute
         left 0
