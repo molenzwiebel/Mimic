@@ -266,7 +266,7 @@
         background-image url(https://lolstatic-a.akamaihd.net/frontpage/apps/prod/lcu_alpha_website/en_US/c0dcb26e1ba53437859331627d5e2f01dfda818e/assets/img/bgs/magic-repeater.jpg)
         background-size cover
         background-position center
-        height 100%
+        flex 1
         transition background-image 0.3s ease // Not a standard, but most mobile browsers support it.
         font-size 50px
         display flex

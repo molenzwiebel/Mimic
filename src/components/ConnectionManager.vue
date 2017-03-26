@@ -4,7 +4,8 @@
             <span class="msg">Connecting...</span>
         </div>
 
-        <div v-else="">
+        <div v-else="" style="display: flex; flex-direction: column; height: 100%">
+            <queue></queue>
             <lobby></lobby>
             <invites></invites>
         </div>
@@ -17,10 +18,12 @@
 
     import InviteManager = require("./InviteManager.vue");
     import LobbyManager = require("./LobbyManager.vue");
+    import QueueManager = require("./QueueManager.vue");
 
     @Component({
         components: {
             invites: InviteManager,
+            queue: QueueManager,
             lobby: LobbyManager
         }
     })
