@@ -1,42 +1,100 @@
 <template>
     <div v-if="hasLobby" class="lobby" :style="backgroundImage">
-        <div class="lobby-header">
-            <div class="info">
-                <span class="header">Lobby</span>
-                <span class="info">{{ lobbyInfo }}</span>
+        <transition name="bounce" enter-active-class="fadeInUp" leave-active-class="fadeOutDown">
+            <div v-show="displayingRolePicker" class="role-picker">
+                <i class="ion-android-close close" @click="displayingRolePicker = false"></i>
+                <div class="header">Select {{ selectingFirstRole ? 'First' : 'Second' }} Role</div>
+                <div class="role" @click="updatePosition('FILL')">
+                    <img :src="roleImage('FILL')">
+                    <span>Fill</span>
+                </div>
+                <div class="role" @click="updatePosition('TOP')">
+                    <img :src="roleImage('TOP')">
+                    <span>Top</span>
+                </div>
+                <div class="role" @click="updatePosition('JUNGLE')">
+                    <img :src="roleImage('JUNGLE')">
+                    <span>Jungle</span>
+                </div>
+                <div class="role" @click="updatePosition('MIDDLE')">
+                    <img :src="roleImage('MIDDLE')">
+                    <span>Mid</span>
+                </div>
+                <div class="role" @click="updatePosition('BOTTOM')">
+                    <img :src="roleImage('BOTTOM')">
+                    <span>Bot</span>
+                </div>
+                <div class="role" @click="updatePosition('UTILITY')">
+                    <img :src="roleImage('UTILITY')">
+                    <span>Support</span>
+                </div>
+            </div>
+        </transition>
+
+        <div class="top">
+            <div class="lobby-header">
+                <div class="info">
+                    <span class="header">Lobby</span>
+                    <span class="info">{{ lobbyInfo }}</span>
+                </div>
+
+                <i @click="leaveLobby()" class="ion-android-close"></i>
             </div>
 
-            <i @click="leaveLobby()" class="ion-android-close"></i>
-        </div>
+            <transition-group enter-active-class="slideInLeft" leave-active-class="slideOutRight">
+                <div class="lobby-member" v-for="member in lobbyMembers" :key="member.id">
+                    <div class="left">
+                        <img :src="memberImage(member)">
+                        <div class="texts">
+                            <span><i v-if="member.isOwner" class="ion-ribbon-b"></i>{{ member.summoner.displayName }}</span>
+                            <span class="positions" v-if="lobbyData.showPositionSelector && member.id !== lobbyData.localMember.id" v-html="positions(member)"></span>
+                        </div>
+                    </div>
 
-        <transition-group enter-active-class="slideInLeft" leave-active-class="slideOutRight">
-            <div class="lobby-member" v-for="member in lobbyMembers" :key="member.id">
-                <div class="left">
-                    <img :src="memberImage(member)">
-                    <div class="texts">
-                        <span><i v-if="member.isOwner" class="ion-ribbon-b"></i>{{ member.summoner.displayName }}</span>
-                        <span class="positions" v-if="lobbyData.showPositionSelector" v-html="positions(member)"></span>
+                    <div class="right" v-if="lobbyData.localMember.isOwner && member.id !== lobbyData.localMember.id">
+                        <i class="ion-ribbon-a" @click="makeOwner(member)"></i>
+                        <i :class="member.canInviteOthers ? 'ion-person-add' : 'ion-person'" @click="toggleInvite(member)"></i>
+                        <i class="ion-close-circled" @click="kick(member)"></i>
+                    </div>
+
+                    <div class="right" v-if="lobbyData.showPositionSelector && member.id === lobbyData.localMember.id">
+                        <img
+                                @click="(displayingRolePicker = true, selectingFirstRole = true)"
+                                :src="roleImage(lobbyData.localMember.positionPreferences.firstPreference)">
+                        <img
+                                v-if="lobbyData.localMember.positionPreferences.firstPreference !== 'FILL'"
+                                @click="(displayingRolePicker = true, selectingFirstRole = false)"
+                                :src="roleImage(lobbyData.localMember.positionPreferences.secondPreference)">
                     </div>
                 </div>
+            </transition-group>
+        </div>
 
-                <div class="right" v-if="lobbyData.localMember.isOwner && member.id !== lobbyData.localMember.id">
-                    <i class="ion-ribbon-a" @click="makeOwner(member)"></i>
-                    <i :class="member.canInviteOthers ? 'ion-person-add' : 'ion-person'" @click="toggleInvite(member)"></i>
-                    <i class="ion-close-circled" @click="kick(member)"></i>
-                </div>
+        <div class="bottom">
+            <div class="button" :disabled="!(lobbyData.canStartMatchmaking && lobbyData.localMember.isOwner)">
+                <div class="button-border" :style="buttonCSS"></div>
+                Find Match
             </div>
-        </transition-group>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
     import Component from "vue-class-component";
-    import { MAPS, QUEUES } from "../constants";
+    import { DDRAGON_VERSION, MAPS, QUEUES } from "../constants";
 
     import HABackground = require("../static/bg-ha.jpg");
     import TTBackground = require("../static/bg-tt.jpg");
     import SRBackground = require("../static/bg-sr.jpg");
+
+    import RoleUnselected = require("../static/role-unselected.png");
+    import RoleTop = require("../static/role-top.png");
+    import RoleJungle = require("../static/role-jungle.png");
+    import RoleMid = require("../static/role-mid.png");
+    import RoleBot = require("../static/role-bot.png");
+    import RoleSupport = require("../static/role-support.png");
+    import RoleFill = require("../static/role-fill.png");
 
     const POSITION_NAMES: { [key: string]: string } = {
         TOP: "Top",
@@ -79,6 +137,9 @@
         hasLobby: boolean = false;
         lobbyData: Lobby = <Lobby><any>{};
 
+        displayingRolePicker = false;
+        selectingFirstRole = false;
+
         mounted() {
             this.$root.observe("/lol-lobby/v1/lobby", async (status, data) => {
                 if (status !== 200) {
@@ -118,8 +179,45 @@
             return [this.lobbyData.localMember, ...(this.lobbyData.members.filter(x => x.id !== this.lobbyData.localMember.id))];
         }
 
+        get buttonCSS() {
+            // Chrome needs the border: transparent, Safari needs to not have it for some reason.
+            const border = (<any>window).chrome ? "border: 3px solid transparent;" : "";
+            return border + `border-image: linear-gradient(to top,#785b28 0%,#c89c3c 55%,#c8a355 71%,#c8aa6e 100%); border-image-slice: 1;`;
+        }
+
+        roleImage(role: string) {
+            if (role === "UNSELECTED") return RoleUnselected;
+            if (role === "TOP") return RoleTop;
+            if (role === "JUNGLE") return RoleJungle;
+            if (role === "MIDDLE") return RoleMid;
+            if (role === "BOTTOM") return RoleBot;
+            if (role === "UTILITY") return RoleSupport;
+            if (role === "FILL") return RoleFill;
+            return "";
+        }
+
         memberImage(member: LobbyMember) {
-            return `http://ddragon.leagueoflegends.com/cdn/7.5.2/img/profileicon/${member.summoner.profileIconId}.png`;
+            return `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${member.summoner.profileIconId}.png`;
+        }
+
+        updatePosition(position: string) {
+            const roles: { firstPreference: string, secondPreference: string } = Object.assign({}, this.lobbyData.localMember.positionPreferences);
+            if (this.selectingFirstRole && position === roles.secondPreference) {
+                // First role was set to the same as the second one, swap.
+                roles.secondPreference = roles.firstPreference;
+                roles.firstPreference = position;
+            } else if (position === roles.firstPreference) {
+                // Second role was set to the same as the first one, unselect second one.
+                roles.secondPreference = "UNSELECTED";
+            } else if (this.selectingFirstRole) {
+                roles.firstPreference = position;
+                if (position === "FILL") roles.secondPreference = "UNSELECTED";
+            } else {
+                roles.secondPreference = position;
+            }
+
+            this.$root.request("/lol-lobby/v1/lobby/members/localMember/position-preferences", "PUT", JSON.stringify(roles));
+            this.displayingRolePicker = false;
         }
 
         positions(member: LobbyMember) {
@@ -157,7 +255,7 @@
 </script>
 
 <style lang="stylus" scoped>
-    .slideInLeft, .slideOutRight
+    .slideInLeft, .slideOutRight, .fadeInUp, .fadeOutDown
         animation-duration 0.4s !important
 
     .lobby
@@ -167,6 +265,52 @@
         height 100%
         transition background-image 0.3s ease // Not a standard, but most mobile browsers support it.
         font-size 50px
+        display flex
+        flex-direction column
+        justify-content space-between
+
+    .role-picker
+        position absolute
+        top 0
+        left 0
+        right 0
+        bottom 0
+        z-index 2
+        display flex
+        flex-direction column
+        align-items center
+        background-color white
+
+        .close
+            position absolute
+            top 22px
+            right 40px
+            font-size 70px
+
+        & > .header
+            width 100%
+            text-align center
+            border-bottom 1px solid lightgray
+            margin-top 20px
+            padding-bottom 20px
+            font-family "LoL Body"
+            font-size 60px
+
+        .role
+            box-sizing border-box
+            padding 10px
+            width 100%
+            display flex
+            align-items center
+            border-bottom 1px solid lightgray
+            font-family "LoL Display"
+            font-size 60px
+
+            span
+                margin-left 30px
+
+            img
+                margin-left 10px
 
     .lobby-header
         padding 20px
@@ -244,4 +388,40 @@
 
         .right i
             margin 20px
+
+        .right img
+            width 85px
+            height 85px
+            margin 0 15px
+
+    .button
+        position relative
+        margin 10px
+        margin-bottom 20px
+        width calc(100% - 20px)
+        height 120px
+        display flex
+        justify-content center
+        align-items center
+        background-color rgb(30, 35, 40)
+        text-transform uppercase
+        color rgb(205, 190, 145)
+        font-size 60px
+        font-family "LoL Display Bold"
+        transition 0.3s ease
+
+        &[disabled]
+            background-color #1e2328
+            color #5c5b57
+
+            .button-border
+                border 3px solid #5c5b57 !important
+
+        .button-border
+            transition 0.3s ease
+            position absolute
+            top -2px
+            left -2px
+            width 100%
+            height 100%
 </style>

@@ -1,3 +1,5 @@
+export const DDRAGON_VERSION = "7.6.1";
+
 export const QUEUES: { [key: number]: string } = {
     2: "Normal 5v5",
     8: "Normal 3v3",

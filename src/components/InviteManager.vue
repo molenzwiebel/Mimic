@@ -22,7 +22,7 @@
 <script lang="ts">
     import Vue from "vue";
     import Component from "vue-class-component";
-    import { MAPS, QUEUES } from "../constants";
+    import { DDRAGON_VERSION, MAPS, QUEUES } from "../constants";
 
     interface Invite {
         id: string;
@@ -64,7 +64,7 @@
         }
 
         inviteImage(invite: Invite) {
-            return `http://ddragon.leagueoflegends.com/cdn/7.5.2/img/profileicon/${invite.fromSummoner.profileIconId}.png`;
+            return `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${invite.fromSummoner.profileIconId}.png`;
         }
 
         inviteSubtext(invite: Invite) {

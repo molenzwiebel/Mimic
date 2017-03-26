@@ -73,7 +73,7 @@
 
         private connect() {
             // TODO: Do not hardcode this.
-            this.socket = new WebSocket("ws://192.168.1.9:8181");
+            this.socket = new WebSocket("ws://" + location.hostname + ":8181");
 
             this.socket.onopen = () => {
                 this.connected = true;
