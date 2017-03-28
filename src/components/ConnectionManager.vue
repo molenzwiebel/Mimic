@@ -5,6 +5,7 @@
         </div>
 
         <div v-else="" style="display: flex; flex-direction: column; height: 100%">
+            <champ-select></champ-select>
             <ready></ready>
             <queue></queue>
             <lobby></lobby>
@@ -21,11 +22,13 @@
     import LobbyManager = require("./LobbyManager.vue");
     import QueueManager = require("./QueueManager.vue");
     import ReadyCheckManager = require("./ReadyCheckManager.vue");
+    import ChampSelectManager = require("./ChampSelectManager.vue");
 
     import path = require("../static/queue-pop.mp3");
 
     @Component({
         components: {
+            champSelect: ChampSelectManager,
             ready: ReadyCheckManager,
             invites: InviteManager,
             queue: QueueManager,
