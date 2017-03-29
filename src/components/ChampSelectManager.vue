@@ -1,5 +1,5 @@
 <template>
-    <div class="champ-select" :class="isInQueue">
+    <div class="champ-select" v-if="isInChampSelect">
         <i>Champ Select</i>
     </div>
 </template>
@@ -89,4 +89,5 @@
         right 0
         background-color black
         display flex
+        flex-direction column
 </style>

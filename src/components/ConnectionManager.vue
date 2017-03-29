@@ -84,7 +84,7 @@
 
         private connect() {
             // TODO: Do not hardcode this.
-            this.socket = new WebSocket("ws://" + location.hostname + ":8181");
+            this.socket = new WebSocket("ws://localhost:8181/league");
 
             this.socket.onopen = () => {
                 this.connected = true;
