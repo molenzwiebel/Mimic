@@ -85,11 +85,7 @@
 <script lang="ts">
     import Vue from "vue";
     import Component from "vue-class-component";
-    import { DDRAGON_VERSION, MAPS, QUEUES } from "../constants";
-
-    import HABackground = require("../static/bg-ha.jpg");
-    import TTBackground = require("../static/bg-tt.jpg");
-    import SRBackground = require("../static/bg-sr.jpg");
+    import { DDRAGON_VERSION, MAPS, QUEUES, POSITION_NAMES, mapBackground } from "../constants";
 
     import RoleUnselected = require("../static/role-unselected.png");
     import RoleTop = require("../static/role-top.png");
@@ -98,15 +94,6 @@
     import RoleBot = require("../static/role-bot.png");
     import RoleSupport = require("../static/role-support.png");
     import RoleFill = require("../static/role-fill.png");
-
-    const POSITION_NAMES: { [key: string]: string } = {
-        TOP: "Top",
-        JUNGLE: "Jungle",
-        MIDDLE: "Mid",
-        BOTTOM: "Bottom",
-        UTILITY: "Support",
-        FILL: "Fill"
-    };
 
     interface LobbyMember {
         summoner: { displayName: string, profileIconId: number };
@@ -170,11 +157,7 @@
         }
 
         get backgroundImage() {
-            if (!this.lobbyData) return "";
-            if (this.lobbyData.mapId === 10) return "background-image: url(" + TTBackground + ");";
-            if (this.lobbyData.mapId === 11) return "background-image: url(" + SRBackground + ");";
-            if (this.lobbyData.mapId === 12) return "background-image: url(" + HABackground + ");";
-            return "";
+            return mapBackground(this.lobbyData ? this.lobbyData.mapId : 0);
         }
 
         get lobbyMembers() {

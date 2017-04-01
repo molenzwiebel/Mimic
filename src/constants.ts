@@ -24,3 +24,24 @@ export const MAPS: { [key: number]: string } = {
     11: "Summoner's Rift",
     12: "The Howling Abyss"
 };
+
+export const POSITION_NAMES: { [key: string]: string } = {
+    TOP: "Top",
+    JUNGLE: "Jungle",
+    MIDDLE: "Mid",
+    BOTTOM: "Bottom",
+    UTILITY: "Support",
+    FILL: "Fill"
+};
+
+import HABackground = require("./static/bg-ha.jpg");
+import TTBackground = require("./static/bg-tt.jpg");
+import SRBackground = require("./static/bg-sr.jpg");
+
+export function mapBackground(mapId: number) {
+    if (!mapId) return "";
+    if (mapId === 10) return "background-image: url(" + TTBackground + ");";
+    if (mapId === 11) return "background-image: url(" + SRBackground + ");";
+    if (mapId === 12) return "background-image: url(" + HABackground + ");";
+    return "";
+}
