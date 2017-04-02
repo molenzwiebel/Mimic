@@ -5,6 +5,7 @@
         </div>
 
         <div v-else="" class="body">
+            <ready-check></ready-check>
             <queue></queue>
             <lobby></lobby>
             <!--<champ-select></champ-select>

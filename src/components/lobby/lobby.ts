@@ -65,7 +65,7 @@ export default class Lobby extends Vue {
      * this in it, it will not work. This is because this is just a proxy object to Vue instance when
      * initializing class properties."
      */
-    handleLobbyChange = async function(result: Result) {
+    handleLobbyChange = async function(this: Lobby, result: Result) {
         if (result.status !== 200) {
             this.state = null;
             return;

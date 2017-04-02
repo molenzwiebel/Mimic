@@ -3,6 +3,8 @@ import Component from "vue-class-component";
 
 import Lobby = require("../lobby/lobby.vue");
 import Queue = require("../queue/queue.vue");
+import ReadyCheck = require("../ready-check/ready-check.vue");
+
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -19,7 +21,8 @@ type WebsocketMessage = [1, string, number, any] | [2, number, number, any];
 @Component({
     components: {
         lobby: Lobby,
-        queue: Queue
+        queue: Queue,
+        readyCheck: ReadyCheck
     }
 })
 export default class Root extends Vue {

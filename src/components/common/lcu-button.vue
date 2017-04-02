@@ -63,8 +63,6 @@
         .button-border
             transition 0.3s ease
             position absolute
-            top -3px
-            left -3px
             width 100%
             height 100%
             border-width 6px

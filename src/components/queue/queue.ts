@@ -25,7 +25,7 @@ export default class Queue extends Vue {
      * Handles a change to the matchmaking search. Adds the appropriate class to the body element.
      * Note: this cannot be an arrow function for various changes. See the lobby component for more info.
      */
-    handleMatchmakingChange = async function(result: Result) {
+    handleMatchmakingChange = async function(this: Queue, result: Result) {
         if (result.status !== 200) {
             this.state = null;
             document.body.classList.remove("in-queue");
@@ -54,6 +54,6 @@ export default class Queue extends Vue {
      * Formats the provided number of seconds into a XX:YY format.
      */
     formatSeconds(secs: number) {
-        return (Math.floor(secs / 60)) + ":" + ("00" + (secs % 60).toFixed(0)).slice(-2);
+        return (Math.floor(secs / 60)) + ":" + ("00" + (Math.round(secs) % 60).toFixed(0)).slice(-2);
     }
 }
