@@ -58,11 +58,12 @@ export function roleImage(role: Role) {
 import HABackground = require("./static/bg-ha.jpg");
 import TTBackground = require("./static/bg-tt.jpg");
 import SRBackground = require("./static/bg-sr.jpg");
+import MagicBackground = require("./static/magic-background.jpg");
 
 export function mapBackground(mapId: number) {
     if (!mapId) return "";
     if (mapId === 10) return "background-image: url(" + TTBackground + ");";
     if (mapId === 11) return "background-image: url(" + SRBackground + ");";
     if (mapId === 12) return "background-image: url(" + HABackground + ");";
-    return "";
+    return "background-image: url(" + MagicBackground + ");";
 }

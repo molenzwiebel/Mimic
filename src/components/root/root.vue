@@ -5,14 +5,10 @@
         </div>
 
         <div v-else="" class="body">
+            <champ-select></champ-select>
             <ready-check></ready-check>
             <queue></queue>
             <lobby></lobby>
-            <!--<champ-select></champ-select>
-            <ready></ready>
-            <queue></queue>
-            <lobby></lobby>
-            <invites></invites>-->
         </div>
     </div>
 </template>
@@ -23,7 +19,7 @@
     // Position the message in the center.
     .full-screen-msg
         position absolute
-        background-image url(https://lolstatic-a.akamaihd.net/frontpage/apps/prod/lcu_alpha_website/en_US/c0dcb26e1ba53437859331627d5e2f01dfda818e/assets/img/bgs/magic-repeater.jpg)
+        background-image url(../../static/magic-background.jpg)
         left 0
         top 0
         right 0

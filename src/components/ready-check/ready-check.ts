@@ -36,7 +36,7 @@ export default class ReadyCheck extends Vue {
     }
 
     /**
-     * Handles a change to the matchmaking search. Adds the appropriate class to the body element.
+     * Handles a change to the ready check state. Plays sounds(/vibrates) if needed.
      * Note: this cannot be an arrow function for various changes. See the lobby component for more info.
      */
     handleReadyCheckChange = async function(this: ReadyCheck, result: Result) {
