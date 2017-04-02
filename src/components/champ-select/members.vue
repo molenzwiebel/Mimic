@@ -16,7 +16,7 @@
             </div>
         </div>
 
-        <div class="team enemy-team">
+        <div class="team enemy-team" v-if="state.theirTeam.length > 0">
             <span class="team-name">Enemy Team</span>
             <div class="team-member enemy" v-for="member in state.theirTeam">
                 <div class="member-background" :style="getBackgroundStyle(member)"></div>
@@ -38,6 +38,7 @@
     .scrollable-content
         // String interpolation is needed because variables are ignored in calc.
         max-height "calc(100% - %s)" % (timer-status-height + player-settings-height)
+        min-height "calc(100% - %s)" % (timer-status-height + player-settings-height)
         overflow-y scroll
         -webkit-overflow-scrolling touch // smooth scrolling on ios
 

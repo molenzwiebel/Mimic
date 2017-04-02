@@ -5,6 +5,7 @@ import { DDRAGON_VERSION, mapBackground, POSITION_NAMES, Role } from "../../cons
 
 import Timer = require("./timer.vue");
 import Members = require("./members.vue");
+import PlayerSettings = require("./player-settings.vue");
 import MagicBackground = require("../../static/magic-background.jpg");
 
 export interface ChampSelectMember {
@@ -69,7 +70,8 @@ export interface GameflowState {
 @Component({
     components: {
         timer: Timer,
-        members: Members
+        members: Members,
+        playerSettings: PlayerSettings
     }
 })
 export default class ChampSelect extends Vue {

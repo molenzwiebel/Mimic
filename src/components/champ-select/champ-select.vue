@@ -2,6 +2,7 @@
     <div class="champ-select" v-if="state" :style="background">
         <timer :state="state"></timer>
         <members :state="state"></members>
+        <player-settings :state="state"></player-settings>
     </div>
 </template>
 
