@@ -5,11 +5,12 @@
         </div>
 
         <div v-else="" class="body">
-            <champ-select></champ-select>
+            <lobby></lobby>
+            <!--<champ-select></champ-select>
             <ready></ready>
             <queue></queue>
             <lobby></lobby>
-            <invites></invites>
+            <invites></invites>-->
         </div>
     </div>
 </template>

@@ -12,7 +12,7 @@
     export type ButtonType = "normal" | "confirm" | "deny";
 
     @Component
-    export default class InviteManager extends Vue {
+    export default class LCUButton extends Vue {
         @Prop({ default: false })
         disabled: boolean;
 

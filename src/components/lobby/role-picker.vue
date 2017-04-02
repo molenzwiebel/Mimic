@@ -5,7 +5,7 @@
             <div class="header">Select {{ selectingFirst ? 'First' : 'Second' }} Role</div>
 
             <div class="role" @click="select(role.key)" v-for="role in ROLES">
-                <img :src="role.image">
+                <img :src="roleImage(role.key)">
                 <span>{{ role.name }}</span>
             </div>
         </div>

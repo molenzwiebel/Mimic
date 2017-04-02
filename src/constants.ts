@@ -34,6 +34,27 @@ export const POSITION_NAMES: { [key: string]: string } = {
     FILL: "Fill"
 };
 
+import RoleUnselected = require("./static/role-unselected.png");
+import RoleTop = require("./static/role-top.png");
+import RoleJungle = require("./static/role-jungle.png");
+import RoleMid = require("./static/role-mid.png");
+import RoleBot = require("./static/role-bot.png");
+import RoleSupport = require("./static/role-support.png");
+import RoleFill = require("./static/role-fill.png");
+
+export type Role = "TOP" | "JUNGLE" | "MIDDLE" | "BOTTOM" | "UTILITY" | "FILL" | "UNSELECTED";
+
+export function roleImage(role: Role) {
+    if (role === "UNSELECTED") return RoleUnselected;
+    if (role === "TOP") return RoleTop;
+    if (role === "JUNGLE") return RoleJungle;
+    if (role === "MIDDLE") return RoleMid;
+    if (role === "BOTTOM") return RoleBot;
+    if (role === "UTILITY") return RoleSupport;
+    if (role === "FILL") return RoleFill;
+    return "";
+}
+
 import HABackground = require("./static/bg-ha.jpg");
 import TTBackground = require("./static/bg-tt.jpg");
 import SRBackground = require("./static/bg-sr.jpg");

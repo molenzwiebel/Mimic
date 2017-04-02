@@ -1,16 +1,7 @@
 import Vue from "vue";
 import Root from "../root/root";
 import { Component, Prop } from "vue-property-decorator";
-
-import RoleUnselected = require("../../static/role-unselected.png");
-import RoleTop = require("../../static/role-top.png");
-import RoleJungle = require("../../static/role-jungle.png");
-import RoleMid = require("../../static/role-mid.png");
-import RoleBot = require("../../static/role-bot.png");
-import RoleSupport = require("../../static/role-support.png");
-import RoleFill = require("../../static/role-fill.png");
-
-export type Role = "TOP" | "JUNGLE" | "MIDDLE" | "BOTTOM" | "UTILITY" | "FILL" | "UNSELECTED";
+import { Role, roleImage as constantsRoleImage } from "../../constants";
 
 /**
  * Simple role picker. Pressing the X emits the 'selected' event with the same roles.
@@ -37,28 +28,22 @@ export default class RolePicker extends Vue {
 
     ROLES = [{
         name: "Top",
-        key: "TOP",
-        image: RoleTop
+        key: "TOP"
     }, {
         name: "Jungle",
-        key: "JUNGLE",
-        image: RoleJungle
+        key: "JUNGLE"
     }, {
         name: "Mid",
-        key: "MIDDLE",
-        image: RoleMid
+        key: "MIDDLE"
     }, {
         name: "Bot",
-        key: "BOTTOM",
-        image: RoleBot
+        key: "BOTTOM"
     }, {
         name: "Support",
-        key: "UTILITY",
-        image: RoleSupport
+        key: "UTILITY"
     }, {
         name: "Fill",
-        key: "FILL",
-        image: RoleFill
+        key: "FILL"
     }];
 
     /**
@@ -87,4 +72,9 @@ export default class RolePicker extends Vue {
 
         this.$emit("selected", roles);
     }
+
+    /**
+     * @returns the role image for the specified role
+     */
+    roleImage = constantsRoleImage;
 }

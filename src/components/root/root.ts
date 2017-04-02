@@ -1,6 +1,8 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 
+import Lobby = require("../lobby/lobby.vue");
+
 // Represents a result from the LCU api.
 export interface Result {
     // Status code of the API call.
@@ -13,17 +15,21 @@ export interface Result {
 // Type 2: a request was completed. Format: [2, request_id, status, response]
 type WebsocketMessage = [1, string, number, any] | [2, number, number, any];
 
-@Component
+@Component({
+    components: {
+        lobby: Lobby
+    }
+})
 export default class Root extends Vue {
     connected = false;
     socket: WebSocket;
 
     idCounter = 0;
-    observers: { [key: string]: (result: Result) => void };
-    requests: { [key: number]: Function };
+    observers: { [key: string]: (result: Result) => void } = {};
+    requests: { [key: number]: Function } = {};
 
     mounted() {
-        //this.connect();
+        this.connect();
     }
 
     /**
