@@ -6,6 +6,8 @@ import { DDRAGON_VERSION, mapBackground, POSITION_NAMES, Role } from "../../cons
 import Timer = require("./timer.vue");
 import Members = require("./members.vue");
 import PlayerSettings = require("./player-settings.vue");
+import SummonerPicker = require("./summoner-picker.vue");
+
 import MagicBackground = require("../../static/magic-background.jpg");
 
 export interface ChampSelectMember {
@@ -71,7 +73,8 @@ export interface GameflowState {
     components: {
         timer: Timer,
         members: Members,
-        playerSettings: PlayerSettings
+        playerSettings: PlayerSettings,
+        summonerPicker: SummonerPicker
     }
 })
 export default class ChampSelect extends Vue {
@@ -83,6 +86,10 @@ export default class ChampSelect extends Vue {
     // These two are used to map summoner/champion id -> data.
     championDetails: { [id: number]: { id: string, key: string, name: string } };
     summonerSpellDetails: { [id: number]: { id: string, key: string, name: string } };
+
+    // Information for the summoner spell overlay.
+    pickingSummonerSpell = false;
+    pickingFirstSummonerSpell = false;
 
     mounted() {
         this.loadStatic("champion.json").then(map => {

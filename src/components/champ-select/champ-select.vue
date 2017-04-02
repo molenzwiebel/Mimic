@@ -1,8 +1,10 @@
 <template>
     <div class="champ-select" v-if="state" :style="background">
+        <summoner-picker :state="state" :show="pickingSummonerSpell" :first="pickingFirstSummonerSpell" @close="pickingSummonerSpell = false"></summoner-picker>
+
         <timer :state="state"></timer>
         <members :state="state"></members>
-        <player-settings :state="state"></player-settings>
+        <player-settings :state="state" @spell="(pickingSummonerSpell = true, pickingFirstSummonerSpell = $event)"></player-settings>
     </div>
 </template>
 
