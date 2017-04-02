@@ -1,9 +1,10 @@
 import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
-import { DDRAGON_VERSION, mapBackground, Role } from "../../constants";
+import { DDRAGON_VERSION, mapBackground, POSITION_NAMES, Role } from "../../constants";
 
 import Timer = require("./timer.vue");
+import Members = require("./members.vue");
 import MagicBackground = require("../../static/magic-background.jpg");
 
 export interface ChampSelectMember {
@@ -67,7 +68,8 @@ export interface GameflowState {
 
 @Component({
     components: {
-        timer: Timer
+        timer: Timer,
+        members: Members
     }
 })
 export default class ChampSelect extends Vue {
@@ -77,16 +79,20 @@ export default class ChampSelect extends Vue {
     gameflowState: GameflowState | null = null;
 
     // These two are used to map summoner/champion id -> data.
-    championDetails: { id: string, key: string, name: string }[];
-    summonerSpellDetails: { id: string, key: string, name: string }[];
+    championDetails: { [id: number]: { id: string, key: string, name: string } };
+    summonerSpellDetails: { [id: number]: { id: string, key: string, name: string } };
 
     mounted() {
         this.loadStatic("champion.json").then(map => {
-            this.championDetails = Object.keys(map.data).map(x => map.data[x]);
+            const details: any = {};
+            Object.keys(map.data).forEach(x => details[+map.data[x].key] = map.data[x]);
+            this.championDetails = details;
         });
 
         this.loadStatic("summoner.json").then(map => {
-            this.summonerSpellDetails = Object.keys(map.data).map(x => map.data[x]);
+            const details: any = {};
+            Object.keys(map.data).forEach(x => details[+map.data[x].key] = map.data[x]);
+            this.summonerSpellDetails = details;
         });
 
         // Start observing champion select.
@@ -125,11 +131,12 @@ export default class ChampSelect extends Vue {
     /**
      * @returns the map background for the current queue
      */
-    get background() {
+    get background(): string {
         if (!this.gameflowState) return "background-image: url(" + MagicBackground + ")";
         return mapBackground(this.gameflowState.map.id);
     }
 
+    // TODO: Maybe unify the following two functions?
     /**
      * @returns the current turn happening, or null if no single turn is currently happening (pre and post picks)
      */
@@ -140,9 +147,25 @@ export default class ChampSelect extends Vue {
     }
 
     /**
+     * @returns the next turn happening, or null if there is no next turn.
+     */
+    get nextTurn(): ChampSelectTurn | null {
+        if (!this.state || this.state.timer.phase !== "BAN_PICK") return null;
+        return this.state.actions.filter(x => x.filter(y => !y.completed).length > 0)[1];
+    }
+
+    /**
+     * @returns the action in the current turn for the specified member, or null if the member can't do anything
+     */
+    getActions(member: ChampSelectMember, future = false): ChampSelectAction | null {
+        const turn = future ? this.nextTurn : this.currentTurn;
+        return turn ? turn.filter(x => x.actorCellId === member.cellId)[0] || null : null;
+    }
+
+    /**
      * @returns the member associated with the specified cellId
      */
-    memberForCellId(cellId: number): ChampSelectMember {
+    getMember(cellId: number): ChampSelectMember {
         if (!this.state) throw new Error("Shouldn't happen");
         return this.state.myTeam.filter(x => x.cellId === cellId)[0] || this.state.theirTeam.filter(x => x.cellId === cellId)[0];
     }

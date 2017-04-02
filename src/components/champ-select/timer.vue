@@ -5,7 +5,7 @@
         <div class="timer-bans">
             <div class="bans bans-mine">
                 <template v-for="champ in ourBans">
-                    <img v-if="champ" :src="championIcon(champ)">
+                    <img v-if="champ" :src="getChampionIcon(champ)">
                     <div v-else="" class="ban-placeholder"></div>
                 </template>
             </div>
@@ -14,7 +14,7 @@
 
             <div class="bans bans-enemy">
                 <template v-for="champ in enemyBans">
-                    <img v-if="champ" :src="championIcon(champ)">
+                    <img v-if="champ" :src="getChampionIcon(champ)">
                     <div v-else="" class="ban-placeholder"></div>
                 </template>
             </div>

@@ -40,7 +40,7 @@ export default class Timer extends Vue {
 
         // Only a single person is picking.
         if (stillBusy.length === 1) {
-            const member = this.$parent.memberForCellId(stillBusy[0].actorCellId);
+            const member = this.$parent.getMember(stillBusy[0].actorCellId);
             return member.displayName + " is " + (stillBusy[0].type === "ban" ? "banning" : "picking");
         }
 
@@ -71,8 +71,8 @@ export default class Timer extends Vue {
     /**
      * @returns the path to the icon for the specified champion id
      */
-    championIcon(id: number) {
-        return "http://ddragon.leagueoflegends.com/cdn/" + DDRAGON_VERSION + "/img/champion/" + this.$parent.championDetails.filter(x => x.key === "" + id)[0].id + ".png";
+    getChampionIcon(id: number) {
+        return "http://ddragon.leagueoflegends.com/cdn/" + DDRAGON_VERSION + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
     }
 
     @Watch("state.timer")
