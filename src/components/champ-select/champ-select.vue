@@ -1,6 +1,7 @@
 <template>
     <div class="champ-select" v-if="state" :style="background">
         <summoner-picker :state="state" :show="pickingSummonerSpell" :first="pickingFirstSummonerSpell" @close="pickingSummonerSpell = false"></summoner-picker>
+        <champion-picker :state="state" :show="pickingChampion" @close="pickingChampion = false"></champion-picker>
 
         <timer :state="state"></timer>
         <members :state="state"></members>

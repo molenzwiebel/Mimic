@@ -1,12 +1,13 @@
 import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
-import { DDRAGON_VERSION, mapBackground, POSITION_NAMES, Role } from "../../constants";
+import { DDRAGON_VERSION, mapBackground, Role } from "../../constants";
 
 import Timer = require("./timer.vue");
 import Members = require("./members.vue");
 import PlayerSettings = require("./player-settings.vue");
 import SummonerPicker = require("./summoner-picker.vue");
+import ChampionPicker = require("./champion-picker.vue");
 
 import MagicBackground = require("../../static/magic-background.jpg");
 
@@ -74,7 +75,8 @@ export interface GameflowState {
         timer: Timer,
         members: Members,
         playerSettings: PlayerSettings,
-        summonerPicker: SummonerPicker
+        summonerPicker: SummonerPicker,
+        championPicker: ChampionPicker
     }
 })
 export default class ChampSelect extends Vue {
@@ -90,6 +92,9 @@ export default class ChampSelect extends Vue {
     // Information for the summoner spell overlay.
     pickingSummonerSpell = false;
     pickingFirstSummonerSpell = false;
+
+    // Information for the champion picker.
+    pickingChampion = true;
 
     mounted() {
         this.loadStatic("champion.json").then(map => {
