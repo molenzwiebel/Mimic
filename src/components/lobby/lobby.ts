@@ -57,6 +57,13 @@ export default class Lobby extends Vue {
     /**
      * Handles a change to the /lol-lobby/v1/lobby endpoint. Loads
      * summoner information, then delegates diff computing to Vue.
+     *
+     * Note: this cannot be an arrow function and instead needs to be bound. To quote vue-class-component:
+     * "vue-class-component collects class properties as Vue instance data by instantiating the original
+     * constructor under the hood. While we can define instance data like native class manner, we sometimes
+     * need to know how it works. For example, if you define an arrow function as a class property and access
+     * this in it, it will not work. This is because this is just a proxy object to Vue instance when
+     * initializing class properties."
      */
     handleLobbyChange = async function(result: Result) {
         if (result.status !== 200) {

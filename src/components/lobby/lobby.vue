@@ -1,7 +1,7 @@
 <template>
     <div v-if="state" class="lobby" :style="backgroundImage">
         <!-- This overlays the lobby if we are currently in queue. -->
-        <div class="queue-overlay" style="display: none;"></div>
+        <div class="queue-overlay"></div>
 
         <!-- Role picker needs to be here because of z-index. -->
         <role-picker
@@ -90,4 +90,20 @@
     .queue-button
         margin 10px
         margin-bottom 20px
+</style>
+
+<!-- Note that this style tag is _not_ scoped. -->
+<!-- This is needed because of the body class. -->
+<style lang="stylus">
+    body:not(.in-queue) .queue-overlay
+        display none
+
+    body.in-queue .queue-overlay
+        position absolute
+        left 0
+        top 0
+        width 100%
+        height 100%
+        z-index 100
+        background-color rgba(0, 0, 0, 0.5)
 </style>
