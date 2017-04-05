@@ -39,7 +39,7 @@
             </transition-group>
 
             <!-- Show the invite overlay toggle if we can invite people. -->
-            <div class="invite-prompt" v-if="showInvitePrompt" @click="showingInvites = true">
+            <div class="invite-prompt" v-if="showInvitePrompt" @click="showingInvites = state.localMember.canInviteOthers" :style="state.localMember.canInviteOthers || 'opacity: 0.4;'">
                 <i class="ion-plus"></i>  Add Others
             </div>
         </div>
@@ -104,7 +104,7 @@
         height 100px
         font-size 50px
         text-transform uppercase
-        color opacity(#f6ecd8, 0.6)
+        color rgba(246, 236, 216, 0.6)
         font-family "LoL Display"
         font-weight 700
         letter-spacing 0.075em
