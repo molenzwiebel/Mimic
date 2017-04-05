@@ -94,7 +94,7 @@ export default class ChampSelect extends Vue {
     pickingFirstSummonerSpell = false;
 
     // Information for the champion picker.
-    pickingChampion = true;
+    pickingChampion = false;
 
     mounted() {
         this.loadStatic("champion.json").then(map => {

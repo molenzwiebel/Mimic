@@ -20,7 +20,7 @@
 
     .role-picker
         position absolute
-        top 0
+        top 165px
         left 0
         right 0
         bottom 0
@@ -28,7 +28,10 @@
         display flex
         flex-direction column
         align-items center
-        background-color white
+        background-image url(../../static/magic-background.jpg)
+        background-repeat no-repeat
+        background-size cover
+        color #f0e6d3
 
         .close
             position absolute
@@ -51,7 +54,7 @@
             width 100%
             display flex
             align-items center
-            border-bottom 1px solid lightgray
+            border-bottom 1px solid #cdbe93
             font-family "LoL Display"
             font-size 60px
 

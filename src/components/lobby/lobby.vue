@@ -3,6 +3,8 @@
         <!-- This overlays the lobby if we are currently in queue. -->
         <div class="queue-overlay"></div>
 
+        <invites :show="showingInvites" @close="showingInvites = false"></invites>
+
         <!-- Role picker needs to be here because of z-index. -->
         <role-picker
             :show="showingRolePicker"
@@ -35,6 +37,11 @@
                         @roles="showRolePicker($event)">
                 </lobby-member>
             </transition-group>
+
+            <!-- Show the invite overlay toggle if we can invite people. -->
+            <div class="invite-prompt" v-if="showInvitePrompt" @click="showingInvites = true">
+                <i class="ion-plus"></i>  Add Others
+            </div>
         </div>
 
         <div class="bottom">
@@ -61,6 +68,8 @@
         justify-content space-between
 
     .lobby-header
+        box-sizing border-box
+        height 165px
         padding 20px
         display flex
         flex-direction row
@@ -86,6 +95,24 @@
         i
             margin-right 20px
             font-size 80px
+
+    .invite-prompt
+        margin-left 40px
+        display flex
+        align-items center
+        justify-content center
+        height 100px
+        font-size 50px
+        text-transform uppercase
+        color opacity(#f6ecd8, 0.6)
+        font-family "LoL Display"
+        font-weight 700
+        letter-spacing 0.075em
+
+        i
+            padding-top 2px
+            font-size 40px
+            margin-right 10px
 
     .queue-button
         margin 10px

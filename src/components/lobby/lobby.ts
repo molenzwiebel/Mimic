@@ -5,6 +5,7 @@ import { mapBackground, MAPS, QUEUES, Role } from "../../constants";
 
 import LobbyMemberComponent = require("./lobby-member.vue");
 import RolePicker = require("./role-picker.vue");
+import InviteOverlay = require("./invite-overlay.vue");
 
 /**
  * Represents a member of the lobby. The summoner
@@ -33,13 +34,15 @@ export interface LobbyState {
     canStartMatchmaking: boolean;
     showPositionSelector: boolean;
     localMember: LobbyMember;
+    maximumParticipantListSize: number;
     members: LobbyMember[];
 }
 
 @Component({
     components: {
         lobbyMember: LobbyMemberComponent,
-        rolePicker: RolePicker
+        rolePicker: RolePicker,
+        invites: InviteOverlay
     }
 })
 export default class Lobby extends Vue {
@@ -48,6 +51,8 @@ export default class Lobby extends Vue {
 
     showingRolePicker = false;
     pickingFirstRole = false;
+
+    showingInvites = false;
 
     mounted() {
         // Start observing the lobby.
@@ -108,6 +113,14 @@ export default class Lobby extends Vue {
     get lobbyMembers(): LobbyMember[] {
         if (!this.state) return [];
         return [this.state.localMember, ...(this.state.members.filter(x => x !== this.state!!.localMember))];
+    }
+
+    /**
+     * @returns if the invite prompt should be shown
+     */
+    get showInvitePrompt(): boolean {
+        if (!this.state) return false;
+        return this.state.members.length < this.state.maximumParticipantListSize;
     }
 
     /**
