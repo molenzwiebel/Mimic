@@ -3,7 +3,7 @@
         <!-- This overlays the lobby if we are currently in queue. -->
         <div class="queue-overlay"></div>
 
-        <invites :show="showingInvites" @close="showingInvites = false"></invites>
+        <lobby-invites :show="showingInvites" @close="showingInvites = false"></lobby-invites>
 
         <!-- Role picker needs to be here because of z-index. -->
         <role-picker

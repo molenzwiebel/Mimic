@@ -42,7 +42,7 @@ export interface LobbyState {
     components: {
         lobbyMember: LobbyMemberComponent,
         rolePicker: RolePicker,
-        invites: InviteOverlay
+        lobbyInvites: InviteOverlay
     }
 })
 export default class Lobby extends Vue {
