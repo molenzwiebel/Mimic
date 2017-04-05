@@ -139,7 +139,14 @@ export default class ChampSelect extends Vue {
             });
         }
 
+        const oldAction = this.state ? this.getActions(this.state.localPlayer) : undefined;
         this.state = newState;
+
+        const newAction = this.getActions(this.state.localPlayer);
+        // If we didn't have an action and have one now, or if the actions differ in id, present the champion picker.
+        if ((!oldAction && newAction) || (newAction && oldAction && oldAction.id !== newAction.id)) {
+            this.pickingChampion = true;
+        }
     };
 
     /**

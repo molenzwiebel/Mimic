@@ -1,5 +1,9 @@
 <template>
     <div class="player-settings">
+        <div class="expand-champion-chevron" @click="$emit('expand')">
+            <i class="ion-chevron-up"></i>
+        </div>
+
         <div class="rune-mastery">
             <select @change="selectRunePage($event)">
                 <option :value="rune.id" :selected="rune.current" v-for="rune in runePages">{{ rune.name }}</option>
@@ -23,6 +27,7 @@
     @require "./style.styl"
 
     .player-settings
+        position relative
         box-sizing border-box
         border-top 1px solid rgba(240, 230, 210, 0.5)
         background-color rgba(0, 0, 0, 0.5)
@@ -30,6 +35,20 @@
         display flex
         align-items center
         padding 10px
+
+    .expand-champion-chevron
+        position absolute
+        top 0
+        left 50%
+        transform translate(-50%, -100%)
+        color white
+        font-size 50px
+        padding 4px 40px
+        border-top-left-radius 8px
+        border-top-right-radius 8px
+        border 1px solid rgba(240, 230, 210, 0.7)
+        border-bottom-width 0
+        background-color rgba(0, 0, 0, 0.5)
 
     .rune-mastery
         flex 1

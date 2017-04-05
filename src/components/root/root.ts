@@ -45,6 +45,7 @@ export default class Root extends Vue {
      */
     observe(path: string, handler: (result: Result) => void) {
         this.observers[path] = handler;
+        this.socket.send(JSON.stringify([1, path, 200])); // ask to observe the specified path.
 
         // Make initial request to populate the handler.
         this.request(path).then(handler);
@@ -55,7 +56,10 @@ export default class Root extends Vue {
      * isn't currently being observed.
      */
     unobserve(path: string) {
-        delete this.observers[path];
+        if (this.observers[path]) {
+            delete this.observers[path];
+            if (this.socket.readyState === WebSocket.OPEN) this.socket.send(JSON.stringify([2, path])); // ask to stop observing
+        }
     }
 
     /**
@@ -67,7 +71,7 @@ export default class Root extends Vue {
     request(path: string, method: string = "GET", body?: string): Promise<Result> {
         return new Promise(resolve => {
             const id = this.idCounter++;
-            this.socket.send(JSON.stringify([id, path, method, body]));
+            this.socket.send(JSON.stringify([3, id, path, method, body]));
             this.requests[id] = resolve;
         });
     }

@@ -89,6 +89,7 @@
 
     .queue-button
         margin 10px
+        margin-left 14px
         margin-bottom 20px
 </style>
 

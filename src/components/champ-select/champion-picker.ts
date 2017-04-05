@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
-import { ChampSelectState, default as ChampSelect } from "./champ-select";
+import { ChampSelectAction, ChampSelectState, default as ChampSelect } from "./champ-select";
 import Root from "../root/root";
 import { DDRAGON_VERSION } from "../../constants";
 
@@ -87,8 +87,21 @@ export default class ChampionPicker extends Vue {
      */
     selectChampion(championId: number) {
         const act = this.$parent.getActions(this.state.localPlayer);
-        if (!act) return; // TODO: Champ hovering.
+        if (!act) return this.hoverChampion(championId);
         this.$root.request("/lol-champ-select/v1/session/actions/" + act.id, "PATCH", JSON.stringify({ championId }));
+    }
+
+    // TODO: This is completely untested. This might not even be how you hover a champion.
+    /**
+     * Hovers the specified champion, by changing the champion of
+     * the first uncompleted pick action for the current player.
+     * Does nothing if there is no action to pick for.
+     */
+    hoverChampion(championId: number) {
+        const allActions: ChampSelectAction[] = Array.prototype.concat(this.state.actions);
+        const firstUncompletedPick = allActions.filter(x => x.type === "pick" && x.actorCellId === this.state.localPlayerCellId && !x.completed)[0];
+        if (!firstUncompletedPick) return;
+        this.$root.request("/lol-champ-select/v1/session/actions/" + firstUncompletedPick.id, "PATCH", JSON.stringify({ championId }));
     }
 
     /**
@@ -97,7 +110,7 @@ export default class ChampionPicker extends Vue {
     completeAction() {
         const act = this.$parent.getActions(this.state.localPlayer)!;
         this.$root.request("/lol-champ-select/v1/session/actions/" + act.id + "/complete", "POST");
-        //this.$emit("close");
+        this.$emit("close");
     }
 
     /**

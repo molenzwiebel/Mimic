@@ -27,11 +27,8 @@
 <style lang="stylus" scoped>
     .button
         position relative
-        width calc(100% - 25px)
+        width calc(100% - 40px)
         height 120px
-        display flex
-        justify-content center
-        align-items center
         background-color rgb(30, 35, 40)
         text-transform uppercase
         font-size 60px
@@ -65,6 +62,8 @@
             position absolute
             width 100%
             height 100%
+            left -3px
+            top -3px
             border-width 6px
             border-style solid
 </style>

@@ -5,7 +5,7 @@
 
         <timer :state="state"></timer>
         <members :state="state"></members>
-        <player-settings :state="state" @spell="(pickingSummonerSpell = true, pickingFirstSummonerSpell = $event)"></player-settings>
+        <player-settings :state="state" @spell="(pickingSummonerSpell = true, pickingFirstSummonerSpell = $event)" @expand="pickingChampion = true"></player-settings>
     </div>
 </template>
 

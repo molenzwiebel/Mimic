@@ -35,7 +35,6 @@
         z-index 1
         display flex
         flex-direction column
-        align-items center
         color #f0e6d3
         background-image url(../../static/magic-background.jpg)
         background-repeat no-repeat
