@@ -74,12 +74,25 @@ export default class ChampionPicker extends Vue {
     }
 
     /**
-     * @returns the id of the champion currently selected
+     * @returns the id of the champion currently selected or hovered
      */
     get selectedChampion(): number {
         const act = this.$parent.getActions(this.state.localPlayer);
-        if (!act) return 0;
-        return act.championId;
+        if (act) return act.championId;
+
+        const firstUncompletedPick = this.firstUncompletedPickAction;
+        if (firstUncompletedPick) return firstUncompletedPick.championId;
+
+        return 0;
+    }
+
+    /**
+     * Gets the first uncompleted pick action for the current player,
+     * or undefined if there is no such action.
+     */
+    get firstUncompletedPickAction(): ChampSelectAction | undefined {
+        const allActions: ChampSelectAction[] = Array.prototype.concat(...this.state.actions);
+        return allActions.filter(x => x.type === "pick" && x.actorCellId === this.state.localPlayerCellId && !x.completed)[0];
     }
 
     /**
@@ -91,15 +104,13 @@ export default class ChampionPicker extends Vue {
         this.$root.request("/lol-champ-select/v1/session/actions/" + act.id, "PATCH", JSON.stringify({ championId }));
     }
 
-    // TODO: This is completely untested. This might not even be how you hover a champion.
     /**
      * Hovers the specified champion, by changing the champion of
      * the first uncompleted pick action for the current player.
      * Does nothing if there is no action to pick for.
      */
     hoverChampion(championId: number) {
-        const allActions: ChampSelectAction[] = Array.prototype.concat(this.state.actions);
-        const firstUncompletedPick = allActions.filter(x => x.type === "pick" && x.actorCellId === this.state.localPlayerCellId && !x.completed)[0];
+        const firstUncompletedPick = this.firstUncompletedPickAction;
         if (!firstUncompletedPick) return;
         this.$root.request("/lol-champ-select/v1/session/actions/" + firstUncompletedPick.id, "PATCH", JSON.stringify({ championId }));
     }
