@@ -7,6 +7,7 @@
         <div v-else="" class="body">
             <champ-select></champ-select>
             <ready-check></ready-check>
+            <invites></invites>
             <queue></queue>
             <lobby></lobby>
         </div>

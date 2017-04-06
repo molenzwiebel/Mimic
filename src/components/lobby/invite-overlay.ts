@@ -57,7 +57,7 @@ export default class InviteOverlay extends Vue {
      * Invites the summoner with the specified id.
      */
     invite(toSummonerId: number) {
-        this.$root.request("/lol-lobby/v2/lobby/invitations", "POST", JSON.stringify([{ toSummonerId }])).then(x => console.dir(x));
+        this.$root.request("/lol-lobby/v2/lobby/invitations", "POST", JSON.stringify([{ toSummonerId }]));
     }
 
     /**

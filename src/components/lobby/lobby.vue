@@ -39,7 +39,7 @@
             </transition-group>
 
             <!-- Show the invite overlay toggle if we can invite people. -->
-            <div class="invite-prompt" v-if="showInvitePrompt" @click="showingInvites = state.localMember.canInviteOthers" :style="state.localMember.canInviteOthers || 'opacity: 0.4;'">
+            <div class="invite-prompt" v-if="showInvitePrompt" @click="showingInvites = true">
                 <i class="ion-plus"></i>  Add Others
             </div>
         </div>
@@ -57,7 +57,7 @@
 
 <style lang="stylus" scoped>
     .lobby
-        background-image url(https://lolstatic-a.akamaihd.net/frontpage/apps/prod/lcu_alpha_website/en_US/c0dcb26e1ba53437859331627d5e2f01dfda818e/assets/img/bgs/magic-repeater.jpg)
+        background-image url(../../static/magic-background.jpg)
         background-size cover
         background-position center
         position relative
@@ -81,6 +81,7 @@
         .info
             display flex
             flex-direction column
+            white-space nowrap
 
         .header
             color #f0e6d3

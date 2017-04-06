@@ -120,7 +120,7 @@ export default class Lobby extends Vue {
      */
     get showInvitePrompt(): boolean {
         if (!this.state) return false;
-        return this.state.members.length < this.state.maximumParticipantListSize;
+        return this.state.localMember.canInviteOthers && this.state.members.length < this.state.maximumParticipantListSize;
     }
 
     /**

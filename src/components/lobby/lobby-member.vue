@@ -106,7 +106,7 @@
 
         .left span i
             color #f0e6d3
-            margin-right 20px
+            margin-right 4px
 
         .right
             display flex

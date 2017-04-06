@@ -5,6 +5,7 @@ import Lobby = require("../lobby/lobby.vue");
 import Queue = require("../queue/queue.vue");
 import ReadyCheck = require("../ready-check/ready-check.vue");
 import ChampSelect = require("../champ-select/champ-select.vue");
+import Invites = require("../invites/invites.vue");
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -23,7 +24,8 @@ type WebsocketMessage = [1, string, number, any] | [2, number, number, any];
         lobby: Lobby,
         queue: Queue,
         readyCheck: ReadyCheck,
-        champSelect: ChampSelect
+        champSelect: ChampSelect,
+        invites: Invites
     }
 })
 export default class Root extends Vue {
