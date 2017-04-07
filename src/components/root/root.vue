@@ -1,7 +1,9 @@
 <template>
     <div>
         <div v-if="!connected" class="full-screen-msg">
-            <span class="msg">Connecting...</span>
+            <span class="msg">Enter the IP as shown in tray icon right-click menu (this is temporary).</span>
+            <input v-model="hostname" placeholder="192.168.1.1">
+            <button @click="connect">Connect</button>
         </div>
 
         <div v-else="" class="body">
@@ -26,10 +28,19 @@
         right 0
         bottom 0
         display flex
+        flex-direction column
         justify-content center
         align-items center
 
+        input, button
+            margin-top 10px
+            background-color white
+            width 90%
+            height 120px
+            font-size 60px
+
         .msg
+            margin 20px
             color white
             font-size 100px
             font-family "LoL Body"

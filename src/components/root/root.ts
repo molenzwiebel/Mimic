@@ -35,9 +35,10 @@ export default class Root extends Vue {
     idCounter = 0;
     observers: { matcher: RegExp, handler: (res: Result) => void }[] = [];
     requests: { [key: number]: Function } = {};
+    hostname = "";
 
     mounted() {
-        this.connect();
+        //this.connect();
     }
 
     /**
@@ -110,7 +111,7 @@ export default class Root extends Vue {
      */
     private connect() {
         // TODO: Do not hardcode this.
-        this.socket = new WebSocket("ws://" + "localhost" + ":8182/league");
+        this.socket = new WebSocket("ws://" + this.hostname + ":8182/league");
 
         this.socket.onopen = () => {
             this.connected = true;
@@ -120,9 +121,9 @@ export default class Root extends Vue {
 
         this.socket.onclose = () => {
             this.connected = false;
-            setTimeout(() => {
+            /*setTimeout(() => {
                 this.connect();
-            }, 1000);
+            }, 1000);*/
         };
     }
 }
