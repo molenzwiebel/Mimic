@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "watch": "webpack-dev-server --host 0.0.0.0",
+    "bundle": "webpack --progress --colors --env=prod --optimize-minimize -p"
+  },
   "dependencies": {
     "css-loader": "^0.27.3",
     "file-loader": "^0.10.1",

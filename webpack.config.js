@@ -6,7 +6,7 @@ const webpack = require("webpack");
 
 module.exports = function(env) {
     return {
-        entry: [
+        entry: env === "prod" ? ["./src/index.ts"] : [
             "webpack-dev-server/client?http://0.0.0.0:8081",
             "webpack/hot/only-dev-server",
             "./src/index.ts"
@@ -47,8 +47,7 @@ module.exports = function(env) {
             port: 8081
         },
         plugins: [
-            new webpack.HotModuleReplacementPlugin(),
-            new webpack.NamedModulesPlugin()
+            new webpack.HotModuleReplacementPlugin()
         ]
     };
 };
