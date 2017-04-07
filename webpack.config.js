@@ -22,7 +22,10 @@ module.exports = function(env) {
                 options: { appendTsSuffixTo: [/\.vue$/] }
             }, {
                 test: /\.vue$/,
-                loader: "vue-loader"
+                loader: "vue-loader",
+                options: {
+                    postcss: [require("autoprefixer")]
+                }
             }, {
                 test: /\.png$/,
                 loader: "file-loader"
