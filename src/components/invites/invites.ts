@@ -20,7 +20,9 @@ export default class Invites extends Vue {
 
     mounted() {
         // Start observing the queue.
-        this.$root.observe("/lol-lobby/v1/received-invitations", async (result) => {
+        this.$root.observe(/^\/lol-lobby\/v1\/received-invitations/, async (_) => {
+            const result = await this.$root.request("/lol-lobby/v1/received-invitations");
+
             if (result.status !== 200) {
                 this.invites = [];
                 return;

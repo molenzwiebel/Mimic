@@ -25,6 +25,16 @@ export interface LobbyMember {
 }
 
 /**
+ * Represents a (pending) invitation to the current lobby.
+ */
+export interface InvitationMetadata {
+    id: string;
+    state: "Pending" | "Declined" | "Accepted" | "Kicked";
+    toSummonerId: number;
+    toSummoner: { displayName: string }; // Loaded manually.
+}
+
+/**
  * Represents a lobby. Note that this is a non-exhaustive
  * list of properties that only contain the ones we are using.
  */
@@ -36,6 +46,7 @@ export interface LobbyState {
     localMember: LobbyMember;
     maximumParticipantListSize: number;
     members: LobbyMember[];
+    invitations: InvitationMetadata[];
 }
 
 @Component({
@@ -83,6 +94,10 @@ export default class Lobby extends Vue {
             member.summoner = (await this.$root.request("/lol-summoner/v1/summoners/" + member.id)).content;
         }
 
+        for (const invite of state.invitations) {
+            invite.toSummoner = (await this.$root.request("/lol-summoner/v1/summoners/" + invite.toSummonerId)).content;
+        }
+
         // Update localMember to also contain the summoner.
         state.localMember = state.members.filter(x => x.id === state.localMember.id)[0];
         state.localMember.isLocalMember = true;
@@ -120,7 +135,7 @@ export default class Lobby extends Vue {
      */
     get showInvitePrompt(): boolean {
         if (!this.state) return false;
-        return this.state.localMember.canInviteOthers && this.state.members.length < this.state.maximumParticipantListSize;
+        return this.state.localMember.canInviteOthers;
     }
 
     /**

@@ -11,7 +11,7 @@
 
             <span class="section-header">Invited</span>
             <div class="content">
-                <div class="invite" v-for="invite in invites">
+                <div class="invite" v-for="invite in state.invitations">
                     <i :class="getInvitationIcon(invite)"></i>
                     <span>{{ invite.toSummoner.displayName }}</span>
                 </div>

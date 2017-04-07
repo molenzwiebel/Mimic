@@ -1,13 +1,8 @@
 import Vue from "vue";
 import Root from "../root/root";
 import { Component, Prop } from "vue-property-decorator";
+import Lobby, { InvitationMetadata, LobbyState } from "./lobby";
 
-interface InvitationMetadata {
-    id: string;
-    state: "Pending" | "Declined" | "Accepted" | "Kicked";
-    toSummonerId: number;
-    toSummoner: { displayName: string }; // Loaded manually.
-}
 
 interface InvitationSuggestion {
     summonerId: number;
@@ -24,25 +19,13 @@ export default class InviteOverlay extends Vue {
     @Prop()
     show: boolean;
 
+    @Prop()
+    state: LobbyState;
+
     inviteName: string = "";
-    invites: InvitationMetadata[] = [];
     suggestions: InvitationSuggestion[] = [];
 
     mounted() {
-        this.$root.observe("/lol-lobby/v1/lobby/invitations", async result => {
-            if (result.status !== 200) {
-                this.invites = [];
-                return;
-            }
-
-            const newInvites: InvitationMetadata[] = result.content;
-            for (const invite of newInvites) {
-                invite.toSummoner = (await this.$root.request("/lol-summoner/v1/summoners/" + invite.toSummonerId)).content;
-            }
-
-            this.invites = newInvites;
-        });
-
         this.$root.observe("/lol-suggested-players/v1/suggested-players", result => {
             this.suggestions = result.status === 200 ? result.content : [];
         });

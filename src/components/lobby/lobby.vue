@@ -3,7 +3,7 @@
         <!-- This overlays the lobby if we are currently in queue. -->
         <div class="queue-overlay"></div>
 
-        <lobby-invites :show="showingInvites" @close="showingInvites = false"></lobby-invites>
+        <lobby-invites :state="state" :show="showingInvites" @close="showingInvites = false"></lobby-invites>
 
         <!-- Role picker needs to be here because of z-index. -->
         <role-picker
@@ -40,7 +40,7 @@
 
             <!-- Show the invite overlay toggle if we can invite people. -->
             <div class="invite-prompt" v-if="showInvitePrompt" @click="showingInvites = true">
-                <i class="ion-plus"></i>  Add Others
+                <i class="ion-plus"></i>  Invite Others
             </div>
         </div>
 

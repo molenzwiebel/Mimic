@@ -33,7 +33,7 @@ export default class Root extends Vue {
     socket: WebSocket;
 
     idCounter = 0;
-    observers: { [key: string]: (result: Result) => void } = {};
+    observers: { matcher: RegExp, handler: (res: Result) => void }[] = [];
     requests: { [key: number]: Function } = {};
 
     mounted() {
@@ -45,23 +45,31 @@ export default class Root extends Vue {
      * whenever the endpoints contents or HTTP status change. Only a single
      * instance can observe the same path at a time.
      */
-    observe(path: string, handler: (result: Result) => void) {
-        this.observers[path] = handler;
-        this.socket.send(JSON.stringify([1, path, 200])); // ask to observe the specified path.
+    observe(path: RegExp | string, handler: (result: Result) => void) {
+        if (typeof path === "string") {
+            // Make initial request to populate the handler.
+            this.request(path).then(handler);
 
-        // Make initial request to populate the handler.
-        this.request(path).then(handler);
+            path = new RegExp("^" + path + "$");
+        }
+
+        this.observers.push({ matcher: path, handler });
+        this.socket.send(JSON.stringify([1, path.source])); // ask to observe the specified path.
     }
 
     /**
      * Stop observing the specified path. Does nothing if the path
      * isn't currently being observed.
      */
-    unobserve(path: string) {
-        if (this.observers[path]) {
-            delete this.observers[path];
-            if (this.socket.readyState === WebSocket.OPEN) this.socket.send(JSON.stringify([2, path])); // ask to stop observing
-        }
+    unobserve(path: RegExp | string) {
+        if (typeof path === "string") path = new RegExp("^" + path + "$");
+
+        this.observers = this.observers.filter(x => {
+            if (x.matcher.toString() !== path.toString()) return true;
+
+            if (this.socket.readyState === WebSocket.OPEN) this.socket.send(JSON.stringify([2, (path as RegExp).source])); // ask to stop observing
+            return false;
+        });
     }
 
     /**
@@ -85,8 +93,10 @@ export default class Root extends Vue {
     handleWebsocketMessage = (msg: MessageEvent) => {
         const data: WebsocketMessage = JSON.parse(msg.data);
 
-        if (data[0] === 1 && this.observers[data[1]]) {
-            this.observers[data[1]]({ status: data[2], content: data[3] });
+        if (data[0] === 1) {
+            this.observers
+                .filter(x => !!x.matcher.exec(data[1] as string))
+                .forEach(x => x.handler({ status: data[2], content: data[3] }));
         }
 
         if (data[0] === 2 && this.requests[data[1] as number]) {
@@ -100,7 +110,7 @@ export default class Root extends Vue {
      */
     private connect() {
         // TODO: Do not hardcode this.
-        this.socket = new WebSocket("ws://" + location.hostname + ":8181/league");
+        this.socket = new WebSocket("ws://" + "localhost" + ":8182/league");
 
         this.socket.onopen = () => {
             this.connected = true;
