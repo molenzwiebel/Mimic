@@ -25,6 +25,7 @@ export default class ReadyCheck extends Vue {
         // iOS only allows you to play sounds "at random" once you've played at least once in response
         // to user interaction. You can play the sound muted and it will still count. Only caveat is that
         // if the user _never_ interacts with the screen until queue pop, the sound will not play. ¯\_(ツ)_/¯
+        // Note: This does not seem to apply when the website was added to the home screen.
         let hasPermission = false;
         document.body.addEventListener("touchstart", () => {
             if (!hasPermission) {

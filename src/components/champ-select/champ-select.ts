@@ -12,7 +12,7 @@ import ChampionPicker = require("./champion-picker.vue");
 import MagicBackground = require("../../static/magic-background.jpg");
 
 export interface ChampSelectMember {
-    assignedPosition: Role | "";
+    assignedPosition: Role | ""; // blind pick has no role
     cellId: number;
     championId: number;
     championPickIntent: number;
@@ -98,12 +98,14 @@ export default class ChampSelect extends Vue {
 
     mounted() {
         this.loadStatic("champion.json").then(map => {
+            // map to { id: data }
             const details: any = {};
             Object.keys(map.data).forEach(x => details[+map.data[x].key] = map.data[x]);
             this.championDetails = details;
         });
 
         this.loadStatic("summoner.json").then(map => {
+            // map to { id: data }
             const details: any = {};
             Object.keys(map.data).forEach(x => details[+map.data[x].key] = map.data[x]);
             this.summonerSpellDetails = details;
@@ -126,9 +128,9 @@ export default class ChampSelect extends Vue {
         const newState: ChampSelectState = result.content;
         newState.localPlayer = newState.myTeam.filter(x => x.cellId === newState.localPlayerCellId)[0];
 
-        // Give enemy summoners obfuscated names.
+        // Give enemy summoners obfuscated names, if we don't know their names
         newState.theirTeam.forEach((mem, idx) => {
-            mem.displayName = "Summoner " + (idx + 1);
+            mem.displayName = mem.displayName || ("Summoner " + (idx + 1));
         });
 
         // If we weren't in champ select before, fetch some data.

@@ -110,7 +110,6 @@ export default class Root extends Vue {
      * Automatically (re)connects to the websocket.
      */
     private connect() {
-        // TODO: Do not hardcode this.
         this.socket = new WebSocket("ws://" + this.hostname + ":8182/league");
 
         this.socket.onopen = () => {

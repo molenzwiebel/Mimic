@@ -32,7 +32,6 @@ export default class InviteOverlay extends Vue {
     }
 
     destroyed() {
-        this.$root.unobserve("/lol-lobby/v1/lobby/invitations");
         this.$root.unobserve("/lol-suggested-players/v1/suggested-players");
     }
 

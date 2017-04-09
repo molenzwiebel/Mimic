@@ -19,7 +19,7 @@ export default class Invites extends Vue {
     invites: Invite[] = [];
 
     mounted() {
-        const handleInvitationUpdate = async (_: any) => {
+        const handleInvitationUpdate = async () => {
             const result = await this.$root.request("/lol-lobby/v1/received-invitations");
 
             if (result.status !== 200) {
@@ -40,7 +40,7 @@ export default class Invites extends Vue {
         this.$root.observe(/^\/lol-lobby\/v1\/received-invitations/, handleInvitationUpdate);
 
         // Check for initial pending invites.
-        handleInvitationUpdate(null);
+        handleInvitationUpdate();
     }
 
     /**

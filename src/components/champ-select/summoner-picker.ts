@@ -18,6 +18,7 @@ export default class SummonerPicker extends Vue {
     @Prop
     first: boolean;
 
+    // Loaded from LCU assets, contains information about which spells are available in which queues.
     summonerSpellMetadata: { id: number, gameModes: string[] }[] = [];
 
     mounted() {

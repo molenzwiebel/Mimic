@@ -1,54 +1,62 @@
 <template>
-    <div v-if="state" class="lobby" :style="backgroundImage">
-        <!-- This overlays the lobby if we are currently in queue. -->
-        <div class="queue-overlay"></div>
+    <div style="flex: 1; display: flex;">
+        <div v-if="state" class="lobby" :style="backgroundImage">
+            <!-- This overlays the lobby if we are currently in queue. -->
+            <div class="queue-overlay"></div>
 
-        <lobby-invites :state="state" :show="showingInvites" @close="showingInvites = false"></lobby-invites>
+            <lobby-invites :state="state" :show="showingInvites" @close="showingInvites = false"></lobby-invites>
 
-        <!-- Role picker needs to be here because of z-index. -->
-        <role-picker
-            :show="showingRolePicker"
-            :selecting-first="pickingFirstRole"
-            :first-role="state.localMember.positionPreferences.firstPreference"
-            :second-role="state.localMember.positionPreferences.secondPreference"
-            @selected="updateRoles($event)">
-        </role-picker>
+            <!-- Role picker needs to be here because of z-index. -->
+            <role-picker
+                    :show="showingRolePicker"
+                    :selecting-first="pickingFirstRole"
+                    :first-role="state.localMember.positionPreferences.firstPreference"
+                    :second-role="state.localMember.positionPreferences.secondPreference"
+                    @selected="updateRoles($event)">
+            </role-picker>
 
-        <div class="top">
-            <div class="lobby-header">
-                <div class="info">
-                    <span class="header">Lobby</span>
-                    <span class="info">{{ lobbySubtitle }}</span>
+            <div class="top">
+                <div class="lobby-header">
+                    <div class="info">
+                        <span class="header">Lobby</span>
+                        <span class="info">{{ lobbySubtitle }}</span>
+                    </div>
+
+                    <i @click="leaveLobby()" class="ion-android-close"></i>
                 </div>
 
-                <i @click="leaveLobby()" class="ion-android-close"></i>
+                <transition-group enter-active-class="slideInLeft" leave-active-class="slideOutRight">
+                    <lobby-member
+                            v-for="member in lobbyMembers"
+                            :key="member.id"
+                            :member="member"
+                            :show-positions="state.showPositionSelector"
+                            :show-moderation="state.localMember.isOwner"
+                            @promote="promoteMember(member)"
+                            @invite="toggleInvite(member)"
+                            @kick="kickMember(member)"
+                            @roles="showRolePicker($event)">
+                    </lobby-member>
+                </transition-group>
+
+                <!-- Show the invite overlay toggle if we can invite people. -->
+                <div class="invite-prompt" v-if="showInvitePrompt" @click="showingInvites = true">
+                    <i class="ion-plus"></i>  Invite Others
+                </div>
             </div>
 
-            <transition-group enter-active-class="slideInLeft" leave-active-class="slideOutRight">
-                <lobby-member
-                        v-for="member in lobbyMembers"
-                        :key="member.id"
-                        :member="member"
-                        :show-positions="state.showPositionSelector"
-                        :show-moderation="state.localMember.isOwner"
-                        @promote="promoteMember(member)"
-                        @invite="toggleInvite(member)"
-                        @kick="kickMember(member)"
-                        @roles="showRolePicker($event)">
-                </lobby-member>
-            </transition-group>
-
-            <!-- Show the invite overlay toggle if we can invite people. -->
-            <div class="invite-prompt" v-if="showInvitePrompt" @click="showingInvites = true">
-                <i class="ion-plus"></i>  Invite Others
+            <div class="bottom">
+                <!-- We can join matchmaking if we can start, and we are the owner -->
+                <lcu-button class="queue-button" @click="joinMatchmaking()" :disabled="!(state.canStartMatchmaking && state.localMember.isOwner)">
+                    Find Match
+                </lcu-button>
             </div>
         </div>
 
-        <div class="bottom">
-            <!-- We can join matchmaking if we can start, and we are the owner -->
-            <lcu-button class="queue-button" @click="joinMatchmaking()" :disabled="!(state.canStartMatchmaking && state.localMember.isOwner)">
-                Find Match
-            </lcu-button>
+        <!-- No lobby -->
+        <div class="no-lobby" v-else>
+            <span class="header">No Lobby</span>
+            <span class="detail">Wait for an invite, or join a<br> lobby on your desktop.</span>
         </div>
     </div>
 </template>
@@ -119,6 +127,32 @@
         margin 10px
         margin-left 14px
         margin-bottom 20px
+
+    .no-lobby
+        background-image url(../../static/magic-background.jpg)
+        background-size cover
+        background-position center
+        position relative
+        flex 1
+        display flex
+        flex-direction column
+        justify-content center
+        align-items center
+
+        .header
+            color #f0e6d3
+            font-family "LoL Display"
+            letter-spacing 0.075em
+            text-transform uppercase
+            font-weight bold
+            font-size 70px
+
+        .detail
+            margin-top 10px
+            color #aaaea0
+            font-family "LoL Body"
+            font-size 50px
+            text-align center
 </style>
 
 <!-- Note that this style tag is _not_ scoped. -->

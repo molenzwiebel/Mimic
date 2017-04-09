@@ -16,6 +16,7 @@ export default class ChampionPicker extends Vue {
     show: boolean;
 
     // List of champions that the current user can select. Includes banned champions.
+    // This automatically updates to contain bannable champions when the user needs to ban.
     availableChampions: number[] = [];
 
     created() {
@@ -43,6 +44,7 @@ export default class ChampionPicker extends Vue {
      */
     get header(): string {
         const act = this.$parent.getActions(this.state.localPlayer);
+        if (!act && this.firstUncompletedPickAction) return "Declare your Champion!";
         if (!act || act.type !== "ban") return "Pick a Champion";
         return "Ban a Champion";
     }
