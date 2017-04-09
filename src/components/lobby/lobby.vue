@@ -57,6 +57,7 @@
         <div class="no-lobby" v-else>
             <span class="header">No Lobby</span>
             <span class="detail">Wait for an invite, or join a<br> lobby on your desktop.</span>
+            <span v-if="!isStandalone" class="tip"><b>PRO TIP:</b> Add this site to your homescreen to use Riftwalk in fullscreen.</span>
         </div>
     </div>
 </template>
@@ -152,6 +153,17 @@
             color #aaaea0
             font-family "LoL Body"
             font-size 50px
+            text-align center
+
+        .tip
+            position absolute
+            bottom 0
+            left 0
+            margin 20px
+            width 100%
+            color #aaaea0
+            font-family "LoL Body"
+            font-size 40px
             text-align center
 </style>
 

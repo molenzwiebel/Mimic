@@ -139,6 +139,13 @@ export default class Lobby extends Vue {
     }
 
     /**
+     * @returns if the website is currently running in "standalone" mode (e.g. added to homescreen)
+     */
+    get isStandalone(): boolean {
+        return !!((<any>navigator).standalone || window.matchMedia('(display-mode: standalone)').matches);
+    }
+
+    /**
      * Confirms if the user wants to leave the lobby, then leaves if neccessary.
      * If the underlying call fails, this will simply do nothing and leave the user in the lobby.
      */
