@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["es6", "dom"]
+  },
+  "exclude": [
+    "node_modules", "dist"
+  ]
+}
