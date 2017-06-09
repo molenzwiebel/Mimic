@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
-import { default as ChampSelect, ChampSelectState, ChampSelectTimer } from "./champ-select";
+import { default as ChampSelect, ChampSelectState, ChampSelectTimer, ChampSelectAction } from "./champ-select";
 import { DDRAGON_VERSION } from "../../constants";
 
 @Component
@@ -52,20 +52,20 @@ export default class Timer extends Vue {
      * @returns the bans of our team, with uncompleted bans represented as an id of 0
      */
     get ourBans(): number[] {
-        const banCount = Math.floor(this.state.bans.numBans / 2);
-        const bans = [...this.state.bans.myTeamBans];
-        for (let i = bans.length; i < banCount; i++) bans[i] = 0;
-        return bans;
+        const allActions = (<ChampSelectAction[]>[]).concat(...this.state.actions);
+        const ourTeamIDs = this.state.myTeam.map(x => x.cellId);
+        const ourTeamBans = allActions.filter(x => x.type === "ban" && ourTeamIDs.indexOf(x.actorCellId) !== -1);
+        return ourTeamBans.map(x => x.completed ? x.championId : 0);
     }
 
     /**
      * @returns the bans of the enemy team, with uncompleted bans represented as an id of 0
      */
     get enemyBans(): number[] {
-        const banCount = Math.floor(this.state.bans.numBans / 2);
-        const bans = [...this.state.bans.theirTeamBans];
-        for (let i = bans.length; i < banCount; i++) bans[i] = 0;
-        return bans;
+        const allActions = (<ChampSelectAction[]>[]).concat(...this.state.actions);
+        const theirTeamIDs = this.state.theirTeam.map(x => x.cellId);
+        const theirTeamBans = allActions.filter(x => x.type === "ban" && theirTeamIDs.indexOf(x.actorCellId) !== -1);
+        return theirTeamBans.map(x => x.completed ? x.championId : 0);
     }
 
     /**

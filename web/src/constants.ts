@@ -1,4 +1,4 @@
-export const DDRAGON_VERSION = "7.7.1";
+export const DDRAGON_VERSION = "7.11.1";
 
 export const QUEUES: { [key: number]: string } = {
     2: "Normal 5v5",

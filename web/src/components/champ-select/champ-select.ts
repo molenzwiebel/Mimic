@@ -19,6 +19,7 @@ export interface ChampSelectMember {
     displayName: string;
     spell1Id: number;
     spell2Id: number;
+    team: number;
 }
 
 export interface ChampSelectAction {
@@ -42,12 +43,6 @@ export interface ChampSelectTimer {
 
 export interface ChampSelectState {
     actions: ChampSelectTurn[];
-
-    bans: {
-        numBans: number;
-        myTeamBans: number[];
-        theirTeamBans: number[];
-    }
 
     localPlayerCellId: number;
     localPlayer: ChampSelectMember; // added manually, not actually in the payload

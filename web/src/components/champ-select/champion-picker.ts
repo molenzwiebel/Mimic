@@ -36,7 +36,9 @@ export default class ChampionPicker extends Vue {
      */
     get selectableChampions(): number[] {
         if (!this.state) return [];
-        return this.availableChampions.filter(x => this.state.bans.myTeamBans.indexOf(x) === -1 && this.state.bans.theirTeamBans.indexOf(x) === -1);
+        const allActions = (<ChampSelectAction[]>[]).concat(...this.state.actions);
+        const bannedChamps = allActions.filter(x => x.type === "ban" && x.completed).map(x => x.championId);
+        return this.availableChampions.filter(x => bannedChamps.indexOf(x) === -1);
     }
 
     /**
