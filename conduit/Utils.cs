@@ -4,11 +4,11 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace RiftwalkConduit
+namespace MimicConduit
 {
     static class Utils
     {
-        private static string dataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Riftwalk");
+        private static string dataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Mimic");
 
         static Utils()
         {
@@ -90,7 +90,7 @@ namespace RiftwalkConduit
             {
                 // Notify that the path is invalid.
                 MessageBox.Show(
-                    "Riftwalk could not find the League client at " + path + ". Please select the location of 'LeagueClient.exe' manually.",
+                    "Mimic could not find the League client at " + path + ". Please select the location of 'LeagueClient.exe' manually.",
                     "LCU not found",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation

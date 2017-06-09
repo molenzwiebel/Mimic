@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RiftwalkConduit.Properties
+namespace MimicConduit.Properties
 {
 
 

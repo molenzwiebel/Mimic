@@ -7,8 +7,8 @@
     <ProjectGuid>{14CF3485-4A89-42BF-8323-C7B5DFE7EFFE}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RiftwalkConduit</RootNamespace>
-    <AssemblyName>RiftwalkConduit</AssemblyName>
+    <RootNamespace>MimicConduit</RootNamespace>
+    <AssemblyName>MimicConduit</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

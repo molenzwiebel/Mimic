@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Windows.Forms;
 using WebSocketSharp.Server;
 
-namespace RiftwalkConduit
+namespace MimicConduit
 {
     class Program : ApplicationContext
     {
@@ -25,8 +25,8 @@ namespace RiftwalkConduit
             {
                 Icon = SystemIcons.WinLogo,
                 Visible = true,
-                BalloonTipTitle = "Riftwalk",
-                BalloonTipText = "Riftwalk will run in the background. Right-Click the tray icon for more info."
+                BalloonTipTitle = "Mimic",
+                BalloonTipText = "Mimic will run in the background. Right-Click the tray icon for more info."
             };
             trayIcon.ShowBalloonTip(5000);
             UpdateMenuItems();
@@ -37,7 +37,7 @@ namespace RiftwalkConduit
 
         private void UpdateMenuItems()
         {
-            var aboutMenuItem = new MenuItem("Riftwalk v0.1 - " + (connected ? "Connected" : "Disconnected"));
+            var aboutMenuItem = new MenuItem("Mimic v0.1 - " + (connected ? "Connected" : "Disconnected"));
             aboutMenuItem.Enabled = false;
 
             var ipMenuItem = new MenuItem("Address: " + FindLocalIP());
@@ -60,7 +60,7 @@ namespace RiftwalkConduit
         private void onLeagueStart(string lockfileContents)
         {
             Console.WriteLine("League Started.");
-            trayIcon.BalloonTipText = "Connected to League. Visit http://riftwalk.molenzwiebel.xyz to control your client remotely.";
+            trayIcon.BalloonTipText = "Connected to League. Visit http://mimic.molenzwiebel.xyz to control your client remotely.";
             trayIcon.ShowBalloonTip(2000);
             connected = true;
             UpdateMenuItems();

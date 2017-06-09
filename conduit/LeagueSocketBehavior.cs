@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
-namespace RiftwalkConduit
+namespace MimicConduit
 {
     class LeagueSocketBehavior : WebSocketBehavior
     {
