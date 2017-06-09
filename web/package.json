@@ -1,11 +1,15 @@
 {
-  "name": "Riftwalk",
+  "name": "mimic",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "watch": "webpack-dev-server --host 0.0.0.0",
     "bundle": "webpack --progress --colors --env=prod --optimize-minimize -p"
+  },
+  "repository": {
+    "url": "https://github.com/molenzwiebel/mimic",
+    "type": "git"
   },
   "dependencies": {
     "autoprefixer": "^6.7.7",
