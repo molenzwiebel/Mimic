@@ -1,6 +1,7 @@
 import { Database } from "basie";
 import { Instance } from "./database";
 import express = require("express");
+import cors = require("cors");
 import bodyParser = require("body-parser");
 
 // Returns the external IP of the request, or null if it is missing or invalid
@@ -20,6 +21,7 @@ function getExternalIP(req: express.Request): string | null {
     console.log("[*] Creating web front...");
     const app = express();
     app.use(bodyParser.json());
+    app.use(cors());
 
     app.put("/discovery", async (req, res) => {
         // Reject invalid payloads.
