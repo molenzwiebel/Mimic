@@ -13,6 +13,12 @@
             <queue></queue>
             <lobby></lobby>
         </div>
+
+        <transition enter-active-class="slideInUp" leave-active-class="slideOutDown">
+            <div v-if="notification" class="notification">
+                {{ notification }}
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -50,4 +56,19 @@
         display flex
         flex-direction column
         height 100%
+
+    .notification
+        z-index 1000
+        position absolute
+        background-color black
+        padding 10px
+        text-transform uppercase
+        border-top 2px solid #785a28
+        bottom 0
+        left 0
+        right 0
+        color #d5d9c9
+        font-family "LoL Body"
+        font-size 40px
+        text-align center
 </style>

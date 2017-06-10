@@ -17,7 +17,8 @@ export interface Result {
 
 // Type 1: an observed path changed. Format: [1, path_that_changed, new_status, new_content]
 // Type 2: a request was completed. Format: [2, request_id, status, response]
-type WebsocketMessage = [1, string, number, any] | [2, number, number, any];
+// Type 3: a response to an info request. Format: [3, conduit_version, machine_name]
+type WebsocketMessage = [1, string, number, any] | [2, number, number, any] | [3, string, string];
 
 @Component({
     components: {
@@ -31,6 +32,7 @@ type WebsocketMessage = [1, string, number, any] | [2, number, number, any];
 export default class Root extends Vue {
     connected = false;
     socket: WebSocket;
+    notifications: string[] = [];
 
     idCounter = 0;
     observers: { matcher: RegExp, handler: (res: Result) => void }[] = [];
@@ -39,6 +41,13 @@ export default class Root extends Vue {
 
     mounted() {
         //this.connect();
+    }
+
+    /**
+     * @returns the most recent notification, if there is one
+     */
+    get notification() {
+        return this.notifications[0];
     }
 
     /**
@@ -97,12 +106,16 @@ export default class Root extends Vue {
         if (data[0] === 1) {
             this.observers
                 .filter(x => !!x.matcher.exec(data[1] as string))
-                .forEach(x => x.handler({ status: data[2], content: data[3] }));
+                .forEach(x => x.handler({ status: +data[2], content: data[3] }));
         }
 
         if (data[0] === 2 && this.requests[data[1] as number]) {
             this.requests[data[1] as number]({ status: data[2], content: data[3] });
             delete this.requests[data[1] as number];
+        }
+
+        if (data[0] === 3) {
+            this.showNotification("Connected to " + data[2]);
         }
     };
 
@@ -114,15 +127,27 @@ export default class Root extends Vue {
 
         this.socket.onopen = () => {
             this.connected = true;
+            this.socket.send("[4]");
         };
 
         this.socket.onmessage = this.handleWebsocketMessage;
 
         this.socket.onclose = () => {
             this.connected = false;
+            this.showNotification("Connection closed.");
             /*setTimeout(() => {
                 this.connect();
             }, 1000);*/
         };
+    }
+
+    /**
+     * Shows a notification that hides after a few moments.
+     */
+    private showNotification(content: string) {
+        this.notifications.push(content);
+        setTimeout(() => {
+            this.notifications.splice(this.notifications.indexOf(content), 1);
+        }, 5000);
     }
 }
