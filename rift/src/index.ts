@@ -21,7 +21,7 @@ function getExternalIP(req: express.Request): string | null {
     const app = express();
     app.use(bodyParser.json());
 
-    app.post("/update", async (req, res) => {
+    app.put("/discovery", async (req, res) => {
         // Reject invalid payloads.
         if (!req.body || typeof req.body.internal !== "string") return res.status(400).end();
 
@@ -38,13 +38,25 @@ function getExternalIP(req: express.Request): string | null {
         res.status(204).end();
     });
 
-    app.get("/lookup", async (req, res) => {
+    app.get("/discovery", async (req, res) => {
         // Reject invalid payloads.
         const external = getExternalIP(req);
         if (!external) return res.status(400).end();
 
         const entry = await Instance.findBy({ externalIP: external });
         res.json(entry ? entry.internalIP : null); // return null if not found
+    });
+
+    app.delete("/discovery", async (req, res) => {
+        // Reject invalid payloads.
+        const external = getExternalIP(req);
+        if (!external) return res.status(400).end();
+
+        const entry = await Instance.findBy({ externalIP: external });
+        if (entry) await entry.destroy();
+
+        // 204 NO CONTENT
+        res.status(204).end();
     });
 
     app.get("*", (_, res) => res.end("This endpoint is only used for Mimic autodiscovery. You might want the main site instead."));
