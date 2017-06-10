@@ -24,12 +24,12 @@ export default class ChampionPicker extends Vue {
     created() {
         // Observe the list of pickable and bannable champions. The list is sorted by name.
         this.$root.observe("/lol-champ-select/v1/pickable-champions", result => {
-            this.pickableChampions = result.status === 200 ? result.content.championIds : this.pickableChampions;
+            this.pickableChampions = (result.status === 200 ? result.content.championIds : this.pickableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
             this.pickableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
         });
 
         this.$root.observe("/lol-champ-select/v1/bannable-champions", result => {
-            this.bannableChampions = result.status === 200 ? result.content.championIds : this.bannableChampions;
+            this.bannableChampions = (result.status === 200 ? result.content.championIds : this.bannableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
             this.bannableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
         });
     }
