@@ -16,19 +16,27 @@ export default class ChampionPicker extends Vue {
     show: boolean;
 
     // List of champions that the current user can select. Includes banned champions.
-    // This automatically updates to contain bannable champions when the user needs to ban.
-    availableChampions: number[] = [];
+    pickableChampions: number[] = [];
+
+    // List of champions that the current user can ban. Includes already banned champions.
+    bannableChampions: number[] = [];
 
     created() {
         // Observe the list of pickable and bannable champions. The list is sorted by name.
         this.$root.observe("/lol-champ-select/v1/pickable-champions", result => {
-            this.availableChampions = result.status === 200 ? result.content.championIds : this.availableChampions;
-            this.availableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
+            this.pickableChampions = result.status === 200 ? result.content.championIds : this.pickableChampions;
+            this.pickableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
+        });
+
+        this.$root.observe("/lol-champ-select/v1/bannable-champions", result => {
+            this.bannableChampions = result.status === 200 ? result.content.championIds : this.bannableChampions;
+            this.bannableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
         });
     }
 
     destroyed() {
         this.$root.unobserve("/lol-champ-select/v1/pickable-champions");
+        this.$root.unobserve("/lol-champ-select/v1/bannable-champions");
     }
 
     /**
@@ -36,9 +44,11 @@ export default class ChampionPicker extends Vue {
      */
     get selectableChampions(): number[] {
         if (!this.state) return [];
+        const isCurrentlyBanning = this.$parent.currentTurn && this.$parent.currentTurn.filter(x => x.type === "ban" && x.actorCellId === this.state.localPlayerCellId && !x.completed).length > 0;
+
         const allActions = (<ChampSelectAction[]>[]).concat(...this.state.actions);
         const bannedChamps = allActions.filter(x => x.type === "ban" && x.completed).map(x => x.championId);
-        return this.availableChampions.filter(x => bannedChamps.indexOf(x) === -1);
+        return (isCurrentlyBanning ? this.bannableChampions : this.pickableChampions).filter(x => bannedChamps.indexOf(x) === -1);
     }
 
     /**

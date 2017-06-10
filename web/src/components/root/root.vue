@@ -17,7 +17,7 @@
             <div class="manual">
                 <span>Enter your computer's IP address.<br>You can find this in Conduit's right-click menu.</span>
                 <input v-model="hostname" placeholder="192.168.1.1">
-                <lcu-button :disabled="!hostname || connecting" :type="manualButtonType" @click="connect()">Connect</lcu-button>
+                <lcu-button :disabled="(!hostname) || connecting" :type="manualButtonType" @click="connect()">Connect</lcu-button>
             </div>
         </div>
 

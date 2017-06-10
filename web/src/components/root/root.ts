@@ -165,30 +165,29 @@ export default class Root extends Vue {
             };
 
             this.socket.onmessage = this.handleWebsocketMessage;
-            this.socket.onerror = ev => this.connecting && this.showConnectingError();
 
-            this.socket.onclose = () => {
+            this.socket.onclose = ev => {
                 if (this.connecting) {
-                    this.showConnectingError();
+                    this.showConnectingError("Closed unexpectedly (" + ev.reason + ")");
                     return;
                 }
 
                 this.connected = false;
-                this.showNotification("Connection closed.");
+                this.showNotification("Connection to host closed.");
             };
         } catch (e) {
-            this.showConnectingError();
+            this.showConnectingError(e.message);
         }
     }
 
     /**
      * Shows a connecting error in the second button.
      */
-    private showConnectingError() {
+    private showConnectingError(message: string) {
         this.connecting = false;
         this.manualButtonType = "deny";
         setTimeout(() => this.manualButtonType = "confirm", 2500);
-        this.showNotification("Failed to connect. Is Conduit running?");
+        this.showNotification("Failed to connect: " + message + ". Is Conduit running?");
     }
 
     /**
@@ -198,6 +197,6 @@ export default class Root extends Vue {
         this.notifications.push(content);
         setTimeout(() => {
             this.notifications.splice(this.notifications.indexOf(content), 1);
-        }, 5000);
+        }, 8000);
     }
 }
