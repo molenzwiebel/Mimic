@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
@@ -96,6 +97,10 @@ namespace MimicConduit
 
                 var response = makeRequest(path, method, body);
                 Send("[2, " + id + ", " + response.Item1 + ", " + SimpleJson.SerializeObject(response.Item2) + "]");
+            }
+            else if (op == 4) // Get client info
+            {
+                Send("[3, \"" + Program.VERSION + "\", \"" + Environment.MachineName + "\"]");
             }
         }
 

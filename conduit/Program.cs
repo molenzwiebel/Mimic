@@ -10,6 +10,8 @@ namespace MimicConduit
 {
     class Program : ApplicationContext
     {
+        public static string VERSION = "1.0.0";
+
         private WebSocketServer server;
         private List<LeagueSocketBehavior> behaviors = new List<LeagueSocketBehavior>();
         private NotifyIcon trayIcon;
@@ -23,7 +25,7 @@ namespace MimicConduit
 
             trayIcon = new NotifyIcon()
             {
-                Icon = SystemIcons.WinLogo,
+                Icon = new Icon(GetType(), "mimic.ico"),
                 Visible = true,
                 BalloonTipTitle = "Mimic",
                 BalloonTipText = "Mimic will run in the background. Right-Click the tray icon for more info."
@@ -37,10 +39,10 @@ namespace MimicConduit
 
         private void UpdateMenuItems()
         {
-            var aboutMenuItem = new MenuItem("Mimic v0.1 - " + (connected ? "Connected" : "Disconnected"));
+            var aboutMenuItem = new MenuItem("Mimic v1.0.0 - " + (connected ? "Connected" : "Disconnected"));
             aboutMenuItem.Enabled = false;
 
-            var ipMenuItem = new MenuItem("Address: " + FindLocalIP());
+            var ipMenuItem = new MenuItem("Local IP Address: " + FindLocalIP());
             ipMenuItem.Enabled = false;
 
             var quitMenuItem = new MenuItem("Quit", (a, b) => Application.Exit());
@@ -73,6 +75,8 @@ namespace MimicConduit
                 behaviors.Add(behavior);
                 return behavior;
             });
+
+            MakeDiscoveryRequest("PUT", "{ \"internal\": \"" + FindLocalIP() + "\" }");
         }
 
         private void onLeagueStop()
@@ -87,6 +91,18 @@ namespace MimicConduit
             behaviors.ForEach(x => x.Destroy());
             behaviors.Clear();
             server.RemoveWebSocketService("/league");
+
+            MakeDiscoveryRequest("DELETE", "{}");
+        }
+
+        /// Makes an http request to the discovery server to announce or denounce our IP pairs.
+        static void MakeDiscoveryRequest(string method, string body)
+        {
+            using (var client = new WebClient())
+            {
+                client.Headers[HttpRequestHeader.ContentType] = "application/json";
+                try { client.UploadString("http://discovery.mimic.molenzwiebel.xyz/discovery", method, body); } catch { }
+            }
         }
 
         [STAThread]
