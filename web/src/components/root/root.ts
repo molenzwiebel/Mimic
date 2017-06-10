@@ -34,14 +34,15 @@ export default class Root extends Vue {
     socket: WebSocket;
     notifications: string[] = [];
 
+    discoveryButtonType = "normal";
+    manualButtonType = "confirm";
+    discoveringConduit = false;
+    connecting = false;
+    hostname = (localStorage && localStorage.getItem("hostname")) || "";
+
     idCounter = 0;
     observers: { matcher: RegExp, handler: (res: Result) => void }[] = [];
     requests: { [key: number]: Function } = {};
-    hostname = "";
-
-    mounted() {
-        //this.connect();
-    }
 
     /**
      * @returns the most recent notification, if there is one
@@ -120,25 +121,74 @@ export default class Root extends Vue {
     };
 
     /**
+     * Makes a request to the discovery service to try and determine the IP automatically.
+     */
+    discoverConduit() {
+        if (this.discoveringConduit) return;
+        this.discoveringConduit = true;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://discovery.mimic.molenzwiebel.xyz/discovery");
+        xhr.send();
+
+        xhr.onreadystatechange = ev => {
+            if (xhr.readyState !== XMLHttpRequest.DONE) return;
+
+            this.discoveringConduit = false;
+            const res: string | null = JSON.parse(xhr.responseText);
+            if (!res) {
+                this.discoveryButtonType = "deny";
+                setTimeout(() => this.discoveryButtonType = "normal", 2500);
+                this.showNotification("Failed to find Conduit. Is it running?");
+                return;
+            }
+
+            this.hostname = res;
+            this.connect();
+        };
+    }
+
+    /**
      * Automatically (re)connects to the websocket.
      */
     private connect() {
-        this.socket = new WebSocket("ws://" + this.hostname + ":8182/league");
+        localStorage && localStorage.setItem("hostname", this.hostname);
+        this.connecting = true;
 
-        this.socket.onopen = () => {
-            this.connected = true;
-            this.socket.send("[4]");
-        };
+        try {
+            this.socket = new WebSocket("ws://" + this.hostname + ":8182/league");
 
-        this.socket.onmessage = this.handleWebsocketMessage;
+            this.socket.onopen = () => {
+                this.connected = true;
+                this.connecting = false;
+                this.socket.send("[4]");
+            };
 
-        this.socket.onclose = () => {
-            this.connected = false;
-            this.showNotification("Connection closed.");
-            /*setTimeout(() => {
-                this.connect();
-            }, 1000);*/
-        };
+            this.socket.onmessage = this.handleWebsocketMessage;
+            this.socket.onerror = ev => this.connecting && this.showConnectingError();
+
+            this.socket.onclose = () => {
+                if (this.connecting) {
+                    this.showConnectingError();
+                    return;
+                }
+
+                this.connected = false;
+                this.showNotification("Connection closed.");
+            };
+        } catch (e) {
+            this.showConnectingError();
+        }
+    }
+
+    /**
+     * Shows a connecting error in the second button.
+     */
+    private showConnectingError() {
+        this.connecting = false;
+        this.manualButtonType = "deny";
+        setTimeout(() => this.manualButtonType = "confirm", 2500);
+        this.showNotification("Failed to connect. Is Conduit running?");
     }
 
     /**
