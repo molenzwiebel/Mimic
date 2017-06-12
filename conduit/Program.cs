@@ -21,7 +21,16 @@ namespace MimicConduit
         {
             // Start the websocket server. It will not actually do anything until we add a behavior.
             server = new WebSocketServer(8182);
-            server.Start();
+                
+            try
+            {
+                server.Start();
+            }
+            catch (System.Net.Sockets.SocketException e)
+            {
+                MessageBox.Show($"Error code {e.ErrorCode.ToString()}: '{e.Message}'", "Unable to start server", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             trayIcon = new NotifyIcon()
             {
@@ -108,12 +117,26 @@ namespace MimicConduit
         [STAThread]
         static void Main()
         {
-            var lcuPath = Utils.GetLCUPath();
-            if (lcuPath == null) return; // Abort
+            try
+            {
+                using (new SingleGlobalInstance(500)) // Wait 500 seconds max for other programs to stop
+                {
+                    var lcuPath = Utils.GetLCUPath();
+                    if (lcuPath == null)
+                    {
+                        MessageBox.Show("Could not determine path to LCU!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        return; // Abort
+                    }
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Program(lcuPath));
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new Program(lcuPath));
+                }
+            }
+            catch (TimeoutException)
+            {
+                MessageBox.Show("Mimic Conduit is already running!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
         }
     }
 }
