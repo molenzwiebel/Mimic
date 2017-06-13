@@ -10,7 +10,7 @@ namespace MimicConduit
     class SingleGlobalInstance : IDisposable
     {
         public bool hasHandle = false;
-        Mutex mutex;
+        private Mutex mutex;
 
         private void InitMutex()
         {
@@ -29,9 +29,9 @@ namespace MimicConduit
             InitMutex();
             try
             {
-                hasHandle = mutex.WaitOne((timeOut <= 0) ? Timeout.Infinite : timeOut, false);
+                hasHandle = mutex.WaitOne(timeOut <= 0 ? Timeout.Infinite : timeOut, false);
 
-                if (hasHandle == false)
+                if (!hasHandle)
                     throw new TimeoutException("Timeout waiting for exclusive access on SingleInstance");
             }
             catch (AbandonedMutexException)
@@ -39,7 +39,6 @@ namespace MimicConduit
                 hasHandle = true;
             }
         }
-
 
         public void Dispose()
         {
