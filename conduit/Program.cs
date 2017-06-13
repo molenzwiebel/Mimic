@@ -16,6 +16,7 @@ namespace MimicConduit
         private List<LeagueSocketBehavior> behaviors = new List<LeagueSocketBehavior>();
         private NotifyIcon trayIcon;
         private bool connected = false;
+        private LeagueMonitor leagueMonitor;
 
         private Program(string lcuPath)
         {
@@ -43,7 +44,7 @@ namespace MimicConduit
             UpdateMenuItems();
 
             // Start monitoring league.
-            Utils.MonitorLeague(lcuPath, onLeagueStart, onLeagueStop);
+            leagueMonitor = new LeagueMonitor(lcuPath, onLeagueStart, onLeagueStop);
         }
 
         private void UpdateMenuItems()
@@ -121,7 +122,7 @@ namespace MimicConduit
             {
                 using (new SingleGlobalInstance(500)) // Wait 500 seconds max for other programs to stop
                 {
-                    var lcuPath = Utils.GetLCUPath();
+                    var lcuPath = LeagueMonitor.GetLCUPath();
                     if (lcuPath == null)
                     {
                         MessageBox.Show("Could not determine path to LCU!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);

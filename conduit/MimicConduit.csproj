@@ -48,6 +48,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,8 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LeagueSocketBehavior.cs" />
+    <Compile Include="ProcessExtensions.cs" />
     <Compile Include="SingleGlobalInstance.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="LeagueMonitor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleJson.cs" />
