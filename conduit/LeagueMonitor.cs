@@ -92,15 +92,21 @@ namespace MimicConduit
 
             if (!IsValidLCUPath(path))
             {
-                // Notify that the path is invalid.
-                MessageBox.Show(
-                    "Mimic could not find the League client at " + path + ". Make sure the League client runs, and press OK.",
-                    "LCU not found",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation
-                );
-
                 var leaguePath = GetLCUPathWithRunningLeagueClient();
+                if (leaguePath == null)
+                {
+                    // Ask the user to run the League client
+                    MessageBox.Show(
+                        "Mimic could not find the League client at " + path + ". Make sure the League client runs, and press OK.",
+                        "LCU not found",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation
+                    );
+
+                    // Now try again
+                    leaguePath = GetLCUPathWithRunningLeagueClient();
+                }
+
                 path = leaguePath != null ? leaguePath + "LeagueClient.exe" : path;
 
                 // Store choice so we don't have to look for it again.
@@ -185,7 +191,7 @@ namespace MimicConduit
                     return false;
 
                 string folder = Path.GetDirectoryName(path);
-                return File.Exists(path) && File.Exists(folder + "/lockfile");
+                return File.Exists(folder + "/LeagueClient.exe") && Directory.Exists(folder + "/Config") && Directory.Exists(folder + "/Logs");
             }
             catch(Exception)
             {

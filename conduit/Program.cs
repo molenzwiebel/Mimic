@@ -49,7 +49,7 @@ namespace MimicConduit
 
         private void UpdateMenuItems()
         {
-            var aboutMenuItem = new MenuItem("Mimic v1.0.0 - " + (connected ? "Connected" : "Disconnected"));
+            var aboutMenuItem = new MenuItem($"Mimic v{VERSION} - {(connected ? "Connected" : "Disconnected")}");
             aboutMenuItem.Enabled = false;
 
             var ipMenuItem = new MenuItem("Local IP Address: " + FindLocalIP());
