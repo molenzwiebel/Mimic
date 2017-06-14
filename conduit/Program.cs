@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
@@ -10,12 +11,16 @@ namespace MimicConduit
 {
     class Program : ApplicationContext
     {
-        public static string VERSION = "1.0.0";
+        public static string APP_NAME = "Mimic"; // For boot identification
+        public static string VERSION = "1.1.0";
 
         private WebSocketServer server;
         private List<LeagueSocketBehavior> behaviors = new List<LeagueSocketBehavior>();
         private NotifyIcon trayIcon;
         private bool connected = false;
+        private LeagueMonitor leagueMonitor;
+        private RegistryKey bootKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+        private MenuItem startOnBootMenuItem;
 
         private Program(string lcuPath)
         {
@@ -37,25 +42,57 @@ namespace MimicConduit
                 Icon = new Icon(GetType(), "mimic.ico"),
                 Visible = true,
                 BalloonTipTitle = "Mimic",
-                BalloonTipText = "Mimic will run in the background. Right-Click the tray icon for more info."
             };
-            trayIcon.ShowBalloonTip(5000);
+
+            if (!startsOnBoot) // If starting on boot, boot silently.
+            {
+                trayIcon.BalloonTipText = "Mimic will run in the background. Right-Click the tray icon for more info.";
+                trayIcon.ShowBalloonTip(5000);
+            }
+            else if (bootKey.GetValue(APP_NAME).ToString() != Application.ExecutablePath) // Was our application moved?
+                bootKey.SetValue(APP_NAME, Application.ExecutablePath); // Make sure the application startup location is correct
+
             UpdateMenuItems();
 
             // Start monitoring league.
-            Utils.MonitorLeague(lcuPath, onLeagueStart, onLeagueStop);
+            leagueMonitor = new LeagueMonitor(lcuPath, onLeagueStart, onLeagueStop);
+        }
+
+
+        private bool startsOnBoot
+        {
+            get
+            {
+                return bootKey.GetValue(APP_NAME) != null;
+            }
+        }
+
+        private void ToggleStartOnBoot()
+        {
+            if (!startsOnBoot)
+                bootKey.SetValue(APP_NAME, Application.ExecutablePath);
+            else bootKey.DeleteValue(APP_NAME, false);
+            
+            trayIcon.BalloonTipText = $"Mimic {(startsOnBoot ? "will now" : "won't")} start with Windows from now on.";
+            trayIcon.ShowBalloonTip(1000);
+
+            // Update menu state
+            startOnBootMenuItem.Checked = startsOnBoot;
         }
 
         private void UpdateMenuItems()
         {
-            var aboutMenuItem = new MenuItem("Mimic v1.0.0 - " + (connected ? "Connected" : "Disconnected"));
+            var aboutMenuItem = new MenuItem($"Mimic v{VERSION} - {(connected ? "Connected" : "Disconnected")}");
             aboutMenuItem.Enabled = false;
 
             var ipMenuItem = new MenuItem("Local IP Address: " + FindLocalIP());
             ipMenuItem.Enabled = false;
 
+            startOnBootMenuItem = new MenuItem("Start with Windows", (s, e) => ToggleStartOnBoot());
+            startOnBootMenuItem.Checked = startsOnBoot;
+
             var quitMenuItem = new MenuItem("Quit", (a, b) => Application.Exit());
-            trayIcon.ContextMenu = new ContextMenu(new MenuItem[] { aboutMenuItem, ipMenuItem, quitMenuItem });
+            trayIcon.ContextMenu = new ContextMenu(new MenuItem[] { aboutMenuItem, ipMenuItem, startOnBootMenuItem, quitMenuItem });
         }
 
         private string FindLocalIP()
@@ -121,7 +158,7 @@ namespace MimicConduit
             {
                 using (new SingleGlobalInstance(500)) // Wait 500 seconds max for other programs to stop
                 {
-                    var lcuPath = Utils.GetLCUPath();
+                    var lcuPath = LeagueMonitor.GetLCUPath();
                     if (lcuPath == null)
                     {
                         MessageBox.Show("Could not determine path to LCU!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
