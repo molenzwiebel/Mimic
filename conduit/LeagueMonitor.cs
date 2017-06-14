@@ -193,7 +193,7 @@ namespace MimicConduit
                 string folder = Path.GetDirectoryName(path);
                 return File.Exists(folder + "/LeagueClient.exe") && Directory.Exists(folder + "/Config") && Directory.Exists(folder + "/Logs");
             }
-            catch(Exception)
+            catch
             {
                 return false;
             }
