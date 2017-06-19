@@ -3,8 +3,7 @@
  */
 const path = require("path");
 const webpack = require("webpack");
-const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
-
+const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin");
 
 module.exports = function(env) {
     return {
@@ -52,16 +51,14 @@ module.exports = function(env) {
             hot: true,
             contentBase: path.resolve(__dirname, "src"),
             publicPath: "/",
-            port: 80
+            port: 8081
         },
         plugins: [
-            new SWPrecacheWebpackPlugin(
-              {
-                filename: 'service-worker.js',
+            new SWPrecacheWebpackPlugin({
+                filename: "service-worker.js",
                 minify: true,
-                navigateFallback: '/index.html'
-              }
-            ),
+                navigateFallback: "/index.html"
+            }),
             new webpack.HotModuleReplacementPlugin()
         ]
     };
