@@ -10,7 +10,7 @@ After checking out the source, run `yarn install` to install all dependencies. Y
 
 During development, you can use `yarn watch` to start a webserver at [localhost:8081](http://localhost:8081). This webserver uses Hot Module Reloading to automatically refresh the UI whenever a file is edited.
 
-Building a release bundle can be done using `yarn bundle`. This will generate a folder called `dist/` that contains all files, _except index.html_. You will need to copy the index.html from `src/`.
+Building a release bundle can be done using `yarn bundle`. This will generate a folder called `dist/` that contains all files, _except index.html, manifest.json and the icons directory_. You will need to copy the index.html from `src/`.
 
 ## License
 
