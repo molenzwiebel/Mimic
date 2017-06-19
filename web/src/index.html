@@ -1,73 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-      <title>Mimic</title>
-      <meta name="description" content="The new League client. Except it's on your phone."/>
-      <meta name="viewport" content="user-scalable=no">
+<head>
+    <title>Mimic</title>
+    <meta name="description" content="The new League client. Except it's on your phone." />
+    <meta name="viewport" content="user-scalable=no">
 
-      <!-- Browser favicon -->
-      <link rel="shortcut icon" href="icons/icon-72x72.png" sizes="72x72">
+    <!-- Browser favicon -->
+    <link rel="shortcut icon" href="icons/icon-72x72.png" sizes="72x72">
 
-      <!-- See https://goo.gl/OOhYW5 -->
-      <link rel="manifest" href="manifest.json">
+    <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="manifest" href="manifest.json">
 
-      <!-- See https://goo.gl/qRE0vM -->
-      <meta name="theme-color" content="#000A13">
+    <!-- See https://goo.gl/qRE0vM -->
+    <meta name="theme-color" content="#9b59b6">
 
-      <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
-      <meta name="mobile-web-app-capable" content="yes">
-      <meta name="application-name" content="Mimic">
+    <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Mimic">
 
-      <!-- Add to homescreen for Safari on iOS -->
-      <meta name="apple-mobile-web-app-capable" content="yes">
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-      <meta name="apple-mobile-web-app-title" content="Mimic">
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mimic">
 
-      <!-- Homescreen icons -->
-      <link rel="apple-touch-icon" href="icons/icon.png">
-      <link rel="apple-touch-icon" sizes="72x72" href="icons/icon-72x72.png">
-      <link rel="apple-touch-icon" sizes="96x96" href="icons/icon-96x96.png">
-      <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144x144.png">
-      <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
+    <!-- Homescreen icons -->
+    <link rel="apple-touch-icon" href="icons/icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="icons/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
 
-      <!-- Tile icon for Windows 8 (144x144 + tile color) -->
-      <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
-      <meta name="msapplication-TileColor" content="#000A13">
-      <meta name="msapplication-tap-highlight" content="no">
+    <!-- Tile icon for Windows 8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#000A13">
+    <meta name="msapplication-tap-highlight" content="no">
 
-      <link href="https://fonts.googleapis.com/css?family=Droid+Sans" rel="stylesheet">
-      <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet">
-      <style>
-          @font-face {
-              font-family: LoL Display Bold;
-              font-weight: 700;
-              font-style: normal;
-              src: url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Bold.woff) format("woff"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Bold.ttf) format("truetype"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Bold.eot?#iefix) format("eot"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Bold.svg) format("svg")
-          }
-
-          @font-face {
-              font-family: LoL Display;
-              font-weight: 400;
-              font-style: normal;
-              src: url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Regular.woff2) format("woff2"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Regular.ttf) format("truetype"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Regular.eot?#iefix) format("eot"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Regular.woff) format("woff"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Regular.svg) format("svg");
-          }
-
-          @font-face {
-              font-family: LoL Body;
-              font-weight: 400;
-              font-style: normal;
-              src: url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/Spiegel-Regular.woff) format("woff"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/Spiegel-Regular.svg) format("svg"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/Spiegel-Regular.ttf) format("truetype");
-          }
-      </style>
-  </head>
-  <body>
-      <div id="root"></div>
-      <script>
-        if('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('service-worker.js');
+    <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: LoL Display Bold;
+            font-weight: 700;
+            font-style: normal;
+            src: url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Bold.woff) format("woff"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Bold.ttf) format("truetype"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Bold.eot?#iefix) format("eot"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Bold.svg) format("svg")
         }
-      </script>
-      <script src="bundle.js"></script>
-  </body>
+
+        @font-face {
+            font-family: LoL Display;
+            font-weight: 400;
+            font-style: normal;
+            src: url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Regular.woff2) format("woff2"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Regular.ttf) format("truetype"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Regular.eot?#iefix) format("eot"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Regular.woff) format("woff"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/BeaufortforLOL-Regular.svg) format("svg");
+        }
+
+        @font-face {
+            font-family: LoL Body;
+            font-weight: 400;
+            font-style: normal;
+            src: url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/Spiegel-Regular.woff) format("woff"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/Spiegel-Regular.svg) format("svg"), url(https://lolstatic-a.akamaihd.net/awesomefonts/1.0.0/Fonts/Spiegel-Regular.ttf) format("truetype");
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js");
+        }
+    </script>
+    <script src="bundle.js"></script>
+</body>
 </html>
