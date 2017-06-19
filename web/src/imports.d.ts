@@ -8,6 +8,11 @@ declare module "*.jpg" {
     export = path;
 }
 
+declare module "*.json" {
+    const path: string;
+    export = path;
+}
+
 declare module "*.png" {
     const path: string;
     export = path;

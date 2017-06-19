@@ -1,10 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>Mimic</title>
+    <meta name="description" content="The new League client. Except it's on your phone." />
     <meta name="viewport" content="user-scalable=no">
+
+    <!-- Browser favicon -->
+    <link rel="shortcut icon" href="icons/icon-72x72.png" sizes="72x72">
+
+    <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- See https://goo.gl/qRE0vM -->
+    <meta name="theme-color" content="#9b59b6">
+
+    <!-- Add to homescreen for Chrome on Android. Fallback for manifest.json -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Mimic">
+
+    <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="http://ddragon.leagueoflegends.com/cdn/7.11.1/img/spell/LeblancR.png" />
-    <link href="https://fonts.googleapis.com/css?family=Droid+Sans" rel="stylesheet">
-    <link href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mimic">
+
+    <!-- Homescreen icons -->
+    <link rel="apple-touch-icon" href="icons/icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="icons/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
+
+    <!-- Tile icon for Windows 8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#9b59b6">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet">
     <style>
         @font-face {
@@ -29,7 +60,14 @@
         }
     </style>
 </head>
+
 <body>
     <div id="root"></div>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js");
+        }
+    </script>
     <script src="bundle.js"></script>
 </body>
+</html>

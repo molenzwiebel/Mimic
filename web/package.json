@@ -18,6 +18,7 @@
     "style-loader": "^0.16.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
+    "sw-precache-webpack-plugin": "^0.11.3",
     "ts-loader": "^2.0.3",
     "typescript": "^2.2.1",
     "vue": "^2.2.5",

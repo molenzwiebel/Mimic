@@ -3,6 +3,7 @@
  */
 const path = require("path");
 const webpack = require("webpack");
+const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin");
 
 module.exports = function(env) {
     return {
@@ -27,6 +28,9 @@ module.exports = function(env) {
                     postcss: [require("autoprefixer")]
                 }
             }, {
+                test: /\.json$/,
+                loader: "file-loader"
+            }, {
                 test: /\.png$/,
                 loader: "file-loader"
             }, {
@@ -41,7 +45,7 @@ module.exports = function(env) {
             }]
         },
         resolve: {
-            extensions: [".js", ".ts", ".html", ".vue"]
+            extensions: [".js", ".json", ".ts", ".html", ".vue"]
         },
         devServer: {
             hot: true,
@@ -50,6 +54,11 @@ module.exports = function(env) {
             port: 8081
         },
         plugins: [
+            new SWPrecacheWebpackPlugin({
+                filename: "service-worker.js",
+                minify: true,
+                navigateFallback: "/index.html"
+            }),
             new webpack.HotModuleReplacementPlugin()
         ]
     };
