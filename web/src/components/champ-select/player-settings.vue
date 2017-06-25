@@ -1,7 +1,12 @@
 <template>
     <div class="player-settings">
-        <div class="expand-champion-chevron" @click="$emit('expand')">
+        <div class="chevron expand-button" @click="$emit('expand')" v-if="!allowsReroll">
             <i class="ion-chevron-up"></i>
+        </div>
+
+        <div class="chevron reroll-button" @click="reroll()" v-else :class="canReroll || 'disabled'">
+            <i class="ion-loop" style="margin-right: 15px"></i>
+            Reroll {{ rerollState }}
         </div>
 
         <div class="rune-mastery">
@@ -36,19 +41,35 @@
         align-items center
         padding 10px
 
-    .expand-champion-chevron
+    .chevron
         position absolute
         top 0
         left 50%
         transform translate(-50%, -100%)
-        color white
         font-size 50px
-        padding 4px 40px
         border-top-left-radius 8px
         border-top-right-radius 8px
+        display flex
+        align-items center
+        text-transform uppercase
+
+    .expand-button
+        padding 4px 40px
+        color white
         border 1px solid rgba(240, 230, 210, 0.7)
         border-bottom-width 0
         background-color rgba(0, 0, 0, 0.5)
+
+    .reroll-button
+        padding 6px 30px
+        color #b6dbdb
+        border 2px solid #0596aa
+        border-bottom-width 0
+        background-color rgba(0, 0, 0, 0.7)
+        font-family LoL Display
+
+        &.disabled
+            color #657a7a
 
     .rune-mastery
         flex 1

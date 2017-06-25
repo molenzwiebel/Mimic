@@ -61,8 +61,18 @@ export interface ChampSelectState {
 export interface GameflowState {
     map: { id: number };
     gameData: {
-        queue: { gameMode: string };
+        queue: {
+            gameMode: string;
+            gameTypeConfig: {
+                reroll: boolean;
+            };
+        };
     }
+}
+
+export interface RerollState {
+    numberOfRolls: number;
+    maxRolls: number;
 }
 
 @Component({
@@ -79,6 +89,7 @@ export default class ChampSelect extends Vue {
 
     state: ChampSelectState | null = null;
     gameflowState: GameflowState | null = null;
+    rerollState: RerollState = { numberOfRolls: 0, maxRolls: 2 };
 
     // These two are used to map summoner/champion id -> data.
     championDetails: { [id: number]: { id: string, key: string, name: string } };
@@ -108,6 +119,11 @@ export default class ChampSelect extends Vue {
 
         // Start observing champion select.
         this.$root.observe("/lol-champ-select/v1/session", this.handleChampSelectChange.bind(this));
+
+        // Keep track of reroll points for if we play ARAM.
+        this.$root.observe("/lol-summoner/v1/current-summoner/rerollPoints", result => {
+            this.rerollState = result.status === 200 ? result.content : { numberOfRolls: 0, maxRolls: 2 };
+        });
     }
 
     /**
