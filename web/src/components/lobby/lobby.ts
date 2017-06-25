@@ -6,6 +6,7 @@ import { mapBackground, MAPS, QUEUES, Role } from "../../constants";
 import LobbyMemberComponent = require("./lobby-member.vue");
 import RolePicker = require("./role-picker.vue");
 import InviteOverlay = require("./invite-overlay.vue");
+import { QueueState } from "../queue/queue";
 
 /**
  * Represents a member of the lobby. The summoner
@@ -58,7 +59,9 @@ export interface LobbyState {
 })
 export default class Lobby extends Vue {
     $root: Root;
+
     state: LobbyState | null = null;
+    matchmakingState: QueueState | null = null;
 
     showingRolePicker = false;
     pickingFirstRole = false;
@@ -68,6 +71,11 @@ export default class Lobby extends Vue {
     mounted() {
         // Start observing the lobby.
         this.$root.observe("/lol-lobby/v1/lobby", this.handleLobbyChange.bind(this));
+
+        // Observe matchmaking state for queue dodge timer.
+        this.$root.observe("/lol-matchmaking/v1/search", result => {
+            this.matchmakingState = result.status === 200 ? result.content : null;
+        });
     }
 
     /**
@@ -139,6 +147,13 @@ export default class Lobby extends Vue {
     }
 
     /**
+     * @returns the current queue dodge timer, or -1 if there is none
+     */
+    get queueDodgeTime(): number {
+        return this.matchmakingState!.errors.reduce((p, c) => c.penaltyTimeRemaining > p ? c.penaltyTimeRemaining : p, -1);
+    }
+
+    /**
      * @returns if the website is currently running in "standalone" mode (e.g. added to homescreen)
      */
     get isStandalone(): boolean {
@@ -201,5 +216,12 @@ export default class Lobby extends Vue {
      */
     joinMatchmaking() {
         this.$root.request("/lol-matchmaking/v1/search", "POST");
+    }
+
+    /**
+     * Formats the provided number of seconds into a XX:YY format.
+     */
+    formatSeconds(secs: number) {
+        return (Math.floor(secs / 60)) + ":" + ("00" + (Math.round(secs) % 60).toFixed(0)).slice(-2);
     }
 }

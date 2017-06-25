@@ -47,8 +47,9 @@
 
             <div class="bottom">
                 <!-- We can join matchmaking if we can start, and we are the owner -->
-                <lcu-button class="queue-button" @click="joinMatchmaking()" :disabled="!(state.canStartMatchmaking && state.localMember.isOwner)">
-                    Find Match
+                <lcu-button class="queue-button" @click="joinMatchmaking()" :disabled="!(state.canStartMatchmaking && queueDodgeTime === -1 && state.localMember.isOwner)">
+                    <template v-if="queueDodgeTime === -1">Find Match</template>
+                    <template v-else>Blocked {{ formatSeconds(queueDodgeTime) }}</template>
                 </lcu-button>
             </div>
         </div>
