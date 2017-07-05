@@ -33,9 +33,10 @@
 
 <script lang="ts">
     import Vue from "vue";
+    import Root from '../root/root';
     import { Component, Prop } from "vue-property-decorator";
     import { LobbyMember } from "./lobby";
-    import { DDRAGON_VERSION, POSITION_NAMES, roleImage as constantRoleImage } from "../../constants";
+    import { POSITION_NAMES, roleImage as constantRoleImage } from "../../constants";
 
     @Component
     export default class LobbyMemberComponent extends Vue {
@@ -48,8 +49,10 @@
         @Prop()
         showModeration: boolean;
 
+        $root: Root;
+
         get summonerIcon(): string {
-            return `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${this.member.summoner.profileIconId}.png`;
+            return this.$root.resolve("/lol-game-data/assets/v1/profile-icons/" + this.member.summoner.profileIconId + ".jpg");
         }
 
         get positions(): string {

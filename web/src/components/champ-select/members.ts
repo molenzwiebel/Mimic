@@ -1,10 +1,12 @@
 import Vue from "vue";
+import Root, { Result } from "../root/root";
 import { Component, Prop } from "vue-property-decorator";
 import { default as ChampSelect, ChampSelectState, ChampSelectMember } from "./champ-select";
-import { DDRAGON_VERSION, POSITION_NAMES } from "../../constants";
+import { POSITION_NAMES } from "../../constants";
 
 @Component
 export default class Members extends Vue {
+    $root: Root;
     $parent: ChampSelect;
 
     @Prop
@@ -17,9 +19,9 @@ export default class Members extends Vue {
         const act = this.$parent.getActions(member);
         const champId = (act ? act.championId : 0) || member.championId || member.championPickIntent;
         if (!champId) return "background-color: transparent;";
-        const champ = this.$parent.championDetails[champId];
+        const skinId = member.selectedSkinId || (member.championId * 1000)
         const fade = champId === member.championPickIntent ? "opacity: 0.6;" : "";
-        return "background-image: url(http://ddragon.leagueoflegends.com/cdn/img/champion/splash//" + champ.id + "_0.jpg);" + fade;
+        return "background-image: url('" + this.$root.resolve("/lol-game-data/assets/v1/champion-splashes/" + champId + "/" + skinId + ".jpg") +"');" + fade;
     }
 
     /**
@@ -58,6 +60,7 @@ export default class Members extends Vue {
      * @returns the url to the icon for the specified summoner icon id
      */
     getSummonerSpellImage(id: number): string {
-        return "http://ddragon.leagueoflegends.com/cdn/" + DDRAGON_VERSION + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
+        let spell = this.$parent.summonerSpellDetails[id];
+        return this.$root.resolve(spell.iconPath);
     }
 }

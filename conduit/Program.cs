@@ -14,7 +14,8 @@ namespace MimicConduit
         public static string APP_NAME = "Mimic"; // For boot identification
         public static string VERSION = "1.1.0";
 
-        private WebSocketServer server;
+        private HttpServer server;
+        private GameDataProxy gameDataProxy;
         private List<LeagueSocketBehavior> behaviors = new List<LeagueSocketBehavior>();
         private NotifyIcon trayIcon;
         private bool connected = false;
@@ -25,8 +26,8 @@ namespace MimicConduit
         private Program(string lcuPath)
         {
             // Start the websocket server. It will not actually do anything until we add a behavior.
-            server = new WebSocketServer(8182);
-                
+            server = new HttpServer(8182);
+
             try
             {
                 server.Start();
@@ -115,12 +116,16 @@ namespace MimicConduit
 
             var parts = lockfileContents.Split(':');
             var port = int.Parse(parts[2]);
+            var pass = parts[3];
             server.AddWebSocketService("/league", () =>
             {
-                var behavior = new LeagueSocketBehavior(port, parts[3]);
+                var behavior = new LeagueSocketBehavior(port, pass);
                 behaviors.Add(behavior);
                 return behavior;
             });
+
+            gameDataProxy?.Dispose();
+            gameDataProxy = new GameDataProxy(server, port, pass);
 
             MakeDiscoveryRequest("PUT", "{ \"internal\": \"" + FindLocalIP() + "\" }");
         }
@@ -134,6 +139,8 @@ namespace MimicConduit
             UpdateMenuItems();
 
             // This will cleanup the pending connections too.
+            gameDataProxy?.Dispose();
+            gameDataProxy = null;
             behaviors.ForEach(x => x.Destroy());
             behaviors.Clear();
             server.RemoveWebSocketService("/league");

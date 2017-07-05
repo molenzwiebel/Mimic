@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameDataProxy.cs" />
     <Compile Include="LeagueSocketBehavior.cs" />
     <Compile Include="ProcessExtensions.cs" />
     <Compile Include="SingleGlobalInstance.cs" />
