@@ -2,7 +2,6 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { ChampSelectState, default as ChampSelect } from "./champ-select";
 import Root from "../root/root";
-import { DDRAGON_VERSION } from "../../constants";
 
 @Component
 export default class SummonerPicker extends Vue {
@@ -63,6 +62,7 @@ export default class SummonerPicker extends Vue {
      * @returns the url to the icon for the specified summoner icon id
      */
     getSummonerSpellImage(id: number): string {
-        return "http://ddragon.leagueoflegends.com/cdn/" + DDRAGON_VERSION + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
+        let spell = this.$parent.summonerSpellDetails[id];
+        return this.$root.resolve(spell.iconPath);
     }
 }

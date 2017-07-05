@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using WebSocketSharp;
@@ -53,7 +54,16 @@ namespace MimicConduit
         private void handleWebSocketMessage(object sender, MessageEventArgs args)
         {
             if (!args.IsText) return;
-            var payload = SimpleJson.DeserializeObject<JsonArray>(args.Data);
+            JsonArray payload;
+            try
+            {
+                payload = SimpleJson.DeserializeObject<JsonArray>(args.Data);
+            }
+            catch (SerializationException)
+            {
+                var tmp = Regex.Replace(args.Data, "(\"spell(?:1|2)Id\"): \\d{5,}", "$1: 0");
+                payload = SimpleJson.DeserializeObject<JsonArray>(tmp);
+            }
 
             if (payload.Count != 3) return;
             if ((long)payload[0] != 8 || !((string)payload[1]).Equals("OnJsonApiEvent")) return;

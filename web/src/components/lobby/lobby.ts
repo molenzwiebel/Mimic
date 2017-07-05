@@ -150,7 +150,8 @@ export default class Lobby extends Vue {
      * @returns the current queue dodge timer, or -1 if there is none
      */
     get queueDodgeTime(): number {
-        return this.matchmakingState!.errors.reduce((p, c) => c.penaltyTimeRemaining > p ? c.penaltyTimeRemaining : p, -1);
+        if (!this.matchmakingState) return -1;
+        return this.matchmakingState.errors.reduce((p, c) => c.penaltyTimeRemaining > p ? c.penaltyTimeRemaining : p, -1);
     }
 
     /**

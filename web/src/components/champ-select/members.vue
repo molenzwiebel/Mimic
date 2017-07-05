@@ -1,21 +1,21 @@
 <template>
-    <div class="scrollable-content">
+    <div class="members">
         <div class="team">
             <span class="team-name">Your Team</span>
             <div class="team-member my" v-for="member in state.myTeam">
                 <div class="member-background" :style="getBackgroundStyle(member)"></div>
                 <div class="active-background" :class="getActiveOverlayClass(member)"></div>
-                <div class="summoner-spells">
-                    <img :src="getSummonerSpellImage(member.spell1Id)">
-                    <img :src="getSummonerSpellImage(member.spell2Id)">
-                </div>
                 <div class="info">
                     <span class="name">{{ member.displayName }}</span>
                     <span class="state">{{ getMemberSubtext(member) }}</span>
                 </div>
+                <div class="summoner-spells" v-if="member.spell1Id != 0 || member.spell2Id != 0">
+                    <img v-if="member.spell1Id != 0" :src="getSummonerSpellImage(member.spell1Id)">
+                    <img v-if="member.spell2Id != 0" :src="getSummonerSpellImage(member.spell2Id)">
+                </div>
             </div>
         </div>
-
+    
         <div class="team enemy-team" v-if="state.theirTeam.length > 0">
             <span class="team-name">Enemy Team</span>
             <div class="team-member enemy" v-for="member in state.theirTeam">
@@ -35,51 +35,60 @@
 <style lang="stylus" scoped>
     @require "./style.styl"
 
-    .scrollable-content
-        // String interpolation is needed because variables are ignored in calc.
+    .members
         max-height "calc(100% - %s)" % (timer-status-height + player-settings-height)
         min-height "calc(100% - %s)" % (timer-status-height + player-settings-height)
-        overflow-y scroll
+
+        display flex
         -webkit-overflow-scrolling touch // smooth scrolling on ios
 
     .team
+        flex 0 0 50%
         display flex
         flex-direction column
-        padding-top 20px
 
     .team-name
         padding 5px 20px
-        height 50px
+        flex 0 0 50px
         font-size 40px
         color #f0e6d2
         letter-spacing 0.05em
         font-family "LoL Display Bold"
+        text-align center
         text-transform uppercase
 
     .team-member
-        height team-member-height
+        flex 1
+        max-height 400px
         box-sizing border-box
         border-bottom 1px solid #cdbe93
         position relative
         display flex
-        align-items center
+        flex-direction column
+        align-items flex-start
+        justify-content space-between
         color white
 
         &:first-of-type
             border-top 1px solid #cdbe93
 
+    .enemy
+        flex-direction row-reverse
+
     .summoner-spells
-        margin 10px 20px
+        margin 10px 10px
         display flex
         flex-direction column
         align-items center
         justify-content space-around
 
         img
-            width 60px
-            height 60px
+            width 64px
+            height 64px
+            margin-top 10px
 
     .info
+        margin 5px 20px
         display flex
         flex-direction column
         font-family "LoL Body"
@@ -89,16 +98,15 @@
 
         .state
             display inline-block
-            height 30px
             transition 0.3s ease
             font-size 30px
             color #fffaef
 
         .state:empty
             height 0
-
+    
     .enemy .info
-        margin-left 20px
+        align-items: flex-end;
 
     .member-background
         position absolute
@@ -108,8 +116,8 @@
         bottom 0
         right 0
         background-repeat no-repeat
-        background-position 0 -80px
-        background-size cover
+        background-position 40% 8%
+        background-size 200%
         transition 0.3s ease
 
         &:after
@@ -120,6 +128,9 @@
             bottom 0
             right 0
             background-image linear-gradient(to left, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)
+
+    .enemy .member-background
+        background-position-x 60%
 
     @keyframes champ-select-active-background
         0% { background-position: 100% 0; }

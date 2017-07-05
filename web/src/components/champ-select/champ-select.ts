@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
-import { DDRAGON_VERSION, mapBackground, Role } from "../../constants";
+import { mapBackground, Role } from "../../constants";
 
 import Timer = require("./timer.vue");
 import Members = require("./members.vue");
@@ -16,6 +16,7 @@ export interface ChampSelectMember {
     cellId: number;
     championId: number;
     championPickIntent: number;
+    selectedSkinId: number;
     displayName: string;
     spell1Id: number;
     spell2Id: number;
@@ -81,8 +82,8 @@ export default class ChampSelect extends Vue {
     gameflowState: GameflowState | null = null;
 
     // These two are used to map summoner/champion id -> data.
-    championDetails: { [id: number]: { id: string, key: string, name: string } };
-    summonerSpellDetails: { [id: number]: { id: string, key: string, name: string } };
+    championDetails: { [id: number]: { id: string, name: string, squarePortraitPath: string } };
+    summonerSpellDetails: { [id: number]: { id: string, name: string, iconPath: string } };
 
     // Information for the summoner spell overlay.
     pickingSummonerSpell = false;
@@ -92,17 +93,17 @@ export default class ChampSelect extends Vue {
     pickingChampion = false;
 
     mounted() {
-        this.loadStatic("champion.json").then(map => {
+        this.loadStatic("champion-summary.json").then(list => {
             // map to { id: data }
             const details: any = {};
-            Object.keys(map.data).forEach(x => details[+map.data[x].key] = map.data[x]);
+            for (let champ of list) details[champ.id] = champ;
             this.championDetails = details;
         });
 
-        this.loadStatic("summoner.json").then(map => {
+        this.loadStatic("summoner-spells.json").then(list => {
             // map to { id: data }
             const details: any = {};
-            Object.keys(map.data).forEach(x => details[+map.data[x].key] = map.data[x]);
+            for (let spell of list) details[spell.id] = spell;
             this.summonerSpellDetails = details;
         });
 
@@ -189,7 +190,7 @@ export default class ChampSelect extends Vue {
     }
 
     /**
-     * Helper method to load the specified json name from the ddragon static data.
+     * Helper method to load the specified json name from the lol-game-data data.
      */
     private loadStatic(filename: string): Promise<any> {
         return new Promise(resolve => {
@@ -199,7 +200,7 @@ export default class ChampSelect extends Vue {
                 const map = JSON.parse(req.responseText);
                 resolve(map);
             };
-            req.open("GET", "http://ddragon.leagueoflegends.com/cdn/" + DDRAGON_VERSION + "/data/en_GB/" + filename, true);
+            req.open("GET", this.$root.resolve("/lol-game-data/assets/v1/" + filename), true);
             req.send();
         });
     }

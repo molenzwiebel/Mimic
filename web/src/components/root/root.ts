@@ -52,6 +52,14 @@ export default class Root extends Vue {
     }
 
     /**
+     * Resolves a full uri at the Conduit's host/port from a path
+     */
+    resolve(path: string) {
+        if (path[0] != '/') path = '/' + path;
+        return "http://" + this.hostname + ":8182" + path;
+    }
+
+    /**
      * Starts observing the specified url. The handler will be called
      * whenever the endpoints contents or HTTP status change. Only a single
      * instance can observe the same path at a time.
