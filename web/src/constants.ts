@@ -1,4 +1,20 @@
-export const DDRAGON_VERSION = "7.11.1";
+let _ddragon: string | undefined;
+export function ddragon() {
+    if (_ddragon) return _ddragon;
+
+    // Load ddragon async.
+    const req = new XMLHttpRequest();
+    req.onreadystatechange = () => {
+        if (req.status !== 200 || !req.responseText || req.readyState !== 4) return;
+        const Riot = { DDragon: { m: { dd: "" } } };
+        _ddragon = Riot.DDragon.m.dd;
+    };
+    req.open("GET", "http://ddragon.leagueoflegends.com/realms/euw.js", true);
+    req.send();
+
+    // Return default until we've loaded.
+    return "7.19.1";
+}
 
 export const QUEUES: { [key: number]: string } = {
     2: "Normal 5v5",

@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
-import { DDRAGON_VERSION, mapBackground, Role } from "../../constants";
+import { ddragon, mapBackground, Role } from "../../constants";
 
 import Timer = require("./timer.vue");
 import Members = require("./members.vue");
@@ -215,7 +215,7 @@ export default class ChampSelect extends Vue {
                 const map = JSON.parse(req.responseText);
                 resolve(map);
             };
-            req.open("GET", "http://ddragon.leagueoflegends.com/cdn/" + DDRAGON_VERSION + "/data/en_GB/" + filename, true);
+            req.open("GET", "http://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/data/en_GB/" + filename, true);
             req.send();
         });
     }

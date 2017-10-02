@@ -1,7 +1,7 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { default as ChampSelect, ChampSelectState, ChampSelectTimer, ChampSelectAction } from "./champ-select";
-import { DDRAGON_VERSION } from "../../constants";
+import { ddragon } from "../../constants";
 
 @Component
 export default class Timer extends Vue {
@@ -72,7 +72,7 @@ export default class Timer extends Vue {
      * @returns the path to the icon for the specified champion id
      */
     getChampionIcon(id: number) {
-        return "http://ddragon.leagueoflegends.com/cdn/" + DDRAGON_VERSION + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
+        return "http://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
     }
 
     @Watch("state.timer")

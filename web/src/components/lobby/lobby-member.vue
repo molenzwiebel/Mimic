@@ -35,7 +35,7 @@
     import Vue from "vue";
     import { Component, Prop } from "vue-property-decorator";
     import { LobbyMember } from "./lobby";
-    import { DDRAGON_VERSION, POSITION_NAMES, roleImage as constantRoleImage } from "../../constants";
+    import { ddragon, POSITION_NAMES, roleImage as constantRoleImage } from "../../constants";
 
     @Component
     export default class LobbyMemberComponent extends Vue {
@@ -49,7 +49,7 @@
         showModeration: boolean;
 
         get summonerIcon(): string {
-            return `http://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${this.member.summoner.profileIconId}.png`;
+            return `http://ddragon.leagueoflegends.com/cdn/${ddragon()}/img/profileicon/${this.member.summoner.profileIconId}.png`;
         }
 
         get positions(): string {
