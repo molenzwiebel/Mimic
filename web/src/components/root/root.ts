@@ -128,7 +128,7 @@ export default class Root extends Vue {
         this.discoveringConduit = true;
 
         const xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://discovery.mimic.molenzwiebel.xyz/discovery");
+        xhr.open("GET", "https://discovery.mimic.molenzwiebel.xyz/discovery");
         xhr.send();
 
         xhr.onreadystatechange = ev => {
