@@ -15,7 +15,7 @@ module.exports = function(env) {
             "./src/index.ts"
         ],
         output: {
-            filename: "bundle.js",
+            filename: "[name].js",
             path: path.resolve(__dirname, "dist")
         },
         module: {
@@ -72,7 +72,26 @@ module.exports = function(env) {
 					removeAttributeQuotes: env === "prod"
 				},
             }),
-			new FriendlyErrors()
+			new FriendlyErrors(),
+			new webpack.optimize.CommonsChunkPlugin({
+				name: 'common',
+				minChunks: function (module, count) {
+					// any required modules inside node_modules are extracted to vendor
+					return (
+						module.resource &&
+						/\.js$/.test(module.resource) &&
+						module.resource.indexOf(
+							path.join(__dirname, '../node_modules')
+						) === 0
+					);
+				}
+			}),
+			// extract webpack runtime and module manifest to its own file in order to
+			// prevent commons hash from being updated whenever app bundle is updated
+			new webpack.optimize.CommonsChunkPlugin({
+				name: 'common',
+				chunks: ['common']
+			})
         ]
     };
 };
