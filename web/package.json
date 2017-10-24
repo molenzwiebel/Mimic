@@ -28,6 +28,8 @@
 		"vue-template-compiler": "2.5.2",
 		"vue2-animate": "^1.0.4",
 		"webpack": "3.8.1",
-		"webpack-dev-server": "2.9.3"
+		"webpack-dev-server": "2.9.3",
+		"html-webpack-plugin": "latest",
+		"friendly-errors-webpack-plugin": "latest"
 	}
 }
