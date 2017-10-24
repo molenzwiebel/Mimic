@@ -3,9 +3,9 @@ import Component from "vue-class-component";
 import Root, { Result } from "../root/root";
 import { mapBackground, MAPS, QUEUES, Role } from "../../constants";
 
-import LobbyMemberComponent = require("./lobby-member.vue");
-import RolePicker = require("./role-picker.vue");
-import InviteOverlay = require("./invite-overlay.vue");
+import LobbyMemberComponent from "./lobby-member.vue";
+import RolePicker from "./role-picker.vue";
+import InviteOverlay from "./invite-overlay.vue";
 import { QueueState } from "../queue/queue";
 
 /**
