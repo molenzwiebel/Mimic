@@ -9,7 +9,7 @@ export default class PlayerSettings extends Vue {
     $root: Root;
     $parent: ChampSelect;
 
-    @Prop
+    @Prop()
     state: ChampSelectState;
 
     // We assume that the summonerId of the user does not change while in champ select.
