@@ -1,35 +1,35 @@
 {
-	"name": "mimic",
-	"version": "1.0.0",
-	"main": "index.js",
-	"license": "MIT",
-	"scripts": {
-		"watch": "webpack-dev-server --host 0.0.0.0",
-		"bundle": "webpack --progress --colors --env=prod --optimize-minimize -p"
-	},
-	"repository": {
-		"url": "https://github.com/molenzwiebel/mimic",
-		"type": "git"
-	},
-	"dependencies": {
-		"autoprefixer": "7.1.6",
-		"css-loader": "0.28.7",
-		"file-loader": "1.1.5",
-		"style-loader": "0.19.0",
-		"stylus": "^0.54.5",
-		"stylus-loader": "^3.0.1",
-		"sw-precache-webpack-plugin": "^0.11.4",
-		"ts-loader": "3.0.5",
-		"typescript": "2.5.3",
-		"vue": "2.5.2",
-		"vue-class-component": "6.0.0",
-		"vue-loader": "13.3.0",
-		"vue-property-decorator": "6.0.0",
-		"vue-template-compiler": "2.5.2",
-		"vue2-animate": "^1.0.4",
-		"webpack": "3.8.1",
-		"webpack-dev-server": "2.9.3",
-		"html-webpack-plugin": "latest",
-		"friendly-errors-webpack-plugin": "latest"
-	}
+    "name": "mimic",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "scripts": {
+        "watch": "webpack-dev-server --host 0.0.0.0",
+        "bundle": "webpack --progress --colors --env=prod --optimize-minimize -p"
+    },
+    "repository": {
+        "url": "https://github.com/molenzwiebel/mimic",
+        "type": "git"
+    },
+    "dependencies": {
+        "autoprefixer": "7.1.6",
+        "css-loader": "0.28.7",
+        "file-loader": "1.1.5",
+        "style-loader": "0.19.0",
+        "stylus": "^0.54.5",
+        "stylus-loader": "^3.0.1",
+        "sw-precache-webpack-plugin": "^0.11.4",
+        "ts-loader": "3.0.5",
+        "typescript": "2.5.3",
+        "vue": "2.5.2",
+        "vue-class-component": "6.0.0",
+        "vue-loader": "13.3.0",
+        "vue-property-decorator": "6.0.0",
+        "vue-template-compiler": "2.5.2",
+        "vue2-animate": "^1.0.4",
+        "webpack": "3.8.1",
+        "webpack-dev-server": "2.9.3",
+        "html-webpack-plugin": "latest",
+        "friendly-errors-webpack-plugin": "latest"
+    }
 }

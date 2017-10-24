@@ -12,7 +12,7 @@
 <script lang="ts" src="./champ-select.ts"></script>
 
 <style lang="stylus" scoped>
-    @import "../../static/style.styl"
+    @import "../../variables.styl"
 
     .champ-select
         z-index 10000

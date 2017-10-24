@@ -63,8 +63,8 @@ module.exports = function(env) {
             }),
             new webpack.HotModuleReplacementPlugin(),
             new HtmlWebpackPlugin({
-				filename: 'index.html',
-				template: path.resolve(__dirname, 'src/index.html'),
+				filename: "index.html",
+				template: path.resolve(__dirname, "src/index.html"),
 				inject: true,
 				minify: {
 					removeComments: env === "prod",
@@ -74,14 +74,14 @@ module.exports = function(env) {
             }),
 			new FriendlyErrors(),
 			new webpack.optimize.CommonsChunkPlugin({
-				name: 'common',
+				name: "common",
 				minChunks: function (module, count) {
 					// any required modules inside node_modules are extracted to vendor
 					return (
 						module.resource &&
 						/\.js$/.test(module.resource) &&
 						module.resource.indexOf(
-							path.join(__dirname, '../node_modules')
+							path.join(__dirname, "../node_modules")
 						) === 0
 					);
 				}
@@ -89,8 +89,8 @@ module.exports = function(env) {
 			// extract webpack runtime and module manifest to its own file in order to
 			// prevent commons hash from being updated whenever app bundle is updated
 			new webpack.optimize.CommonsChunkPlugin({
-				name: 'common',
-				chunks: ['common']
+				name: "common",
+				chunks: ["common"]
 			})
         ]
     };

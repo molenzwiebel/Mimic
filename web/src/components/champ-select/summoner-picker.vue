@@ -20,7 +20,7 @@
 <script lang="ts" src="./summoner-picker.ts"></script>
 
 <style lang="stylus" scoped>
-    @import "../../static/style.styl"
+    @import "../../variables.styl"
 
     .fadeInUp, .fadeOutDown
         animation-duration 0.4s !important

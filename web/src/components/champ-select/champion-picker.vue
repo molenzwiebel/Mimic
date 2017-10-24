@@ -18,7 +18,7 @@
 <script lang="ts" src="./champion-picker.ts"></script>
 
 <style lang="stylus" scoped>
-    @import "../../static/style.styl"
+    @import "../../variables.styl"
 
     button.button
         margin 20px
