@@ -29,7 +29,7 @@
 <script lang="ts" src="./player-settings.ts"></script>
 
 <style lang="stylus" scoped>
-    @require "./style.styl"
+    @require "../../variables.styl"
 
     .player-settings
         position relative

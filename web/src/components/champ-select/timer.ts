@@ -7,7 +7,7 @@ import { ddragon } from "../../constants";
 export default class Timer extends Vue {
     $parent: ChampSelect;
 
-    @Prop
+    @Prop()
     state: ChampSelectState;
 
     currentTime = 0;

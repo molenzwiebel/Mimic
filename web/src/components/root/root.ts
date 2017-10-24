@@ -1,11 +1,11 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 
-import Lobby = require("../lobby/lobby.vue");
-import Queue = require("../queue/queue.vue");
-import ReadyCheck = require("../ready-check/ready-check.vue");
-import ChampSelect = require("../champ-select/champ-select.vue");
-import Invites = require("../invites/invites.vue");
+import Lobby from "../lobby/lobby.vue";
+import Queue from "../queue/queue.vue";
+import ReadyCheck from "../ready-check/ready-check.vue";
+import ChampSelect from "../champ-select/champ-select.vue";
+import Invites from "../invites/invites.vue";
 
 // Represents a result from the LCU api.
 export interface Result {

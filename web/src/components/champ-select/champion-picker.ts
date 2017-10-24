@@ -9,10 +9,10 @@ export default class ChampionPicker extends Vue {
     $root: Root;
     $parent: ChampSelect;
 
-    @Prop
+    @Prop()
     state: ChampSelectState;
 
-    @Prop
+    @Prop()
     show: boolean;
 
     // List of champions that the current user can select. Includes banned champions.

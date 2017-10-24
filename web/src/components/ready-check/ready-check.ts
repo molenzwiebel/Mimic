@@ -2,7 +2,7 @@ import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
 
-import AudioPath = require("../../static/queue-pop.mp3");
+import AudioPath from "../../static/queue-pop.mp3";
 
 interface ReadyCheckState {
     timer: number;

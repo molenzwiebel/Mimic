@@ -33,7 +33,7 @@
 <script lang="ts" src="./members.ts"></script>
 
 <style lang="stylus" scoped>
-    @require "./style.styl"
+    @require "../../variables.styl"
 
     .scrollable-content
         // String interpolation is needed because variables are ignored in calc.

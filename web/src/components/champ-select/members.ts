@@ -7,7 +7,7 @@ import { ddragon, POSITION_NAMES } from "../../constants";
 export default class Members extends Vue {
     $parent: ChampSelect;
 
-    @Prop
+    @Prop()
     state: ChampSelectState;
 
     /**

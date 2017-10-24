@@ -3,13 +3,13 @@ import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
 import { ddragon, mapBackground, Role } from "../../constants";
 
-import Timer = require("./timer.vue");
-import Members = require("./members.vue");
-import PlayerSettings = require("./player-settings.vue");
-import SummonerPicker = require("./summoner-picker.vue");
-import ChampionPicker = require("./champion-picker.vue");
+import Timer from "./timer.vue";
+import Members from "./members.vue";
+import PlayerSettings from "./player-settings.vue";
+import SummonerPicker from "./summoner-picker.vue";
+import ChampionPicker from "./champion-picker.vue";
 
-import MagicBackground = require("../../static/magic-background.jpg");
+import MagicBackground from "../../static/magic-background.jpg";
 
 export interface ChampSelectMember {
     assignedPosition: Role | ""; // blind pick has no role

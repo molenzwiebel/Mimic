@@ -25,7 +25,7 @@
 <script lang="ts" src="./timer.ts"></script>
 
 <style lang="stylus" scoped>
-    @require "./style.styl"
+    @require "../../variables.styl"
 
     .timer-state
         box-sizing border-box
