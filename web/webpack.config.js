@@ -6,6 +6,7 @@ const webpack = require("webpack");
 const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const FriendlyErrors = require('friendly-errors-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = function(env) {
     return {
@@ -16,7 +17,7 @@ module.exports = function(env) {
         ],
         output: {
             filename: "[name].js",
-            path: path.resolve(__dirname, "dist")
+            path: path.resolve(__dirname, "www")
         },
         module: {
             rules: [{
@@ -46,6 +47,7 @@ module.exports = function(env) {
                 loader: "file-loader"
             }]
         },
+        devtool: env === "prod" ? "" : "source-map",
         resolve: {
             extensions: [".js", ".json", ".ts", ".html", ".vue"]
         },
@@ -91,7 +93,14 @@ module.exports = function(env) {
             new webpack.optimize.CommonsChunkPlugin({
                 name: "common",
                 chunks: ["common"]
-            })
+            }),
+            new CopyWebpackPlugin([
+                'src/manifest.json',
+                {
+                    from: 'src/icons',
+                    to: 'icons/'
+				}
+            ])
         ]
     };
 };
