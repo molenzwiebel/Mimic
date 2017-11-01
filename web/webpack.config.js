@@ -95,11 +95,11 @@ module.exports = function(env) {
                 chunks: ["common"]
             }),
             new CopyWebpackPlugin([
-                'src/manifest.json',
+                "src/manifest.json",
                 {
-                    from: 'src/icons',
-                    to: 'icons/'
-				}
+                    from: "src/icons",
+                    to: "icons/"
+                }
             ])
         ]
     };
