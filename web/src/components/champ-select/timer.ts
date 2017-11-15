@@ -52,20 +52,22 @@ export default class Timer extends Vue {
      * @returns the bans of our team, with uncompleted bans represented as an id of 0
      */
     get ourBans(): number[] {
-        const allActions = (<ChampSelectAction[]>[]).concat(...this.state.actions);
-        const ourTeamIDs = this.state.myTeam.map(x => x.cellId);
-        const ourTeamBans = allActions.filter(x => x.type === "ban" && ourTeamIDs.indexOf(x.actorCellId) !== -1);
-        return ourTeamBans.map(x => x.completed ? x.championId : 0);
+        const bans = this.$parent.state!.bans.myTeamBans.slice();
+        while (bans.length < this.$parent.state!.bans.numBans / 2) {
+            bans.push(0);
+        }
+        return bans;
     }
 
     /**
      * @returns the bans of the enemy team, with uncompleted bans represented as an id of 0
      */
     get enemyBans(): number[] {
-        const allActions = (<ChampSelectAction[]>[]).concat(...this.state.actions);
-        const theirTeamIDs = this.state.theirTeam.map(x => x.cellId);
-        const theirTeamBans = allActions.filter(x => x.type === "ban" && theirTeamIDs.indexOf(x.actorCellId) !== -1);
-        return theirTeamBans.map(x => x.completed ? x.championId : 0);
+        const bans = this.$parent.state!.bans.theirTeamBans.slice();
+        while (bans.length < this.$parent.state!.bans.numBans / 2) {
+            bans.push(0);
+        }
+        return bans;
     }
 
     /**

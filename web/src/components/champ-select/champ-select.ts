@@ -50,6 +50,12 @@ export interface ChampSelectState {
     myTeam: ChampSelectMember[];
     theirTeam: ChampSelectMember[];
 
+    bans: {
+        myTeamBans: number[];
+        theirTeamBans: number[];
+        numBans: number;
+    };
+
     timer: ChampSelectTimer;
     trades: {
         id: number;
@@ -135,7 +141,7 @@ export default class ChampSelect extends Vue {
             this.state = null;
             return;
         }
-
+        
         const newState: ChampSelectState = result.content;
         newState.localPlayer = newState.myTeam.filter(x => x.cellId === newState.localPlayerCellId)[0];
 

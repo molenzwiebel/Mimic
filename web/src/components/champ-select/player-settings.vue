@@ -9,13 +9,9 @@
             Reroll {{ rerollState }}
         </div>
 
-        <div class="rune-mastery">
+        <div class="runes">
             <select @change="selectRunePage($event)">
                 <option :value="rune.id" :selected="rune.current" v-for="rune in runePages">{{ rune.name }}</option>
-            </select>
-
-            <select @change="selectMasteryPage($event)">
-                <option :value="mastery.id" :selected="mastery.current" v-for="mastery in masteryPages">{{ mastery.name }}</option>
             </select>
         </div>
 
@@ -71,7 +67,7 @@
         &.disabled
             color #657a7a
 
-    .rune-mastery
+    .runes
         flex 1
         display flex
         flex-direction column
