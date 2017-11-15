@@ -52,7 +52,7 @@ export default class Queue extends Vue {
      * Leaves the current matchmaking queue.
      */
     leaveQueue() {
-        this.$root.request("/lol-matchmaking/v1/search", "DELETE");
+        this.$root.request("/lol-lobby/v2/lobby/matchmaking/search", "DELETE");
     }
 
     /**

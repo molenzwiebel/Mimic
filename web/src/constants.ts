@@ -13,7 +13,7 @@ export function ddragon() {
     req.send();
 
     // Return default until we've loaded.
-    return "7.19.1";
+    return "7.22.1";
 }
 
 export const QUEUES: { [key: number]: string } = {
@@ -31,7 +31,11 @@ export const QUEUES: { [key: number]: string } = {
     400: "Draft 5v5",
     415: "Ranked 5v5",
     420: "Ranked Solo/Duo",
-    440: "Ranked Flex"
+    430: "Normal 5v5",
+    440: "Ranked Flex",
+    450: "ARAM 5v5",
+    460: "Blind 3v3",
+    470: "Ranked 3v3"
 };
 
 export const MAPS: { [key: number]: string } = {

@@ -4,7 +4,7 @@
             <img :src="summonerIcon">
             <div class="texts">
                 <span>
-                    <i v-if="member.isOwner" class="ion-ribbon-b"></i>
+                    <i v-if="member.isLeader" class="ion-ribbon-b"></i>
                     {{ member.summoner.displayName }}
                 </span>
 
@@ -15,18 +15,18 @@
 
         <div class="right" v-if="showModeration && !member.isLocalMember">
             <i class="ion-ribbon-a" @click="$emit('promote')"></i>
-            <i :class="member.canInviteOthers ? 'ion-person-add' : 'ion-person'" @click="$emit('invite')"></i>
+            <i :class="member.allowedInviteOthers ? 'ion-person-add' : 'ion-person'" @click="$emit('invite')"></i>
             <i class="ion-close-circled" @click="$emit('kick')"></i>
         </div>
 
         <div class="right" v-if="showPositions && member.isLocalMember">
             <img
                     @click="$emit('roles', true)"
-                    :src="roleImage(member.positionPreferences.firstPreference)">
+                    :src="roleImage(member.firstPositionPreference)">
             <img
-                    v-if="member.positionPreferences.firstPreference !== 'FILL'"
+                    v-if="member.firstPositionPreference !== 'FILL'"
                     @click="$emit('roles', false)"
-                    :src="roleImage(member.positionPreferences.secondPreference)">
+                    :src="roleImage(member.secondPositionPreference)">
         </div>
     </div>
 </template>
@@ -53,7 +53,7 @@
         }
 
         get positions(): string {
-            const [first, second] = [this.member.positionPreferences.firstPreference, this.member.positionPreferences.secondPreference];
+            const [first, second] = [this.member.firstPositionPreference, this.member.secondPositionPreference];
             if (first === second && first === "UNSELECTED") return "<i>No Roles Selected</i>";
             if (first !== "FILL") {
                 return POSITION_NAMES[first] + " - " + (second === "UNSELECTED" ? "<i>Empty</i>" : POSITION_NAMES[second]);

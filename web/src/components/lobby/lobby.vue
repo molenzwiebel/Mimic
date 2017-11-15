@@ -10,8 +10,8 @@
             <role-picker
                     :show="showingRolePicker"
                     :selecting-first="pickingFirstRole"
-                    :first-role="state.localMember.positionPreferences.firstPreference"
-                    :second-role="state.localMember.positionPreferences.secondPreference"
+                    :first-role="state.localMember.firstPositionPreference"
+                    :second-role="state.localMember.secondPositionPreference"
                     @selected="updateRoles($event)">
             </role-picker>
 
@@ -28,10 +28,10 @@
                 <transition-group enter-active-class="slideInLeft" leave-active-class="slideOutRight">
                     <lobby-member
                             v-for="member in lobbyMembers"
-                            :key="member.id"
+                            :key="member.summonerId"
                             :member="member"
-                            :show-positions="state.showPositionSelector"
-                            :show-moderation="state.localMember.isOwner"
+                            :show-positions="state.gameConfig.showPositionSelector"
+                            :show-moderation="state.localMember.isLeader"
                             @promote="promoteMember(member)"
                             @invite="toggleInvite(member)"
                             @kick="kickMember(member)"
@@ -47,7 +47,7 @@
 
             <div class="bottom">
                 <!-- We can join matchmaking if we can start, and we are the owner -->
-                <lcu-button class="queue-button" @click="joinMatchmaking()" :disabled="!(state.canStartMatchmaking && queueDodgeTime === -1 && state.localMember.isOwner)">
+                <lcu-button class="queue-button" @click="joinMatchmaking()" :disabled="!(state.canStartActivity && queueDodgeTime === -1 && state.localMember.isLeader)">
                     <template v-if="queueDodgeTime === -1">Find Match</template>
                     <template v-else>Blocked {{ formatSeconds(queueDodgeTime) }}</template>
                 </lcu-button>
