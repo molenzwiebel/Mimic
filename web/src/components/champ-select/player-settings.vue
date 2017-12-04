@@ -10,7 +10,7 @@
         </div>
 
         <div class="runes">
-            <select @change="selectRunePage($event)">
+            <select class="league" @change="selectRunePage($event)">
                 <option :value="rune.id" :selected="rune.current" v-for="rune in runePages">{{ rune.name }}</option>
             </select>
         </div>
@@ -25,7 +25,7 @@
 <script lang="ts" src="./player-settings.ts"></script>
 
 <style lang="stylus" scoped>
-    @require "../../variables.styl"
+    @require "../../common.styl"
 
     .player-settings
         position relative
@@ -71,23 +71,6 @@
         flex 1
         display flex
         flex-direction column
-
-        select
-            box-sizing border-box
-            -webkit-appearance none
-            font-family "LoL Body"
-            color #a09b8c
-            font-size 35px
-            height player-dropdown-height
-            width 100%
-            margin 5px
-            padding 7px 15px
-            border-width 2px
-            border-style solid
-            border-image linear-gradient(to top,#695625 0%,#a9852d 23%,#b88d35 93%,#c8aa6e 100%) 1
-            background url(../../static/dropdown_arrows.png) no-repeat right rgb(30, 35, 40)
-            background-size auto player-dropdown-height - 30px
-            background-position right 10px center
 
     .summoners
         display flex

@@ -6,6 +6,7 @@ import Queue from "../queue/queue.vue";
 import ReadyCheck from "../ready-check/ready-check.vue";
 import ChampSelect from "../champ-select/champ-select.vue";
 import Invites from "../invites/invites.vue";
+import RuneEditor from "../champ-select/rune-editor.vue";
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -26,7 +27,8 @@ type WebsocketMessage = [1, string, number, any] | [2, number, number, any] | [3
         queue: Queue,
         readyCheck: ReadyCheck,
         champSelect: ChampSelect,
-        invites: Invites
+        invites: Invites,
+        runeEditor: RuneEditor
     }
 })
 export default class Root extends Vue {

@@ -6,7 +6,7 @@
 
             <div class="invite-summoner">
                 <input v-model="inviteName" type="text" autocomplete="off" spellcheck="false" placeholder="Summoner Name" maxlength="24" autocorrect="off" autocapitalize="off">
-                <div class="search-button" @click="inviteManually"><i class="ion-plus"></i></div>
+                <div class="circular-button" @click="inviteManually"><i class="ion-plus"></i></div>
             </div>
 
             <span class="section-header">Invited</span>
@@ -82,33 +82,6 @@
         color #f0e6d2
         font-weight 700
         letter-spacing 0.075em
-
-    .search-button
-        position relative
-        box-sizing border-box
-        display flex
-        align-items center
-        justify-content center
-        width 90px
-        height 90px
-        margin 10px 20px 10px 10px
-        border search-border-width solid transparent
-        background-color #1e2328
-        background-clip padding-box
-        font-size 40px
-        color #cebf93
-        border-radius 50%
-
-        &:after
-            position absolute
-            content ""
-            left -(search-border-width)
-            top -(search-border-width)
-            bottom -(search-border-width)
-            right -(search-border-width)
-            border-radius 50%
-            background linear-gradient(to top, #785b28 0%, #c89c3c 55%, #c8a355 71%, #c8aa6e 100%)
-            z-index -1
 
     input
         box-sizing border-box

@@ -19,6 +19,8 @@
                 <input v-model="hostname" placeholder="192.168.1.1">
                 <lcu-button :disabled="(!hostname) || connecting" :type="manualButtonType" @click="connect()">Connect</lcu-button>
             </div>
+
+            <rune-editor :show="true"></rune-editor>
         </div>
 
         <div v-else="" class="body">
