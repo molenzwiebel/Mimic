@@ -8,6 +8,7 @@ import Members from "./members.vue";
 import PlayerSettings from "./player-settings.vue";
 import SummonerPicker from "./summoner-picker.vue";
 import ChampionPicker from "./champion-picker.vue";
+import RuneEditor from "./rune-editor.vue";
 
 import MagicBackground from "../../static/magic-background.jpg";
 
@@ -81,13 +82,25 @@ export interface RerollState {
     maxRolls: number;
 }
 
+export interface RunePage {
+    id: number;
+    name: string;
+    isEditable: boolean;
+    isActive: boolean;
+    order: number;
+    primaryStyleId: number; // -1 if not selected
+    subStyleId: number; // -1 if not selected
+    selectedPerkIds: number[]; // 0 or not included if not selected
+}
+
 @Component({
     components: {
         timer: Timer,
         members: Members,
         playerSettings: PlayerSettings,
         summonerPicker: SummonerPicker,
-        championPicker: ChampionPicker
+        championPicker: ChampionPicker,
+        runeEditor: RuneEditor
     }
 })
 export default class ChampSelect extends Vue {
@@ -96,6 +109,7 @@ export default class ChampSelect extends Vue {
     state: ChampSelectState | null = null;
     gameflowState: GameflowState | null = null;
     rerollState: RerollState = { numberOfRolls: 0, maxRolls: 2 };
+    runePages: RunePage[] = [];
 
     // These two are used to map summoner/champion id -> data.
     championDetails: { [id: number]: { id: string, key: string, name: string } };
@@ -129,6 +143,12 @@ export default class ChampSelect extends Vue {
         // Keep track of reroll points for if we play ARAM.
         this.$root.observe("/lol-summoner/v1/current-summoner/rerollPoints", result => {
             this.rerollState = result.status === 200 ? result.content : { numberOfRolls: 0, maxRolls: 2 };
+        });
+
+        // Observe runes
+        this.$root.observe("/lol-perks/v1/pages", response => {
+            response.status === 200 && (this.runePages = response.content);
+            response.status === 200 && (this.runePages.sort((a, b) => a.order - b.order));
         });
     }
 
@@ -211,9 +231,18 @@ export default class ChampSelect extends Vue {
     }
 
     /**
+     * Selects the specified rune page, by setting its `current` property to true and calling the collections backend.
+     */
+    selectRunePage(event: Event) {
+        const id = +(event.target as HTMLSelectElement).value;
+        this.runePages.forEach(r => r.isActive = r.id === id);
+        this.$root.request("/lol-perks/v1/currentpage", "PUT", "" + id);
+    }
+
+    /**
      * Helper method to load the specified json name from the ddragon static data.
      */
-    private loadStatic(filename: string): Promise<any> {
+    public loadStatic(filename: string): Promise<any> {
         return new Promise(resolve => {
             const req = new XMLHttpRequest();
             req.onreadystatechange = () => {

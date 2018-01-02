@@ -10,8 +10,8 @@
         </div>
 
         <div class="runes">
-            <select class="league" @change="selectRunePage($event)">
-                <option :value="rune.id" :selected="rune.current" v-for="rune in runePages">{{ rune.name }}</option>
+            <select class="league" @change="$parent.selectRunePage($event)">
+                <option :value="rune.id" :selected="rune.isActive" v-for="rune in $parent.runePages">{{ rune.name }}</option>
             </select>
         </div>
 

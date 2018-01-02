@@ -5,37 +5,41 @@
             <div class="header">Edit Runepages</div>
 
             <div class="page-options">
-                <select class="league">
-                    <option>Rune Page 1</option>
-                    <option>Rune Page 2</option>
+                <select class="league" @change="$parent.selectRunePage($event)">
+                    <option :value="rune.id" :selected="rune.isActive" v-for="rune in $parent.runePages.filter(x => x.isEditable)">{{ rune.name }}</option>
                 </select>
 
                 <div class="circular-button" @click="addPage"><i class="ion-plus"></i></div>
                 <div class="circular-button" @click="removePage"><i class="ion-trash-a"></i></div>
             </div>
 
-            <div class="content">
+            <div class="content" v-if="currentPage">
                 <span class="section-header">PRIMARY TREE</span>
                 <div class="tree-selector">
-                    <div v-for="(tree, idx) in runes" class="tree" @click="selected[0] = idx, $forceUpdate()" :class="idx === selected[0] && 'selected'" :style="'background-image: url(http://stelar7.no/cdragon/latest/perkstyles/' + tree.id + '.png);'"></div>
+                    <div v-for="tree in runes" class="tree" @click="selectPrimaryTree(tree.id)" :class="currentPage.primaryStyleId === tree.id && 'selected'" :style="'background-image: url(http://stelar7.no/cdragon/latest/perkstyles/' + tree.id + '.png);'"></div>
                 </div>
 
                 <div class="tree-runes">
-                    <div v-for="(slot, idx) in runes[selected[0]].slots" class="slot" :class="idx === 0 && 'keystone'">
-                        <div v-for="(rune, idx2) in slot.runes" :class="idx2 === selected[idx + 1] && 'selected'" @click="selected[idx + 1] = idx2, $forceUpdate()" class="rune" :style="'background-image: url(http://stelar7.no/cdragon/latest/perks/' + rune.id + '.png);'"></div>
+                    <div v-for="(slot, idx) in getRuneTree(currentPage.primaryStyleId).slots" class="slot" :class="idx === 0 && 'keystone'">
+                        <div v-for="rune in slot.runes" :class="currentPage.selectedPerkIds[idx] === rune.id && 'selected'" @click="selectPrimaryRune(idx, rune.id)" class="rune" :style="'background-image: url(http://stelar7.no/cdragon/latest/perks/' + rune.id + '.png);'"></div>
                     </div>
                 </div>
 
                 <span class="section-header">SECONDARY TREE</span>
                 <div class="tree-selector">
-                    <div v-for="(tree, idx) in runes" class="tree" @click="selected[5] = idx, $forceUpdate()" :class="idx === selected[5] && 'selected'" :style="'background-image: url(http://stelar7.no/cdragon/latest/perkstyles/' + tree.id + '.png);'"></div>
+                    <div v-for="tree in runes" class="tree" @click="selectSecondaryTree(tree.id)" :class="currentPage.subStyleId === tree.id && 'selected'" :style="'background-image: url(http://stelar7.no/cdragon/latest/perkstyles/' + tree.id + '.png);'"></div>
                 </div>
 
                 <div class="tree-runes">
-                    <div v-for="(slot, idx) in runes[selected[5]].slots.slice(1)" class="slot">
-                        <div v-for="(rune, idx2) in slot.runes" :class="idx2 === selected[idx + 6] && 'selected'" @click="selected[idx + 6] = idx2, $forceUpdate()" class="rune" :style="'background-image: url(http://stelar7.no/cdragon/latest/perks/' + rune.id + '.png);'"></div>
+                    <div v-for="(slot, idx) in (getRuneTree(currentPage.subStyleId) || []).slots.slice(1)" class="slot">
+                        <div v-for="rune in slot.runes" :class="(currentPage.selectedPerkIds[4] === rune.id || currentPage.selectedPerkIds[5] === rune.id) && 'selected'" @click="selectSecondaryRune(rune.id)" class="rune" :style="'background-image: url(http://stelar7.no/cdragon/latest/perks/' + rune.id + '.png);'"></div>
                     </div>
                 </div>
+            </div>
+
+            <div class="content" v-else>
+                <!-- No viable page (one that is editable) exists. -->
+                <span class="section-header">SELECT OR CREATE A PAGE</span>
             </div>
         </div>
     </transition>
