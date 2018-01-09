@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Root, { Result } from "../root/root";
-import { mapBackground, MAPS, QUEUES, Role } from "../../constants";
+import { mapBackground, Role } from "../../constants";
 
 import LobbyMemberComponent from "./lobby-member.vue";
 import RolePicker from "./role-picker.vue";
@@ -63,6 +63,9 @@ export default class Lobby extends Vue {
     state: LobbyState | null = null;
     matchmakingState: QueueState | null = null;
 
+    queueName = "";
+    mapName = "";
+
     showingRolePicker = false;
     pickingFirstRole = false;
 
@@ -110,6 +113,13 @@ export default class Lobby extends Vue {
         state.localMember = state.members.filter(x => x.summonerId === state.localMember.summonerId)[0];
         state.localMember.isLocalMember = true;
 
+        // Load queue/map info.
+        const queueInfo = await this.$root.request("/lol-game-queues/v1/queues/" + state.gameConfig.queueId);
+        this.queueName = queueInfo.content.description;
+
+        const mapInfo = await this.$root.request("/lol-maps/v1/map/" + state.gameConfig.mapId);
+        this.mapName = mapInfo.content.name;
+
         // Propagate changes.
         this.state = state;
     };
@@ -119,7 +129,7 @@ export default class Lobby extends Vue {
      */
     get lobbySubtitle(): string {
         if (!this.state) return "";
-        return (QUEUES[this.state.gameConfig.queueId] || "Unknown Queue") + " - " + (MAPS[this.state.gameConfig.mapId] || "Unknown Map");
+        return (this.queueName || "Unknown Queue") + " - " + (this.mapName || "Unknown Map");
     }
 
     /**
