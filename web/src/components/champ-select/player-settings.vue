@@ -13,6 +13,8 @@
             <select class="league" @change="$parent.selectRunePage($event)">
                 <option :value="rune.id" :selected="rune.isActive" v-for="rune in $parent.runePages">{{ rune.name }}</option>
             </select>
+
+            <div class="circular-button" @click="$emit('runes')"><i class="ion-edit"></i></div>
         </div>
 
         <div class="summoners">
@@ -70,7 +72,15 @@
     .runes
         flex 1
         display flex
-        flex-direction column
+        flex-direction row
+        align-items center
+
+        select
+            flex 1
+
+        .circular-button
+            flex 0 90px
+            margin 0 0 0 6px
 
     .summoners
         display flex

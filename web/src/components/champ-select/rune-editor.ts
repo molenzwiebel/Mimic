@@ -34,8 +34,8 @@ export default class RuneEditor extends Vue {
      * @returns the page currently selected, unless there are none
      */
     get currentPage() {
-        console.dir(this.$parent.runePages);
-        return this.$parent.runePages.filter(x => x.isEditable && x.isActive)[0];
+        const page = this.$parent.currentRunePage;
+        return page && page.isEditable ? page : undefined;
     }
 
     /**
@@ -57,6 +57,7 @@ export default class RuneEditor extends Vue {
         this.currentPage.subStyleId = this.runes.filter(x => x.id !== id)[0].id;
         this.currentPage.selectedPerkIds = [0, 0, 0, 0, 0, 0];
         this.secondaryIndex = 0;
+        this.savePage();
     }
 
     /**
@@ -67,6 +68,7 @@ export default class RuneEditor extends Vue {
 
         this.currentPage.selectedPerkIds[slotIndex] = id;
         (<any>this).$forceUpdate();
+        this.savePage();
     }
 
     /**
@@ -81,6 +83,8 @@ export default class RuneEditor extends Vue {
         this.currentPage.subStyleId = id;
         this.currentPage.selectedPerkIds[4] = 0;
         this.currentPage.selectedPerkIds[5] = 0;
+
+        this.savePage();
     }
 
     /**
@@ -98,6 +102,8 @@ export default class RuneEditor extends Vue {
         this.secondaryIndex = (this.secondaryIndex + 1) % 2;
         this.currentPage.selectedPerkIds[4 + this.secondaryIndex] = id;
         (<any>this).$forceUpdate();
+
+        this.savePage();
     }
 
     /**
@@ -116,7 +122,24 @@ export default class RuneEditor extends Vue {
         this.$root.request("/lol-perks/v1/currentpage", "PUT", "" + rsp.id);
     }
 
+    /**
+     * Saves the current page, overwriting the LCU version. This does not check if
+     * there were any changes made before saving, so only call this when you are sure
+     * that new changes need to be committed.
+     */
+    savePage() {
+        if (!this.currentPage) return;
+
+        this.$root.request("/lol-perks/v1/pages/" + this.currentPage.id, "PUT", JSON.stringify(this.currentPage));
+    }
+
+    /**
+     * Deletes the current page. The LCU will automatically select a different page for us.
+     */
     removePage() {
-        // TODO
+        if (!this.currentPage) return;
+
+        this.$root.request("/lol-perks/v1/pages/" + this.currentPage.id, "DELETE");
+        this.$parent.runePages = this.$parent.runePages.filter(x => x.id != this.currentPage!.id);
     }
 }

@@ -109,7 +109,9 @@ export default class ChampSelect extends Vue {
     state: ChampSelectState | null = null;
     gameflowState: GameflowState | null = null;
     rerollState: RerollState = { numberOfRolls: 0, maxRolls: 2 };
+
     runePages: RunePage[] = [];
+    currentRunePage: RunePage | null = null;
 
     // These two are used to map summoner/champion id -> data.
     championDetails: { [id: number]: { id: string, key: string, name: string } };
@@ -121,6 +123,9 @@ export default class ChampSelect extends Vue {
 
     // Information for the champion picker.
     pickingChampion = false;
+
+    // Information for the rune editor.
+    showingRuneOverlay = false;
 
     mounted() {
         this.loadStatic("champion.json").then(map => {
@@ -147,8 +152,18 @@ export default class ChampSelect extends Vue {
 
         // Observe runes
         this.$root.observe("/lol-perks/v1/pages", response => {
+            console.log("Got perks update.");
             response.status === 200 && (this.runePages = response.content);
             response.status === 200 && (this.runePages.sort((a, b) => a.order - b.order));
+        });
+
+        this.$root.observe("/lol-perks/v1/currentpage", response => {
+            this.currentRunePage = response.status === 200 ? response.content : null;
+
+            // Update the isActive param if needed.
+            if (this.currentRunePage) {
+                this.runePages.forEach(x => x.isActive = x.id === this.currentRunePage!.id);
+            }
         });
     }
 

@@ -6,14 +6,14 @@ export function ddragon() {
     const req = new XMLHttpRequest();
     req.onreadystatechange = () => {
         if (req.status !== 200 || !req.responseText || req.readyState !== 4) return;
-        const Riot = { DDragon: { m: { dd: "" } } };
-        _ddragon = Riot.DDragon.m.dd;
+        const versions: string[] = JSON.parse(req.responseText);
+        _ddragon = versions[0]; // newest patch is first in the list
     };
-    req.open("GET", "http://ddragon.leagueoflegends.com/realms/euw.js", true);
+    req.open("GET", "http://ddragon.leagueoflegends.com/api/versions.json", true);
     req.send();
 
     // Return default until we've loaded.
-    return "7.22.1";
+    return "8.1.1";
 }
 
 export const QUEUES: { [key: number]: string } = {

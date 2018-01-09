@@ -5,8 +5,8 @@
 
         <timer :state="state"></timer>
         <members :state="state"></members>
-        <player-settings :state="state" @spell="(pickingSummonerSpell = true, pickingFirstSummonerSpell = $event)" @expand="pickingChampion = true"></player-settings>
-        <rune-editor :show="true"></rune-editor>
+        <player-settings :state="state" @spell="(pickingSummonerSpell = true, pickingFirstSummonerSpell = $event)" @expand="pickingChampion = true" @runes="showingRuneOverlay = true"></player-settings>
+        <rune-editor :show="showingRuneOverlay" @close="showingRuneOverlay = false"></rune-editor>
     </div>
 </template>
 

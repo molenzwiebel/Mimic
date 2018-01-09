@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="tree-runes">
-                    <div v-for="(slot, idx) in (getRuneTree(currentPage.subStyleId) || []).slots.slice(1)" class="slot">
+                    <div v-for="(slot, idx) in (getRuneTree(currentPage.subStyleId) || { slots: [] }).slots.slice(1)" class="slot">
                         <div v-for="rune in slot.runes" :class="(currentPage.selectedPerkIds[4] === rune.id || currentPage.selectedPerkIds[5] === rune.id) && 'selected'" @click="selectSecondaryRune(rune.id)" class="rune" :style="'background-image: url(http://stelar7.no/cdragon/latest/perks/' + rune.id + '.png);'"></div>
                     </div>
                 </div>
