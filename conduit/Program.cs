@@ -12,7 +12,7 @@ namespace MimicConduit
     class Program : ApplicationContext
     {
         public static string APP_NAME = "Mimic"; // For boot identification
-        public static string VERSION = "1.1.0";
+        public static string VERSION = "1.2.0";
 
         private WebSocketServer server;
         private List<LeagueSocketBehavior> behaviors = new List<LeagueSocketBehavior>();

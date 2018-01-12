@@ -31,6 +31,7 @@ namespace MimicConduit
             socket.SslConfiguration.ServerCertificateValidationCallback = (a, b, c, d) => true;
             socket.OnMessage += handleWebSocketMessage;
             socket.Connect();
+            Console.WriteLine("Connect");
             // Subscribe to Json API events from the LCU.
             socket.Send("[5,\"OnJsonApiEvent\"]");
         }
@@ -59,11 +60,11 @@ namespace MimicConduit
             if ((long)payload[0] != 8 || !((string)payload[1]).Equals("OnJsonApiEvent")) return;
 
             var ev = (JsonObject)payload[2];
-            if (!ev.ContainsKey("uri") || !ev.ContainsKey("data") || !ev.ContainsKey("eventType") || (ev["data"] != null && !(ev["data"] is JsonObject))) return;
+            if (!ev.ContainsKey("uri") || !ev.ContainsKey("data") || !ev.ContainsKey("eventType") ) return;
 
             var uri = (string)ev["uri"];
             if (!observedPaths.Values.Any(x => x.IsMatch(uri))) return;
-            var data = (JsonObject)ev["data"];
+            var data = ev["data"];
             var eventType = (string)ev["eventType"];
 
             var status = eventType.Equals("Create") || eventType.Equals("Update") ? 200 : 404;
