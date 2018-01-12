@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="!connected" class="intro">
+        <div v-if="!connected || !peerVersion" class="intro">
             <span class="header">Welcome to Mimic!<br><small>How would you like to connect?</small></span>
 
             <div class="automatic">

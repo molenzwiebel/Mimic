@@ -32,7 +32,7 @@ type WebsocketMessage = [1, string, number, any] | [2, number, number, any] | [3
 export default class Root extends Vue {
     connected = false;
     socket: WebSocket;
-    peerVersion: string;
+    peerVersion: string = "";
     notifications: string[] = [];
 
     discoveryButtonType = "normal";
@@ -118,9 +118,17 @@ export default class Root extends Vue {
 
         if (data[0] === 3) {
             this.showNotification("Connected to " + data[2]);
-            this.peerVersion = <string>data[1];
+            this.setPeerVersion(<string>data[1]);
         }
     };
+
+    /**
+     * Weirdly enough, setting this directly in handleWebsocketManage makes vue go
+     * haywire. This works fine though, so we use this instead.
+     */
+    private setPeerVersion(version: string) {
+        this.peerVersion = version;
+    }
 
     /**
      * Makes a request to the discovery service to try and determine the IP automatically.
