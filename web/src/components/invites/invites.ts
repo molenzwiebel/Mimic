@@ -1,14 +1,16 @@
 import Vue from "vue";
 import Root from "../root/root";
 import { Component } from "vue-property-decorator";
-import { ddragon, MAPS, QUEUES } from "../../constants";
+import { ddragon } from "../../constants";
 
 interface Invite {
-    id: string;
-    eligibility: { eligible: boolean };
+    invitationId: string;
+    canAcceptInvitation: boolean;
     fromSummonerId: number;
     fromSummoner: { displayName: string, profileIconId: number }; // added by us
-    invitationMetaData: { gameMode: string, mapId: number, queueId: number };
+    queueName: string; // added by us
+    mapName: string; // added by us
+    gameConfig: { mapId: number, queueId: number };
     state: "Pending" | "Declined";
 }
 
@@ -20,24 +22,39 @@ export default class Invites extends Vue {
 
     mounted() {
         const handleInvitationUpdate = async () => {
-            const result = await this.$root.request("/lol-lobby/v1/received-invitations");
+            const result = await this.$root.request("/lol-lobby/v2/received-invitations");
 
             if (result.status !== 200) {
                 this.invites = [];
                 return;
             }
 
-            // Load summoner info.
+            // Load and queue summoner info.
             const newInvites: Invite[] = result.content;
             for (const invite of newInvites) {
                 invite.fromSummoner = (await this.$root.request("/lol-summoner/v1/summoners/" + invite.fromSummonerId)).content;
+
+                const queueInfo = await this.$root.request("/lol-game-queues/v1/queues/" + invite.gameConfig.queueId);
+                invite.queueName = queueInfo.content.description;
+
+                const mapInfo = await this.$root.request("/lol-maps/v1/map/" + invite.gameConfig.mapId);
+                invite.mapName = mapInfo.content.name;
             }
+
 
             this.invites = newInvites;
         };
 
         // Start observing invitation changes.
-        this.$root.observe(/^\/lol-lobby\/v1\/received-invitations/, handleInvitationUpdate);
+        this.$root.observe("/lol-lobby/v2/received-invitations", handleInvitationUpdate);
+
+        // 1.1.0 does not support observing endpoints that don't return objects (invitations returns an array)
+        // gracefully fall back and periodically poll instead. Anything above 1.1.0 supports it, and since 1.1.0
+        // was the first public version, a simple comparison is fine.
+        if (this.$root.peerVersion === "1.1.0") {
+            console.log("Using polling to watch invites.");
+            setInterval(handleInvitationUpdate, 5000);
+        }
 
         // Check for initial pending invites.
         handleInvitationUpdate();
@@ -54,21 +71,21 @@ export default class Invites extends Vue {
      * Accepts the specified invite.
      */
     acceptInvite(invite: Invite) {
-        this.$root.request("/lol-lobby/v1/received-invitations/" + invite.id + "/accept", "POST");
+        this.$root.request("/lol-lobby/v2/received-invitations/" + invite.invitationId + "/accept", "POST");
     }
 
     /**
      * Declines the specified invite.
      */
     declineInvite(invite: Invite) {
-        this.$root.request("/lol-lobby/v1/received-invitations/" + invite.id + "/decline", "POST");
+        this.$root.request("/lol-lobby/v2/received-invitations/" + invite.invitationId + "/decline", "POST");
     }
 
     /**
      * @returns details of the invite, showing the gamemode and map.
      */
     getInviteDetails(invite: Invite): string {
-        return (QUEUES[invite.invitationMetaData.queueId] || "Unknown Queue") + " - " + (MAPS[invite.invitationMetaData.mapId] || "Unknown Map");
+        return (invite.queueName || "Unknown Queue") + " - " + (invite.mapName || "Unknown Map");
     }
 
     /**

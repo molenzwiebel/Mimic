@@ -32,6 +32,7 @@ type WebsocketMessage = [1, string, number, any] | [2, number, number, any] | [3
 export default class Root extends Vue {
     connected = false;
     socket: WebSocket;
+    peerVersion: string;
     notifications: string[] = [];
 
     discoveryButtonType = "normal";
@@ -117,6 +118,7 @@ export default class Root extends Vue {
 
         if (data[0] === 3) {
             this.showNotification("Connected to " + data[2]);
+            this.peerVersion = <string>data[1];
         }
     };
 
