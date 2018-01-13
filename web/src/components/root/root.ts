@@ -6,6 +6,7 @@ import Queue from "../queue/queue.vue";
 import ReadyCheck from "../ready-check/ready-check.vue";
 import ChampSelect from "../champ-select/champ-select.vue";
 import Invites from "../invites/invites.vue";
+import Version from "../../util/version";
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -32,7 +33,7 @@ type WebsocketMessage = [1, string, number, any] | [2, number, number, any] | [3
 export default class Root extends Vue {
     connected = false;
     socket: WebSocket;
-    peerVersion: string = "";
+    peerVersion: Version = <any>null; // null is required to allow vue to observe
     notifications: string[] = [];
 
     discoveryButtonType = "normal";
@@ -127,7 +128,7 @@ export default class Root extends Vue {
      * haywire. This works fine though, so we use this instead.
      */
     private setPeerVersion(version: string) {
-        this.peerVersion = version;
+        this.peerVersion = new Version(version);
     }
 
     /**

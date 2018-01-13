@@ -152,7 +152,6 @@ export default class ChampSelect extends Vue {
 
         // Observe runes
         this.$root.observe("/lol-perks/v1/pages", response => {
-            console.log("Got perks update.");
             response.status === 200 && (this.runePages = response.content);
             response.status === 200 && (this.runePages.sort((a, b) => a.order - b.order));
         });

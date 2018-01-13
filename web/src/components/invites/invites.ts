@@ -48,12 +48,11 @@ export default class Invites extends Vue {
         // Start observing invitation changes.
         this.$root.observe("/lol-lobby/v2/received-invitations", handleInvitationUpdate);
 
-        // 1.1.0 does not support observing endpoints that don't return objects (invitations returns an array)
-        // gracefully fall back and periodically poll instead. Anything above 1.1.0 supports it, and since 1.1.0
-        // was the first public version, a simple comparison is fine.
-        if (this.$root.peerVersion === "1.1.0") {
+        // Anything below 1.2.0 does not support observing anything that does not return an object.
+        // Opt for polling instead.
+        if (!this.$root.peerVersion.greaterThan(1, 1, 0)) {
             console.log("Using polling to watch invites.");
-            setInterval(handleInvitationUpdate, 5000);
+            setInterval(handleInvitationUpdate, 3000);
         }
 
         // Check for initial pending invites.
