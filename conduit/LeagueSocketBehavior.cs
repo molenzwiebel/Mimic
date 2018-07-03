@@ -22,9 +22,6 @@ namespace MimicConduit
 
         public LeagueSocketBehavior(int port, string password)
         {
-            lcuPort = port;
-            lcuPassword = password;
-
             socket = new WebSocket("wss://127.0.0.1:" + port + "/", "wamp");
             socket.SetCredentials("riot", password, true);
             socket.SslConfiguration.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12;
