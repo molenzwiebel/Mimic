@@ -18,6 +18,7 @@ export interface ChampSelectMember {
     championId: number;
     championPickIntent: number;
     displayName: string;
+    summonerId: number;
     spell1Id: number;
     spell2Id: number;
     team: number;
@@ -179,9 +180,15 @@ export default class ChampSelect extends Vue {
         const newState: ChampSelectState = result.content;
         newState.localPlayer = newState.myTeam.filter(x => x.cellId === newState.localPlayerCellId)[0];
 
+        // For everyone on our team, request their summoner name.
+        await Promise.all(newState.myTeam.map(async mem => {
+            const summ = (await this.$root.request("/lol-summoner/v1/summoners/" + mem.summonerId)).content;
+            mem.displayName = summ.displayName;
+        }));
+
         // Give enemy summoners obfuscated names, if we don't know their names
         newState.theirTeam.forEach((mem, idx) => {
-            mem.displayName = mem.displayName || ("Summoner " + (idx + 1));
+            mem.displayName = "Summoner " + (idx + 1);
         });
 
         // If we weren't in champ select before, fetch some data.
