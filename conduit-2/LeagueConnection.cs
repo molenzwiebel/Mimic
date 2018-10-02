@@ -185,33 +185,16 @@ namespace Conduit
         }
 
         /**
-         * Performs a POST request on the specified URL with the specified body.
+         * Performs a request with the specified method on the specified URL with the specified body.
          */
-        public async Task Post(string url, string body)
+        public Task<HttpResponseMessage> Request(string method, string url, string body)
         {
             if (!connected) throw new InvalidOperationException("Not connected to LCU");
 
-            await HTTP_CLIENT.PostAsync("https://127.0.0.1:" + processInfo.Item3 + url, new StringContent(body, Encoding.UTF8, "application/json"));
-        }
-
-        /**
-         * Performs a PUT request on the specified URL with the specified body.
-         */
-        public async Task Put(string url, string body)
-        {
-            if (!connected) throw new InvalidOperationException("Not connected to LCU");
-
-            await HTTP_CLIENT.PutAsync("https://127.0.0.1:" + processInfo.Item3 + url, new StringContent(body, Encoding.UTF8, "application/json"));
-        }
-
-        /**
-         * Performs a DELETE request on the specified URL.
-         */
-        public async Task Delete(string url)
-        {
-            if (!connected) throw new InvalidOperationException("Not connected to LCU");
-
-            await HTTP_CLIENT.DeleteAsync("https://127.0.0.1:" + processInfo.Item3 + url);
+            return HTTP_CLIENT.SendAsync(new HttpRequestMessage(new HttpMethod(method), "https://127.0.0.1:" + processInfo.Item3 + url)
+            {
+                Content = body == null ? null : new StringContent(body, Encoding.UTF8, "application/json")
+            });
         }
     }
 

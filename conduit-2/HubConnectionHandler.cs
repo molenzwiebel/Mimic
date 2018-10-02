@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using WebSocketSharp;
 
 namespace Conduit
@@ -35,25 +36,27 @@ namespace Conduit
             if (!(contents is JsonArray)) return;
 
             // We got a new connection!
-            if (contents[0] == (long) HubOpcode.Open)
+            if (contents[0] == (long) RiftOpcode.Open)
             {
                 if (connections.ContainsKey(contents[1])) return;
 
                 connections.Add(contents[1], new MobileConnectionHandler(league, msg =>
                 {
-                    socket.Send("[" + (long) HubOpcode.Reply + ",\"" + contents[1] + "\"," + msg + "]");
+                    socket.Send("[" + (long) RiftOpcode.Reply + ",\"" + contents[1] + "\"," + msg + "]");
                 }));
             }
-            else if (contents[0] == (long) HubOpcode.Message)
+            else if (contents[0] == (long) RiftOpcode.Message)
             {
                 if (!connections.ContainsKey(contents[1])) return;
+                Console.WriteLine(contents[1]);
             
                 connections[contents[1]].HandleMessage(contents[2]);
             }
-            else if (contents[0] == (long) HubOpcode.Close)
+            else if (contents[0] == (long) RiftOpcode.Close)
             {
                 if (!connections.ContainsKey(contents[1])) return;
 
+                connections[contents[1]].OnClose();
                 connections.Remove(contents[1]);
             }
         }
@@ -62,7 +65,7 @@ namespace Conduit
     /**
      * Represents an operation sent by the hub. Incomplete, contains only definitions we're interested in.
      */
-    enum HubOpcode : long
+    enum RiftOpcode : long
     {
         // New connection from mobile client.
         Open = 1,

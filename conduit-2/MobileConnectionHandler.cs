@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using WebSocketSharp;
 
 namespace Conduit
 {
@@ -12,6 +16,7 @@ namespace Conduit
 
         private LeagueConnection league;
         private byte[] key;
+        private Dictionary<string, Regex> observedPaths = new Dictionary<string, Regex>();
 
         private SendMessageDelegate Send;
         private SendMessageDelegate SendRaw;
@@ -19,9 +24,18 @@ namespace Conduit
         public MobileConnectionHandler(LeagueConnection league, SendMessageDelegate send)
         {
             this.league = league;
+            this.league.OnWebsocketEvent += HandleLeagueEvent;
 
             this.SendRaw = send;
             this.Send = msg => SendRaw("\"" + CryptoHelpers.EncryptAES(key, msg) + "\"");
+        }
+
+        /**
+         * Called by the HubConnectionHandler when the connection with this mobile peer closes.
+         */
+        public void OnClose()
+        {
+            this.league.OnWebsocketEvent -= HandleLeagueEvent;
         }
 
         /**
@@ -68,9 +82,51 @@ namespace Conduit
         /**
          * Handles a message post-decryption, which is the raw message sent by the mobile client.
          */
-        private void HandleMimicMessage(dynamic msg)
+        private async void HandleMimicMessage(dynamic msg)
         {
-            // TODO
+            Console.WriteLine(msg.ToString());
+
+            if (!(msg is JsonArray)) return;
+
+
+            if (msg[0] == (long) MobileOpcode.Subscribe)
+            {
+                var path = (string) msg[1];
+                if (!observedPaths.ContainsKey(path)) observedPaths.Add(path, new Regex(path));
+            }
+            else if (msg[0] == (long) MobileOpcode.Unsubscribe)
+            {
+                var path = (string) msg[1];
+                if (observedPaths.ContainsKey(path)) observedPaths.Remove(path);
+            }
+            else if (msg[0] == (long) MobileOpcode.Request)
+            {
+                var id = (long) msg[1];
+                var path = (string) msg[2];
+                var method = (string) msg[3];
+                var body = (string) msg[4];
+
+                var result = await league.Request(method, path, body);
+                var contents = await result.Content.ReadAsStringAsync();
+                if (contents.IsNullOrEmpty()) contents = "null";
+
+                Send("[" + (long) MobileOpcode.Response + "," + id + "," + (long) result.StatusCode + "," + contents + "]");
+            }
+            else if (msg[0] == (long) MobileOpcode.Version)
+            {
+                Send("[" + (long) MobileOpcode.VersionResponse + ", \"" + Program.VERSION + "\", \"" + Environment.MachineName + "\"]");
+            }
+        }
+
+        /**
+         * Handles an update coming from the League socket.
+         */
+        private void HandleLeagueEvent(OnWebsocketEventArgs ev)
+        {
+            if (!observedPaths.Values.Any(x => x.IsMatch(ev.Path))) return;
+
+            var status = ev.Type.Equals("Create") || ev.Type.Equals("Update") ? 200 : 404;
+            Send("[" + (long) MobileOpcode.Update + ",\"" + ev.Path + "\"," + status + "," + ev.Data.ToString() + "]");
         }
     }
 
@@ -98,6 +154,10 @@ namespace Conduit
         Request = 7,
 
         // Conduit -> Mobile, response of a previous request message.
-        Response = 8
+        Response = 8,
+
+        // Conduit -> Mobile, when any subscribed endpoint gets an update
+        Update = 9
     }
 }
+ 
