@@ -22,3 +22,12 @@ declare module "*.mp3" {
     const path: string;
     export = path;
 }
+
+declare module "node-rsa" {
+    class NodeRSA {
+        importKey(key: string, format: string): void;
+        encrypt(content: string, outFmt: string, inFmt: string): void;
+    }
+
+    export = NodeRSA;
+}

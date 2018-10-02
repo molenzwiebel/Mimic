@@ -1,24 +1,7 @@
 <template>
     <div>
         <div v-if="!connected || !peerVersion" class="intro">
-            <span class="header">Welcome to Mimic!<br><small>How would you like to connect?</small></span>
-
-            <div class="automatic">
-                <span>Try to find your computer automatically.<br>This is not recommended on shared networks.</span>
-                <lcu-button :disabled="discoveringConduit" :type="discoveryButtonType" @click="discoverConduit()">Find Conduit</lcu-button>
-            </div>
-
-            <div class="or">
-                <div></div>
-                <span>OR</span>
-                <div></div>
-            </div>
-
-            <div class="manual">
-                <span>Enter your computer's IP address.<br>You can find this in Conduit's right-click menu.</span>
-                <input v-model="hostname" placeholder="192.168.1.1">
-                <lcu-button :disabled="(!hostname) || connecting" :type="manualButtonType" @click="connect()">Connect</lcu-button>
-            </div>
+            <!-- TODO -->
         </div>
 
         <div v-else="" class="body">
