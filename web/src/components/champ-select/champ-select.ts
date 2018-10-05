@@ -17,6 +17,7 @@ export interface ChampSelectMember {
     cellId: number;
     championId: number;
     championPickIntent: number;
+    selectedSkinId: number,
     displayName: string;
     summonerId: number;
     spell1Id: number;
