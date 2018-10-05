@@ -17,16 +17,32 @@ export default class ChampionPicker extends Vue {
 
     // List of champions that the current user can select. Includes banned champions.
     pickableChampions: number[] = [];
+    pickableSkins: number[] = [];
+    championSkins: { [id: number]: { id: string, num: number, name: string } };
+    skinList: any = {};
+
 
     // List of champions that the current user can ban. Includes already banned champions.
     bannableChampions: number[] = [];
+    inventory: string;
+
 
     created() {
+
+
+
         // Observe the list of pickable and bannable champions. The list is sorted by name.
         this.$root.observe("/lol-champ-select/v1/pickable-champions", result => {
             this.pickableChampions = (result.status === 200 ? result.content.championIds : this.pickableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
             this.pickableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
         });
+
+
+        // Gets the owned skin list, not using pickable-skins since it's not compatible with custom games
+        this.inventory = "/lol-champions/v1/inventories/" + this.$parent.summoner.summonerId + "/skins-minimal";
+        this.$root.observe(this.inventory, result =>
+            this.skinList = result.content.filter((s: any) => s.ownership.owned == true && s.isBase == false)
+        );
 
         this.$root.observe("/lol-champ-select/v1/bannable-champions", result => {
             this.bannableChampions = (result.status === 200 ? result.content.championIds : this.bannableChampions).filter((x: number) => !!this.$parent.championDetails[x]);

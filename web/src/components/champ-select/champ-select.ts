@@ -115,6 +115,7 @@ export default class ChampSelect extends Vue {
     runePages: RunePage[] = [];
     currentRunePage: RunePage | null = null;
 
+    summoner: any = {};
     // These two are used to map summoner/champion id -> data.
     championDetails: { [id: number]: { id: string, key: string, name: string } };
     summonerSpellDetails: { [id: number]: { id: string, key: string, name: string } };
@@ -152,6 +153,12 @@ export default class ChampSelect extends Vue {
             this.rerollState = result.status === 200 ? result.content : { numberOfRolls: 0, maxRolls: 2 };
         });
 
+        // Get the current summoner info.
+        this.$root.observe("/lol-summoner/v1/current-summoner", result => {
+            this.summoner = result.status === 200 ? result.content : 0;
+            console.log(result);
+        });
+
         // Observe runes
         this.$root.observe("/lol-perks/v1/pages", response => {
             response.status === 200 && (this.runePages = response.content);
@@ -172,12 +179,12 @@ export default class ChampSelect extends Vue {
      * Handles a change to the champion select and updates the state appropriately.
      * Note: this cannot be an arrow function for various changes. See the lobby component for more info.
      */
-    handleChampSelectChange = async function(this: ChampSelect, result: Result) {
+    handleChampSelectChange = async function (this: ChampSelect, result: Result) {
         if (result.status !== 200) {
             this.state = null;
             return;
         }
-        
+
         const newState: ChampSelectState = result.content;
         newState.localPlayer = newState.myTeam.filter(x => x.cellId === newState.localPlayerCellId)[0];
 
