@@ -49,4 +49,8 @@ export default class PlayerSettings extends Vue {
         if (!this.allowsReroll) return "";
         return `(${this.$parent.rerollState.numberOfRolls}/${this.$parent.rerollState.maxRolls})`;
     }
+
+    get locked(): boolean {
+        return this.$parent.champLocked;
+    }
 }

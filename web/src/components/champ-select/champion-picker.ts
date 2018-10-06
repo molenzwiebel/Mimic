@@ -145,7 +145,7 @@ export default class ChampionPicker extends Vue {
         this.$root.request("/lol-champ-select/v1/session/actions/" + act.id + "/complete", "POST");
         // Sends to the skin picker that the user's champion is locked.
         if (act.actorCellId == this.state.localPlayerCellId && act.type === "pick") {
-            this.$parent.locked = true;
+            this.$parent.champLocked = true;
         }
         this.$emit("close");
     }

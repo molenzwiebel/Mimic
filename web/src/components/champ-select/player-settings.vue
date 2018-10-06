@@ -17,7 +17,7 @@
             <div class="circular-button" @click="$emit('runes')"><i class="ion-edit"></i></div>
         </div>
 
-        <div class="skins">
+        <div v-if="locked" class="skins">
             <div class="square-button" @click="$emit('skins')">
                 <img :src="require('../../static/skin-icon.png')" style="height: 90px;">
             </div>
