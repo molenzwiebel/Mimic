@@ -8,6 +8,7 @@ import Members from "./members.vue";
 import PlayerSettings from "./player-settings.vue";
 import SummonerPicker from "./summoner-picker.vue";
 import ChampionPicker from "./champion-picker.vue";
+import SkinPicker from "./skin-picker.vue";
 import RuneEditor from "./rune-editor.vue";
 
 import MagicBackground from "../../static/magic-background.jpg";
@@ -102,6 +103,7 @@ export interface RunePage {
         playerSettings: PlayerSettings,
         summonerPicker: SummonerPicker,
         championPicker: ChampionPicker,
+        skinPicker: SkinPicker,
         runeEditor: RuneEditor
     }
 })

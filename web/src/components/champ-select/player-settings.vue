@@ -21,7 +21,6 @@
             <div class="square-button" @click="$emit('skins')">
                 <img :src="require('../../static/skin-icon.png')" style="height: 90px;">
             </div>
-            <!-- <img :src="" @click="$emit('skins')"> -->
         </div>
 
         <div class="summoners">

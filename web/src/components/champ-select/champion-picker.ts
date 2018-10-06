@@ -17,7 +17,6 @@ export default class ChampionPicker extends Vue {
 
     // List of champions that the current user can select. Includes banned champions.
     pickableChampions: number[] = [];
-    //skinList: any = {};
     skinList: { [id: number]: { championId: number, id: string, name: string } };
 
     // List of champions that the current user can ban. Includes already banned champions.
@@ -38,7 +37,8 @@ export default class ChampionPicker extends Vue {
         // Gets the owned skin list, not using pickable-skins since it's not compatible with custom games
         this.inventory = "/lol-champions/v1/inventories/" + this.$parent.summoner.summonerId + "/skins-minimal";
         this.$root.observe(this.inventory, result => {
-            this.skinList = result.content.filter((s: any) => s.ownership.owned == true && s.isBase == false).reduce((obj: any, item: any) => (obj[item.id] = item, obj), {});
+            this.skinList = result.content.filter((s: any) => s.ownership.owned == true).reduce((obj: any, item: any) => (obj[item.id] = item, obj), {});
+            console.log(result.content.filter((s: any) => s.ownership.owned == true));
         });
     }
 
