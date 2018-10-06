@@ -17,7 +17,6 @@ export default class ChampionPicker extends Vue {
 
     // List of champions that the current user can select. Includes banned champions.
     pickableChampions: number[] = [];
-    skinList: { [id: number]: { championId: number, id: string, name: string } };
 
     // List of champions that the current user can ban. Includes already banned champions.
     bannableChampions: number[] = [];
@@ -34,12 +33,9 @@ export default class ChampionPicker extends Vue {
             this.bannableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
         });
 
-        // Gets the owned skin list, not using pickable-skins since it's not compatible with custom games
-        this.inventory = "/lol-champions/v1/inventories/" + this.$parent.summoner.summonerId + "/skins-minimal";
-        this.$root.observe(this.inventory, result => {
-            this.skinList = result.content.filter((s: any) => s.ownership.owned == true).reduce((obj: any, item: any) => (obj[item.id] = item, obj), {});
-            console.log(result.content.filter((s: any) => s.ownership.owned == true));
-        });
+        // Reset of the toggles for each lobby
+        this.$parent.champLocked = false;
+        this.$parent.availableSkin= false;
     }
 
     destroyed() {
@@ -141,11 +137,16 @@ export default class ChampionPicker extends Vue {
      * Completes the current action and dismisses the picker.
      */
     completeAction() {
-        const act = this.$parent.getActions(this.state.localPlayer)!;
+        const member = this.state.localPlayer;
+        const act = this.$parent.getActions(member)!;
         this.$root.request("/lol-champ-select/v1/session/actions/" + act.id + "/complete", "POST");
         // Sends to the skin picker that the user's champion is locked.
         if (act.actorCellId == this.state.localPlayerCellId && act.type === "pick") {
             this.$parent.champLocked = true;
+
+            const champId = (act ? act.championId : 0) || member.championId || member.championPickIntent;
+            if(this.$parent.skinList.filter(x => x.championId == champId && !x.disabled).length > 1 && this.$parent.champLocked) this.$parent.availableSkin = true;
+            else this.$parent.availableSkin = false;
         }
         this.$emit("close");
     }

@@ -50,7 +50,11 @@ export default class PlayerSettings extends Vue {
         return `(${this.$parent.rerollState.numberOfRolls}/${this.$parent.rerollState.maxRolls})`;
     }
 
-    get locked(): boolean {
-        return this.$parent.champLocked;
+    /**
+     * @returns if the skin button will show. Conditions are locked champion
+     * and having a skin for it, base doesn't count
+     */
+    get unlocked(): boolean {
+        return this.$parent.champLocked && this.$parent.availableSkin;
     }
 }

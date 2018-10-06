@@ -15,19 +15,17 @@ export default class SkinPicker extends Vue {
     show: boolean;
 
     @Prop()
-    first: boolean;
+    // Passes if the user owns a skin for that champion
+    availableSkin: boolean = false;
 
     //Shorthand for the inventory url
     inventory: string;
-
-    // List of skins that the current user can select
-    skinList: { championId: number, id: number, name: string, disabled: boolean }[];
 
     mounted() {
         // Gets the owned skin list, not using pickable-skins since it's not compatible with custom games
         this.inventory = "/lol-champions/v1/inventories/" + this.$parent.summoner.summonerId + "/skins-minimal";
         this.$root.observe(this.inventory, result => {
-            this.skinList = result.content.filter((s: any) => s.ownership.owned == true);
+            this.$parent.skinList = result.content.filter((s: any) => s.ownership.owned == true);
         });
     }
 
@@ -38,10 +36,13 @@ export default class SkinPicker extends Vue {
         const member = this.state.localPlayer;
         const act = this.$parent.getActions(member);
         const champId = (act ? act.championId : 0) || member.championId || member.championPickIntent;
-        return this.skinList.filter(x => {
-            if(x.id % 1000 == 0) x.name = "Base " + x.name;
+        // Locks the selector if you don't own a champion skin, excluding the base skin
+        if(this.$parent.skinList.filter(x => x.championId == champId && !x.disabled).length > 1 && this.$parent.champLocked) this.$parent.availableSkin = true;
+        let list = this.$parent.skinList.filter(x => {
             return x.championId == champId && !x.disabled;
         });
+        if(!list[0].name.startsWith("Base")) list[0].name = "Base " + list[0].name;
+        return list;
     }
 
     /**
