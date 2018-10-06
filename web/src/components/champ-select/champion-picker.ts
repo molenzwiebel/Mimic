@@ -145,6 +145,7 @@ export default class ChampionPicker extends Vue {
             this.$parent.champLocked = true;
 
             const champId = (act ? act.championId : 0) || member.championId || member.championPickIntent;
+            // Locks the selector if you don't own a champion skin, excluding the base skin
             if(this.$parent.skinList.filter(x => x.championId == champId && !x.disabled).length > 1 && this.$parent.champLocked) this.$parent.availableSkin = true;
             else this.$parent.availableSkin = false;
         }

@@ -134,7 +134,9 @@ export default class ChampSelect extends Vue {
     // Information for the skin picker.
     pickingSkin = false;
 
-    // Information for the skin selector
+    // Information for the skin selector unlocker
+    champLocked = false;
+    availableSkin = false;
 
     // Information for the champion picker.
     pickingChampion = false;
@@ -146,13 +148,6 @@ export default class ChampSelect extends Vue {
         this.loadStatic("champion.json").then(map => {
             // map to { id: data }
             const details: any = {};
-            /*data is a label in the json
-            for each data entry do this
-            each entry is a champion name
-            so for each champion do that
-    
-            create a new {}
-            add a label with data[aatrox].key (id number)*/
             Object.keys(map.data).forEach(x => details[+map.data[x].key] = map.data[x]);
             this.championDetails = details;
         });
