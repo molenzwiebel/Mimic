@@ -115,7 +115,9 @@ export default class ChampSelect extends Vue {
     runePages: RunePage[] = [];
     currentRunePage: RunePage | null = null;
 
+    // Information on the current user.
     summoner: any = {};
+
     // These two are used to map summoner/champion id -> data.
     championDetails: { [id: number]: { id: string, key: string, name: string } };
     summonerSpellDetails: { [id: number]: { id: string, key: string, name: string } };
@@ -123,6 +125,10 @@ export default class ChampSelect extends Vue {
     // Information for the summoner spell overlay.
     pickingSummonerSpell = false;
     pickingFirstSummonerSpell = false;
+
+    // Information for the skin picker.
+    pickingSkin = false;
+    locked = false;
 
     // Information for the champion picker.
     pickingChampion = false;
@@ -156,7 +162,6 @@ export default class ChampSelect extends Vue {
         // Get the current summoner info.
         this.$root.observe("/lol-summoner/v1/current-summoner", result => {
             this.summoner = result.status === 200 ? result.content : 0;
-            console.log(result);
         });
 
         // Observe runes

@@ -48,3 +48,28 @@ select.league
         border-radius 50%
         background linear-gradient(to top, #785b28 0%, #c89c3c 55%, #c8a355 71%, #c8aa6e 100%)
         z-index -1
+
+.square-button
+    position relative
+    box-sizing content-box
+    display flex
+    align-items center
+    justify-content center
+    width 100px
+    height 100px
+    margin 10px 10px 10px 10px
+    border 5px solid transparent
+    background-color #1e2328
+    background-clip padding-box
+    font-size 40px
+    color #cebf93
+
+    &:after
+        position absolute
+        content ""
+        left -5px
+        top -5px
+        bottom -5px
+        right -5px
+        background linear-gradient(to top, #785b28 0%, #c89c3c 55%, #c8a355 71%, #c8aa6e 100%)
+        z-index -1

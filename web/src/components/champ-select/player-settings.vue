@@ -17,6 +17,13 @@
             <div class="circular-button" @click="$emit('runes')"><i class="ion-edit"></i></div>
         </div>
 
+        <div class="skins">
+            <div class="square-button" @click="$emit('skins')">
+                <img :src="require('../../static/skin-icon.png')" style="height: 90px;">
+            </div>
+            <!-- <img :src="" @click="$emit('skins')"> -->
+        </div>
+
         <div class="summoners">
             <img :src="getSummonerSpellImage(state.localPlayer.spell1Id)" @click="$emit('spell', true)">
             <img :src="getSummonerSpellImage(state.localPlayer.spell2Id)" @click="$emit('spell', false)">
@@ -68,6 +75,14 @@
 
         &.disabled
             color #657a7a
+    
+    .skins
+        display flex
+        align-items center
+        padding 10px
+
+        .square-button 
+            flex 0 110px
 
     .runes
         flex 1
