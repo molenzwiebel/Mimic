@@ -22,6 +22,14 @@ export default class Members extends Vue {
         return "background-image: url(http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + champ.id + "_" + member.selectedSkinId % 1000 + ".jpg);" + fade;
     }
 
+    getChampionName(member: ChampSelectMember): string {
+        const act = this.$parent.getActions(member);
+        const champId = (act ? act.championId : 0) || member.championId || member.championPickIntent;
+        if (!champId) return "";
+        const champ = this.$parent.championDetails[champId];
+        return champ.id;
+    }
+
     /**
      * @returns the active overlay animation class for the specified member.
      */

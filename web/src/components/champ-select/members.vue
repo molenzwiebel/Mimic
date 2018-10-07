@@ -11,6 +11,7 @@
                 </div>
                 <div class="info">
                     <span class="name">{{ member.displayName }}</span>
+                    <span class="champion">{{ getChampionName(member) }}</span>
                     <span class="state">{{ getMemberSubtext(member) }}</span>
                 </div>
             </div>
@@ -23,6 +24,7 @@
                 <div class="active-background" :class="getActiveOverlayClass(member)"></div>
                 <div class="info">
                     <span class="name">{{ member.displayName }}</span>
+                    <span class="champion">{{ getChampionName(member) }}</span>
                     <span class="state">{{ getMemberSubtext(member) }}</span>
                 </div>
             </div>
@@ -86,6 +88,18 @@
 
         .name
             font-size 45px
+            text-shadow 4px 4px 5px #111
+
+        .champion
+            position absolute
+            bottom 20
+            right 50
+            flex 1
+            display flex
+            flex-direction column
+            margin 0 20px
+            font-size 45px
+            text-shadow 4px 4px 5px #111
 
         .state
             display inline-block
@@ -93,6 +107,7 @@
             transition 0.3s ease
             font-size 30px
             color #fffaef
+            text-shadow 4px 4px 5px #111
 
         .state:empty
             height 0

@@ -24,7 +24,7 @@
         </div>
 
         <div class="summoners">
-            <img :src="getSummonerSpellImage(state.localPlayer.spell1Id)" @click="$emit('spell', true)">
+            <img :src="getSummonerSpellImage(state.localPlayer.spell1Id)" @click="$emit('spell', true)" style="margin-left: 10px">
             <img :src="getSummonerSpellImage(state.localPlayer.spell2Id)" @click="$emit('spell', false)">
         </div>
     </div>
@@ -82,7 +82,11 @@
 
         .square-button 
             flex 0 110px
+            height player-dropdown-height * 1.5
+            width player-dropdown-height * 1.5
 
+        img
+            margin 20px
     .runes
         flex 1
         display flex
@@ -102,8 +106,9 @@
         padding 10px
 
         img
-            margin 20px
+            margin 20px 15px
+            padding-bottom 1px
             border 1px solid #3c3c41
-            height player-dropdown-height * 1.8
-            width player-dropdown-height * 1.8
+            height player-dropdown-height * 1.57
+            width player-dropdown-height * 1.57
 </style>
