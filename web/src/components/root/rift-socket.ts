@@ -18,7 +18,7 @@ export default class RiftSocket {
     private key: CryptoKey | null = null;
     private encrypted = false;
 
-    constructor(_: string) {
+    constructor(private code: string) {
         this.socket.onopen = this.handleOpen;
         this.socket.onmessage = this.handleMessage;
         this.socket.onclose = this.handleClose;
@@ -48,7 +48,7 @@ export default class RiftSocket {
      */
     private handleOpen = () => {
         // Request the public key for our target.
-        this.socket.send(JSON.stringify([RiftOpcode.CONNECT, "663063"]));
+        this.socket.send(JSON.stringify([RiftOpcode.CONNECT, this.code]));
     };
 
     /**

@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 
+import SocketState from "./socket-state.vue";
 import Lobby from "../lobby/lobby.vue";
 import Queue from "../queue/queue.vue";
 import ReadyCheck from "../ready-check/ready-check.vue";
@@ -28,7 +29,8 @@ type WebsocketMessage = [1, string, number, any] | [2, number, number, any] | [3
         queue: Queue,
         readyCheck: ReadyCheck,
         champSelect: ChampSelect,
-        invites: Invites
+        invites: Invites,
+        socketState: SocketState
     }
 })
 export default class Root extends Vue {
@@ -38,7 +40,6 @@ export default class Root extends Vue {
     notifications: string[] = [];
 
     connecting = false;
-    conduitID = (localStorage && localStorage.getItem("conduitID")) || "";
 
     idCounter = 0;
     observers: { matcher: RegExp, handler: (res: Result) => void }[] = [];
@@ -78,7 +79,13 @@ export default class Root extends Vue {
         this.observers = this.observers.filter(x => {
             if (x.matcher.toString() !== path.toString()) return true;
 
-            if (this.socket!.readyState === WebSocket.OPEN) this.socket!.send(JSON.stringify([MobileOpcode.UNSUBSCRIBE, (path as RegExp).source])); // ask to stop observing
+            // Ensure that the websocket is open, which might not be the case if the unmount
+            // happened due to a disconnection.
+            if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                // ask to stop observing
+                this.socket!.send(JSON.stringify([MobileOpcode.UNSUBSCRIBE, (path as RegExp).source]));
+            }
+
             return false;
         });
     }
@@ -132,12 +139,11 @@ export default class Root extends Vue {
     /**
      * Automatically (re)connects to the websocket.
      */
-    private connect() {
-        localStorage && localStorage.setItem("conduitID", this.conduitID);
+    private connect(code: string) {
         this.connecting = true;
 
         try {
-            this.socket = new RiftSocket(this.conduitID);
+            this.socket = new RiftSocket(code);
 
             this.socket.onopen = () => {
                 this.connected = true;
@@ -150,6 +156,7 @@ export default class Root extends Vue {
             this.socket.onclose = () => {
                 if (this.connecting) {
                     this.showNotification("The connection closed unexpectedly. Check your connection?");
+                    this.socket = null;
                     return;
                 }
 

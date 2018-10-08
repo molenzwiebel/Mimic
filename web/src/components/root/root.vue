@@ -2,6 +2,11 @@
     <div>
         <div v-if="!connected || !peerVersion" class="intro">
             <!-- TODO -->
+            <socket-state
+                    :socket="socket"
+                    @connect="connect"
+                    @reset="socket = null"
+            ></socket-state>
         </div>
 
         <div v-else="" class="body">
@@ -35,70 +40,6 @@
         flex-direction column
         justify-content center
         align-items center
-
-        .header
-            position absolute
-            top 100px
-            left 0
-            right 0
-            text-align center
-            font-family "LoL Header"
-            font-size 80px
-            color #f0e6d3
-            padding 50px
-
-            & > small
-                font-size 60px
-                color #dcd2bf
-
-        .automatic, .manual
-            width 95%
-            display flex
-            flex-direction column
-            justify-content center
-            align-items center
-            padding 20px 0
-
-        .automatic > span, .manual > span
-            color #f0e6d3
-            font-family "LoL Body"
-            font-size 40px
-            padding 10px 10px 20px 20px
-            align-self flex-start
-
-        .or
-            width 100%
-            display flex
-            align-items center
-            justify-content space-around
-            flex-direction row
-
-        .or div
-            flex 1 0
-            height 3px
-            background-color alpha(#fffce1, 0.6)
-
-        .or span
-            flex 0
-            padding 10px
-            color #d5d9c9
-            font-family "LoL Body"
-            font-size 40px
-
-        .manual input
-            width 100%
-            box-sizing border-box
-            height 110px
-            padding 20px
-            margin 10px 60px 30px 60px
-            -webkit-appearance none
-            outline none
-            border-radius 0
-            color #f0e6d2
-            font-size 40px
-            font-family "LoL Body"
-            border 3px solid #785a28
-            background-color black
 
     // Make sure the body has the full size.
     .body
