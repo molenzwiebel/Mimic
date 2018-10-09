@@ -23,6 +23,17 @@
             <lcu-button class="button" @click="$emit('reset')">Cancel</lcu-button>
         </template>
 
+        <!-- Failed because the desktop denied our request.. -->
+        <template v-else-if="didGetDenied">
+            <h2>Connection Denied</h2>
+            <img src="https://ddragon.leagueoflegends.com/cdn/7.5.2/img/sticker/poro-angry.png">
+
+            <p style="margin-bottom: 40px">The computer at {{ code }} explicitly denied the connection attempt. When connecting, make sure to press <b>Allow</b> on the window that pops up.</p>
+
+            <lcu-button class="button" @click="connect">Try Again</lcu-button>
+            <lcu-button class="button" @click="$emit('reset')">Cancel</lcu-button>
+        </template>
+
         <!-- Connecting. This includes both connecting to Rift and talking through rift to the computer. -->
         <template v-else-if="isConnecting">
             <h2>Connecting</h2>
@@ -67,6 +78,9 @@
         computed: {
             didFailPubkey() {
                 return this.socket && this.socket.state === RiftSocketState.FAILED_NO_DESKTOP;
+            },
+            didGetDenied() {
+                return this.socket && this.socket.state === RiftSocketState.FAILED_DESKTOP_DENY;
             },
             isConnecting() {
                 return this.socket && this.socket.state === RiftSocketState.CONNECTING;

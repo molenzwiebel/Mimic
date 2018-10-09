@@ -1,4 +1,5 @@
 import NodeRSA = require("node-rsa");
+import { getDeviceDescription, getDeviceID } from "../../util/device";
 
 /**
  * WebSocket-esque class that handles messaging with Conduit through rift.
@@ -105,11 +106,19 @@ export default class RiftSocket {
         const rsa = new NodeRSA();
         rsa.importKey(pubkey, "pkcs8-public-pem");
 
-        this.socket.send(JSON.stringify([RiftOpcode.SEND, [MobileOpcode.SECRET, rsa.encrypt(JSON.stringify({
+        // Create our identification payload with the chosen secret and info on the device.
+        const { device, browser } = getDeviceDescription();
+        const identify = JSON.stringify({
             secret: bufferToBase64(secret.buffer),
-            identity: "my-phone",
-            device: "Mimic v2 - Testbench"
-        }), "base64", "utf8")]]));
+            identity: getDeviceID(),
+            device, browser
+        });
+
+        // Send the handshake to Conduit.
+        this.socket.send(JSON.stringify([
+            RiftOpcode.SEND,
+            [MobileOpcode.SECRET, rsa.encrypt(identify, "base64", "utf8")]
+        ]));
     }
 
     /**
@@ -144,11 +153,10 @@ export default class RiftSocket {
             const succeeded = parts[1];
 
             if (!succeeded) {
-                this.state = RiftSocketState.DISCONNECTED;
+                this.state = RiftSocketState.FAILED_DESKTOP_DENY;
                 this.key = null;
 
                 // Notify the wrapper.
-                if (this.onclose !== null) this.onclose();
                 return;
             }
 
@@ -180,6 +188,9 @@ export const enum RiftSocketState {
 
     // Failed to get a public key for the specified key, probably invalid or offline.
     FAILED_NO_DESKTOP,
+
+    // The desktop denied our connection request.
+    FAILED_DESKTOP_DENY,
 
     // Performing a handshake with Conduit, user may need to accept the connection
     HANDSHAKING,
