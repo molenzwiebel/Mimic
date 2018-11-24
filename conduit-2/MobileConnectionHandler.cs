@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Threading;
 using WebSocketSharp;
 
 namespace Conduit
@@ -70,12 +72,39 @@ namespace Conduit
                 }
 
                 dynamic contents = SimpleJson.DeserializeObject(info);
-                if (contents["secret"] == null || contents["identity"] == null || contents["device"] == null) return;
+                if (contents["secret"] == null || contents["identity"] == null || contents["device"] == null || contents["browser"] == null) return;
 
-                // TODO: Ask user for approval.
+                // If this device is already approved, immediately respond.
+                if (Persistence.IsDeviceApproved(contents["identity"]))
+                {
+                    this.key = Convert.FromBase64String((string)contents["secret"]);
+                    this.SendRaw("[" + (long) MobileOpcode.SecretResponse + ",true]");
+                }
+                else
+                {
+                    // Note: UI prompt needs to happen on an STA thread.
+                    var promptThread = new Thread(() =>
+                    {
+                        // Else, prompt the user.
+                        var window = new DeviceConnectionPrompt((string)contents["device"], (string)contents["browser"], result =>
+                        {
+                            // If approved, save the device identity and set the key.
+                            if (result)
+                            {
+                                this.key = Convert.FromBase64String((string)contents["secret"]);
+                                Persistence.ApproveDevice(contents["identity"]);
+                            }
 
-                this.key = Convert.FromBase64String((string) contents["secret"]);
-                this.SendRaw("[" + (long) MobileOpcode.SecretResponse + ",true]");
+                            // Send the result of the prompt to the device.
+                            this.SendRaw("[" + (long)MobileOpcode.SecretResponse + "," + result.ToString().ToLower() + "]");
+                        });
+                        window.Show();
+                        window.Focus();
+                        Dispatcher.Run();
+                    });
+                    promptThread.SetApartmentState(ApartmentState.STA);
+                    promptThread.Start();
+                }
             }
         }
 
@@ -126,7 +155,7 @@ namespace Conduit
             if (!observedPaths.Values.Any(x => x.IsMatch(ev.Path))) return;
 
             var status = ev.Type.Equals("Create") || ev.Type.Equals("Update") ? 200 : 404;
-            Send("[" + (long) MobileOpcode.Update + ",\"" + ev.Path + "\"," + status + "," + ev.Data.ToString() + "]");
+            Send("[" + (long) MobileOpcode.Update + ",\"" + ev.Path + "\"," + status + "," + (ev.Data != null ? ev.Data.ToString() : "null") + "]");
         }
     }
 

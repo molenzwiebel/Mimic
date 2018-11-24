@@ -20,7 +20,8 @@ namespace Conduit
             socket = new WebSocket(Program.HUB_WS);
             socket.CustomHeaders = new Dictionary<string, string>()
             {
-                {"Token", Persistence.GetHubToken()}
+                {"Token", Persistence.GetHubToken()},
+                {"Public-Key", CryptoHelpers.ExportPublicKey()}
             };
 
             socket.OnMessage += HandleMessage;
@@ -39,6 +40,7 @@ namespace Conduit
             if (contents[0] == (long) RiftOpcode.Open)
             {
                 if (connections.ContainsKey(contents[1])) return;
+                Console.WriteLine("Got new mobile connection: " + (string) contents[1]);
 
                 connections.Add(contents[1], new MobileConnectionHandler(league, msg =>
                 {
@@ -48,7 +50,6 @@ namespace Conduit
             else if (contents[0] == (long) RiftOpcode.Message)
             {
                 if (!connections.ContainsKey(contents[1])) return;
-                Console.WriteLine(contents[1]);
             
                 connections[contents[1]].HandleMessage(contents[2]);
             }
@@ -56,6 +57,7 @@ namespace Conduit
             {
                 if (!connections.ContainsKey(contents[1])) return;
 
+                Console.WriteLine("Lost mobile connection: " + (string)contents[1]);
                 connections[contents[1]].OnClose();
                 connections.Remove(contents[1]);
             }

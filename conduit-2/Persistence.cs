@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Xml.Serialization;
 
@@ -14,6 +15,7 @@ namespace Conduit
 
         private static readonly string HUB_TOKEN_PATH = Path.Combine(DATA_DIRECTORY, "token");
         private static readonly string KEYPAIR_PATH = Path.Combine(DATA_DIRECTORY, "keys");
+        private static readonly string DEVICES_PATH = Path.Combine(DATA_DIRECTORY, "devices");
 
         static Persistence()
         {
@@ -44,6 +46,44 @@ namespace Conduit
         public static void SetHubToken(string token)
         {
             File.WriteAllText(HUB_TOKEN_PATH, token);
+        }
+
+        /**
+         * Checks if the specified device UUID has been seen and approved before.
+         */
+        public static bool IsDeviceApproved(string deviceUUID)
+        {
+            try
+            {
+                if (!File.Exists(DEVICES_PATH)) return false;
+
+                var contents = File.ReadAllLines(DEVICES_PATH);
+                return contents.Any(x => x == deviceUUID);
+            }
+            catch
+            {
+                // Ignore errors.
+                return false;
+            }
+        }
+
+        /**
+         * Adds the specified device UUID to the list of approved devices. Note: this
+         * does not check if the device was previously approved, calling this with an
+         * approved device will lead to duplicate entries.
+         */
+        public static void ApproveDevice(string deviceUUID)
+        {
+            try
+            {
+                // Simply append the UUID to the list of approved devices. This will
+                // create the file if it did not yet exist.
+                File.AppendAllText(DEVICES_PATH, deviceUUID + "\n");
+            }
+            catch
+            {
+                // Ignore errors.
+            }
         }
 
         /**

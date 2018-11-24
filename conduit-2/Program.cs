@@ -16,7 +16,7 @@ namespace Conduit
         {
             Console.WriteLine("Hello, world!");
 
-            Persistence.SetHubToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MzA2MyIsImlhdCI6MTUzODI0NzcyMH0.kUYgdhA2SYySJ-LLPh_OaNiv27iJUdNRh7MPIft7xqk");
+            Persistence.SetHubToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiNjYzMDYzIiwiaWF0IjoxNTM4MjQ3NzIwfQ.GSXm1g6RePlwYuuGHl6XaZkdsMfzrzhgButDPz2nPPE");
 
             LeagueConnection lcu = new LeagueConnection();
             HubConnectionHandler cn;
