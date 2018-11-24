@@ -16,7 +16,7 @@
             <img src="https://ddragon.leagueoflegends.com/cdn/7.5.2/img/sticker/poro-question.png">
 
             <p style="margin-bottom: 40px">The computer belonging to the code you entered could not be found. Make sure
-                that Conduit is running and
+                that both Conduit and League are running and
                 that you entered the code correctly.</p>
 
             <lcu-button class="button" @click="connect">Try Again</lcu-button>
@@ -28,7 +28,8 @@
             <h2>Connection Denied</h2>
             <img src="https://ddragon.leagueoflegends.com/cdn/7.5.2/img/sticker/poro-angry.png">
 
-            <p style="margin-bottom: 40px">The computer at {{ code }} explicitly denied the connection attempt. When connecting, make sure to press <b>Allow</b> on the window that pops up.</p>
+            <p style="margin-bottom: 40px">The computer at {{ code }} explicitly denied the connection attempt. When
+                connecting, make sure to press <b>Allow</b> on the window that pops up.</p>
 
             <lcu-button class="button" @click="connect">Try Again</lcu-button>
             <lcu-button class="button" @click="$emit('reset')">Cancel</lcu-button>
@@ -51,7 +52,7 @@
             <img src="https://ddragon.leagueoflegends.com/cdn/7.5.2/img/sticker/poro-coolguy.png">
 
             <p style="margin-bottom: 40px">Mimic is waiting for your desktop to approve the connection. Simply click the
-                "Accept" button on your computer to allow the connection. Don't worry: you'll only have to do this once
+                "Allow" button on your computer to accept the connection. Don't worry: you'll only have to do this once
                 per device.</p>
 
             <lcu-button class="button" @click="$emit('reset')" type="deny">Cancel</lcu-button>
