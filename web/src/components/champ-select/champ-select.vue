@@ -1,5 +1,5 @@
 <template>
-    <!--<div class="champ-select" v-if="state && state.localPlayer" :style="background">
+    <div class="champ-select" v-if="state && state.localPlayer" :style="background">
         <summoner-picker :state="state" :show="pickingSummonerSpell" :first="pickingFirstSummonerSpell" @close="pickingSummonerSpell = false"></summoner-picker>
         <champion-picker :state="state" :show="pickingChampion" @close="pickingChampion = false"></champion-picker>
 
@@ -7,8 +7,7 @@
         <members :state="state"></members>
         <player-settings :state="state" @spell="(pickingSummonerSpell = true, pickingFirstSummonerSpell = $event)" @expand="pickingChampion = true" @runes="showingRuneOverlay = true"></player-settings>
         <rune-editor :show="showingRuneOverlay" @close="showingRuneOverlay = false"></rune-editor>
-    </div>-->
-    <rune-editor :show="true"></rune-editor>
+    </div>
 </template>
 
 <script lang="ts" src="./champ-select.ts"></script>
