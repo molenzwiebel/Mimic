@@ -38,4 +38,23 @@ app.post("/register", async (req, res) => {
     });
 });
 
+// GET /check?token=jY... Checks if a specified JWT is valid.
+app.get("/check", async (req, res) => {
+    if (typeof req.query.token !== "string") {
+        return res.status(400).json({
+            ok: false,
+            error: "Missing a token to check."
+        });
+    }
+
+    jwt.verify(req.query.token, process.env.RIFT_JWT_SECRET, async (err: Error | null, obj: any) => {
+        // If the token could not be decoded, or if it doesn't contain a code field, return false.
+        if (err) return res.json(false);
+        if (!obj || typeof obj.code !== "string") return res.json(false);
+
+        // Return whether or not the code exists in our database.
+        res.json(!!await db.lookup(obj.code));
+    });
+});
+
 export default app;
