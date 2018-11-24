@@ -15,6 +15,15 @@ interface RuneTree {
     slots: RuneSlot[];
 }
 
+const STAT_DESCRIPTIONS: { [key: number]: string } = {
+    5008: "AP/AD",
+    5005: "ATKSPD",
+    5007: "CDR",
+    5002: "ARMOR",
+    5003: "MR",
+    5001: "HP"
+};
+
 @Component({})
 export default class RuneEditor extends Vue {
     $root: Root;
@@ -107,6 +116,17 @@ export default class RuneEditor extends Vue {
     }
 
     /**
+     * Selects the specified stat rune in the specified slot.
+     */
+    selectStatRune(slotIndex: number, id: number) {
+        if (!this.currentPage) return;
+
+        this.currentPage.selectedPerkIds[6 + slotIndex] = id;
+        (<any>this).$forceUpdate();
+        this.savePage();
+    }
+
+    /**
      * Creates a new rune page and makes it the current selected page.
      */
     async addPage() {
@@ -114,7 +134,7 @@ export default class RuneEditor extends Vue {
             name: "Rune Page " + (this.$parent.runePages.length + 1),
             primaryStyleId: this.runes[0].id,
             secondaryStyleId: this.runes[1].id,
-            selectedPerkIds: [0, 0, 0, 0, 0, 0]
+            selectedPerkIds: [0, 0, 0, 0, 0, 0, 0, 0, 0]
         }))).content;
 
         this.$parent.runePages.push(rsp);
@@ -141,5 +161,19 @@ export default class RuneEditor extends Vue {
 
         this.$root.request("/lol-perks/v1/pages/" + this.currentPage.id, "DELETE");
         this.$parent.runePages = this.$parent.runePages.filter(x => x.id != this.currentPage!.id);
+    }
+
+    /**
+     * @returns the style url to the ddragon image of the specified rune or rune style
+     */
+    getRuneIconStyle(runeOrStyle: { icon: string }) {
+        return `background-image: url(https://ddragon.leagueoflegends.com/cdn/img/${runeOrStyle.icon})`;
+    }
+
+    /**
+     * @return short description of what a stat is
+     */
+    getStatDescription(id: number) {
+        return STAT_DESCRIPTIONS[id];
     }
 }
