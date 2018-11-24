@@ -2,7 +2,7 @@
     <transition enter-active-class="fadeInUp" leave-active-class="fadeOutDown">
         <div class="rune-editor" v-if="show && runes">
             <i class="ion-minus close" @click="$emit('close')"></i>
-            <div class="header">Edit Runepages</div>
+            <div class="header">Edit Rune Pages</div>
 
             <div class="page-options">
                 <select class="league" @change="$parent.selectRunePage($event)">
@@ -16,23 +16,40 @@
             <div class="content" v-if="currentPage">
                 <span class="section-header">PRIMARY TREE</span>
                 <div class="tree-selector">
-                    <div v-for="tree in runes" class="tree" @click="selectPrimaryTree(tree.id)" :class="currentPage.primaryStyleId === tree.id && 'selected'" :style="'background-image: url(http://stelar7.no/cdragon/latest/perkstyles/' + tree.id + '.png);'"></div>
+                    <div v-for="tree in runes" class="tree" @click="selectPrimaryTree(tree.id)" :class="currentPage.primaryStyleId === tree.id && 'selected'" :style="getRuneIconStyle(tree)"></div>
                 </div>
 
                 <div class="tree-runes">
                     <div v-for="(slot, idx) in getRuneTree(currentPage.primaryStyleId).slots" class="slot" :class="idx === 0 && 'keystone'">
-                        <div v-for="rune in slot.runes" :class="currentPage.selectedPerkIds[idx] === rune.id && 'selected'" @click="selectPrimaryRune(idx, rune.id)" class="rune" :style="'background-image: url(http://stelar7.no/cdragon/latest/perks/' + rune.id + '.png);'"></div>
+                        <div v-for="rune in slot.runes" :class="currentPage.selectedPerkIds[idx] === rune.id && 'selected'" @click="selectPrimaryRune(idx, rune.id)" class="rune" :style="getRuneIconStyle(rune)"></div>
                     </div>
                 </div>
 
                 <span class="section-header">SECONDARY TREE</span>
                 <div class="tree-selector">
-                    <div v-for="tree in runes" class="tree" @click="selectSecondaryTree(tree.id)" :class="currentPage.subStyleId === tree.id && 'selected'" :style="'background-image: url(http://stelar7.no/cdragon/latest/perkstyles/' + tree.id + '.png);'"></div>
+                    <div v-for="tree in runes" class="tree" @click="selectSecondaryTree(tree.id)" :class="currentPage.subStyleId === tree.id && 'selected'" :style="getRuneIconStyle(tree)"></div>
                 </div>
 
                 <div class="tree-runes">
                     <div v-for="(slot, idx) in (getRuneTree(currentPage.subStyleId) || { slots: [] }).slots.slice(1)" class="slot">
-                        <div v-for="rune in slot.runes" :class="(currentPage.selectedPerkIds[4] === rune.id || currentPage.selectedPerkIds[5] === rune.id) && 'selected'" @click="selectSecondaryRune(rune.id)" class="rune" :style="'background-image: url(http://stelar7.no/cdragon/latest/perks/' + rune.id + '.png);'"></div>
+                        <div v-for="rune in slot.runes" :class="(currentPage.selectedPerkIds[4] === rune.id || currentPage.selectedPerkIds[5] === rune.id) && 'selected'" @click="selectSecondaryRune(rune.id)" class="rune" :style="getRuneIconStyle(rune)"></div>
+                    </div>
+                </div>
+
+                <span class="section-header">STAT MODS</span>
+                <div class="tree-runes">
+                    <!-- For every tree in the stats. IDs are hardcoded since they are not in the json. -->
+                    <div
+                        v-for="(opts, idx) in [[5008, 5005, 5007], [5008, 5002, 5003], [5001, 5002, 5003]]"
+                        class="slot">
+                        <div
+                            v-for="option in opts"
+                            class="rune stat"
+                            :class="currentPage.selectedPerkIds[6 + idx] === option && 'selected'"
+                            @click="selectStatRune(idx, option)"
+                            :style="'background-image: url(http://stelar7.no/cdragon/latest/perks/' + option + '.png)'">
+                            <span style="padding-top: 180px">{{ getStatDescription(option) }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -100,6 +117,7 @@
     .content
         overflow-y scroll
         -webkit-overflow-scrolling touch
+        padding-bottom 20px
 
         .section-header
             font-family "LoL Display"
@@ -188,6 +206,18 @@
                 filter grayscale(100%)
                 transition 0.3s ease
 
+                &.stat
+                    width 100px
+                    height 100px
+                    display flex
+                    align-items center
+                    justify-content center
+                    margin-bottom 30px
+
+                    color #c8aa6e
+                    font-size 40px
+                    font-family LoL Display
+
             .rune.selected
                 filter none
 
@@ -203,6 +233,12 @@
                 z-index -1
                 background radial-gradient(transparent 62%, #785b28 65%, #c89c3c 76%, #c8a355 88%, #c8aa6e 100%)
                 opacity 0
+
+            .rune.stat::after
+                width 120px
+                height 120px
+                top -((120px - 100px) / 2)
+                left -((120px - 100px) / 2)
 
             .rune.selected::after
                 opacity 0.8
