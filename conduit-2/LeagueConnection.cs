@@ -50,6 +50,14 @@ namespace Conduit
         }
 
         /**
+         * Clears all listeners for websocket events, to ensure that they can get garbage collected.
+         */
+        public void ClearAllListeners()
+        {
+            OnWebsocketEvent = null;
+        }
+
+        /**
          * Tries to connect to a currently running league process. Called
          * by the connection timer every 5 seconds.
          */

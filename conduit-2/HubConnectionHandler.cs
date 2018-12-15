@@ -5,13 +5,19 @@ using WebSocketSharp;
 namespace Conduit
 {
     /**
-     * Handles the connection with the hub, including authentication and other fancy stuff.
+     * This class handles all connection with the hub and delegates any threaded messages to their
+     * appropriate mobile connection handlers. This class is not responsible for ensuring that the JWT
+     * is valid or keeping track of rift/league connection state. The wrapper class for this class, 
+     * ConnectionManager, is in charge of reconnection and JWT registration.
      */
     class HubConnectionHandler
     {
         private WebSocket socket;
         private LeagueConnection league;
         private Dictionary<string, MobileConnectionHandler> connections = new Dictionary<string, MobileConnectionHandler>();
+
+        public event Action OnClose;
+        private bool hasClosed = false;
 
         public HubConnectionHandler(LeagueConnection league)
         {
@@ -25,8 +31,43 @@ namespace Conduit
             };
 
             socket.OnMessage += HandleMessage;
+            socket.OnClose += (sender, ev) =>
+            {
+                // Invoke the close handler unless we explicitly triggered this closure.
+                // Note that we invoke the event handler and close ourselves as well.
+                // This means that in all cases, anyone listening to the closure event does
+                // not have to close us. They only need to call Close on us if we want to
+                // terminate a connection that is still stable.
+                if (!hasClosed)
+                {
+                    OnClose?.Invoke();
+                    Close();
+                }
+            };
 
             socket.Connect();
+        }
+
+        /**
+         * Closes the connection with the hub. Should be invoked when League closes.
+         */
+        public void Close()
+        {
+            if (hasClosed) return;
+            hasClosed = true;
+
+            // Close socket.
+            if (socket.ReadyState == WebSocketState.Open) socket.Close();
+
+            // Call destructors for mobile connections.
+            foreach (var connection in connections.Values) connection.OnClose();
+
+            // Release resources.
+            socket = null;
+            league = null;
+
+            connections.Clear();
+            connections = null;
         }
 
         private void HandleMessage(object sender, MessageEventArgs ev)

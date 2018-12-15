@@ -9,8 +9,9 @@ using WebSocketSharp;
 namespace Conduit
 {
     /**
-     * Handles a connection with a mobile client, which is wrapped through a connection with the hub. Also handles
-     * key negotiation and encryption.
+     * This is the class that handles a direct talk with a mobile client. All messages are tunneled through
+     * Rift, but that is transparent to this class. For all purposes, this class acts as if there is a direct
+     * encrypted connection with the client (that somehow already knows our public key).
      */
     class MobileConnectionHandler
     {
