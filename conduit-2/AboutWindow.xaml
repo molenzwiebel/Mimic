@@ -1,0 +1,27 @@
+﻿<Window x:Class="Conduit.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Conduit"
+        mc:Ignorable="d"
+        Title="Mimic Conduit - About" Height="400" Width="500" ResizeMode="NoResize">
+    <Grid>
+        <Image x:Name="Logo" HorizontalAlignment="Left" Height="80" Margin="15,227,0,0" VerticalAlignment="Top" Width="80" />
+        <Label Content="Mimic Conduit v2.0.0" HorizontalAlignment="Left" Margin="100,227,0,0" VerticalAlignment="Top" FontSize="24" FontWeight="Bold" FontFamily="Arial"/>
+        <Label Content="Made with ♥ by molenzwiebel and contributors." HorizontalAlignment="Left" Margin="100,278,0,0" VerticalAlignment="Top" FontSize="14"/>
+        <Label Content="CONNECTION DETAILS" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <Label Content="ABOUT" HorizontalAlignment="Left" Margin="10,184,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <Button Content="Source Code" Click="OpenGithub" HorizontalAlignment="Left" Margin="15,328,0,0" VerticalAlignment="Top" Width="97" FontSize="14"/>
+        <Button Content="Discord Server" Click="OpenDiscord" HorizontalAlignment="Left" Margin="117,328,0,0" VerticalAlignment="Top" Width="105" FontSize="14"/>
+        <Button Content="Uninstall Conduit" Click="Uninstall" Margin="0,328,10,0" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Right" Width="123"/>
+        <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="1" Margin="0,184,-6,0" Stroke="Black" VerticalAlignment="Top" Width="500"/>
+        <Image x:Name="ConnectionQR" HorizontalAlignment="Left" Margin="15,46,0,206" Width="120" Height="120" />
+        <TextBlock Margin="148,46,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="56" FontSize="13">
+            <Run Text="To control League from your phone, either scan the QR code on the left with your phone or go to "/>
+            <Run FontWeight="Bold" Text="https://mimic.lol"/>
+            <Run Text=" on your phone and enter the following digits:"/>
+        </TextBlock>
+        <Label x:Name="CodeLabel" Content="562414" HorizontalAlignment="Left" Margin="148,107,0,0" VerticalAlignment="Top" Width="336" FontFamily="Courier New" FontSize="50" HorizontalContentAlignment="Center" Height="64" VerticalContentAlignment="Center"/>
+    </Grid>
+</Window>

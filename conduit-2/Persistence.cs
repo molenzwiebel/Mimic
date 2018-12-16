@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace Conduit
@@ -38,6 +39,22 @@ namespace Conduit
                 // If we have an error, just ignore it and return null.
                 return null;
             }
+        }
+
+        /**
+         * Returns the code that needs to be entered on the mobile interface to connect to this
+         * phone. Returns null if no token is received yet.
+         */
+        public static string GetHubCode()
+        {
+            var token = GetHubToken();
+            if (token == null) return null;
+
+            var base64Json = token.Split('.')[1];
+
+            // We need to pad to the nearest multiple of 4 here since jwts are stored without padding =s.
+            var jsonContents = Encoding.UTF8.GetString(Convert.FromBase64String(base64Json.PadRight(4 * ((base64Json.Length + 3) / 4), '=')));
+            return SimpleJson.DeserializeObject<dynamic>(jsonContents)["code"];
         }
 
         /**

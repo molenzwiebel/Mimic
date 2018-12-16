@@ -11,16 +11,15 @@ namespace Conduit
         public static string HUB_WS = "ws://127.0.0.1:51001/conduit";
         public static string HUB = "http://127.0.0.1:51001";
 
+        private static App _instance;
+
         [STAThread]
         public static void Main()
         {
-            Console.WriteLine("Hello, world!");
-
-            Persistence.SetHubToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiNjYzMDYzIiwiaWF0IjoxNTM4MjQ3NzIwfQ.GSXm1g6RePlwYuuGHl6XaZkdsMfzrzhgButDPz2nPPE");
-
-            ConnectionManager connectionManager = new ConnectionManager();
-
-            Console.ReadKey();
+            // Start the application.
+            _instance = new App();
+            _instance.InitializeComponent();
+            _instance.Run();
         }
     }
 }
