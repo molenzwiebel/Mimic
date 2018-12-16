@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace Conduit
 {
@@ -16,15 +17,35 @@ namespace Conduit
         public AboutWindow()
         {
             InitializeComponent();
-
             Logo.Source = Imaging.CreateBitmapSourceFromHIcon(Conduit.Properties.Resources.mimic.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://remote.mimic.lol/" + Persistence.GetHubCode(), QRCodeGenerator.ECCLevel.Q);
-            XamlQRCode qrCode = new XamlQRCode(qrCodeData);
-            ConnectionQR.Source = qrCode.GetGraphic(20);
+            if (Persistence.GetHubCode() != null)
+            {
+                RenderCode();
+            }
+            Persistence.OnHubCodeChanged += RenderCode;
+        }
 
-            CodeLabel.Content = Persistence.GetHubCode();
+        /**
+         * Renders the current hub code. This assumes that a hub token exists and doesn't check for null.
+         */
+        private void RenderCode()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode("https://remote.mimic.lol/" + Persistence.GetHubCode(), QRCodeGenerator.ECCLevel.Q);
+                XamlQRCode qrCode = new XamlQRCode(qrCodeData);
+
+                ConnectionQR.Source = qrCode.GetGraphic(20);
+                ConnectionQR.Visibility = Visibility.Visible;
+
+                CodeLabel.Content = Persistence.GetHubCode();
+                CodeLabel.Visibility = Visibility.Visible;
+
+                ConnectionSteps.Visibility = Visibility.Visible;
+                NoCodeText.Visibility = Visibility.Hidden;
+            });
         }
 
         /**
@@ -65,6 +86,14 @@ namespace Conduit
 
             // Step 3: Stop Program.
             Application.Current.Shutdown();
+        }
+
+        /**
+         * Invoked when window closes, unregisters from persistence listeners.
+         */
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Persistence.OnHubCodeChanged -= RenderCode;
         }
     }
 }

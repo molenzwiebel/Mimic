@@ -8,6 +8,7 @@ namespace Conduit
     public partial class App : System.Windows.Application
     {
         private NotifyIcon icon;
+        private ConnectionManager manager;
 
         public App()
         {
@@ -18,7 +19,7 @@ namespace Conduit
                 Visible = true,
                 ContextMenu = new ContextMenu(new MenuItem[]
                 {
-                    new MenuItem("Mimic Conduit v2.0.0")
+                    new MenuItem(Program.APP_NAME + " " + Program.VERSION)
                     {
                         Enabled = false
                     },
@@ -36,6 +37,8 @@ namespace Conduit
                 if (b is MouseEventArgs args && args.Button == MouseButtons.Left)
                     new AboutWindow().Show();
             };
+
+            manager = new ConnectionManager();
         }
     }
 }

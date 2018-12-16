@@ -13,6 +13,7 @@ namespace Conduit
     class Persistence
     {
         public static string DATA_DIRECTORY = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Mimic");
+        public static event Action OnHubCodeChanged;
 
         private static readonly string HUB_TOKEN_PATH = Path.Combine(DATA_DIRECTORY, "token");
         private static readonly string KEYPAIR_PATH = Path.Combine(DATA_DIRECTORY, "keys");
@@ -63,6 +64,9 @@ namespace Conduit
         public static void SetHubToken(string token)
         {
             File.WriteAllText(HUB_TOKEN_PATH, token);
+
+            // Invoke listeners
+            OnHubCodeChanged?.Invoke();
         }
 
         /**
