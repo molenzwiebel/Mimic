@@ -70,13 +70,13 @@ export default class WebSocketManager {
     private verifyConduitClient: VerifyClientCallbackAsync = async (info, cb) => {
         try {
             // If a token or pubkey is missing, abort.
-            const token = info.req.headers.token;
-            const pubkey = info.req.headers["public-key"];
+	    const token = <string>info.req.headers.token;
+            const pubkey = <string>info.req.headers["public-key"];
             if (!token || !pubkey) return cb(false, 401, "Unauthorized");
 
             // Verify given JWT token.
             const decoded = await new Promise<any>((resolve, reject) => {
-                jwt.verify(token, process.env.RIFT_JWT_SECRET, (err: Error | null, dec: any) => {
+                jwt.verify(token, process.env.RIFT_JWT_SECRET!, (err: Error | null, dec: any) => {
                     err ? reject(err) : resolve(dec)
                 });
             });

@@ -34,7 +34,7 @@ app.post("/register", async (req, res) => {
         ok: true,
         token: jwt.sign({
             code
-        }, process.env.RIFT_JWT_SECRET)
+        }, process.env.RIFT_JWT_SECRET!)
     });
 });
 
@@ -47,7 +47,7 @@ app.get("/check", async (req, res) => {
         });
     }
 
-    jwt.verify(req.query.token, process.env.RIFT_JWT_SECRET, async (err: Error | null, obj: any) => {
+    jwt.verify(req.query.token, process.env.RIFT_JWT_SECRET!, async (err: Error | null, obj: any) => {
         // If the token could not be decoded, or if it doesn't contain a code field, return false.
         if (err) return res.json(false);
         if (!obj || typeof obj.code !== "string") return res.json(false);
