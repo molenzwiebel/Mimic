@@ -103,14 +103,14 @@
         text-align center
 
         h2
-            font-family "LoL Header"
+            font-family "LoL Header", serif
             font-size 100px
             color #f0e6d3
             padding 30px
             margin 0
 
         p
-            font-family "LoL Body"
+            font-family "LoL Body", sans-serif
             font-size 50px
             color #dcd2bf
             margin 10px 60px

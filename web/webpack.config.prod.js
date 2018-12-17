@@ -2,6 +2,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 console.log("[+] Using production webpack config!");
 
@@ -49,6 +50,7 @@ module.exports = {
             inject: true,
             hash: true,
             minify: {
+                minimize: true,
                 removeComments: true,
                 collapseWhitespace: true,
                 removeAttributeQuotes: true
@@ -58,6 +60,13 @@ module.exports = {
         new SWPrecacheWebpackPlugin({
             minify: true,
             navigateFallback: "/index.html"
-        })
+        }),
+        new CopyWebpackPlugin([
+            "src/manifest.json",
+            {
+                from: "src/icons",
+                to: "icons/"
+            }
+        ])
     ]
 };

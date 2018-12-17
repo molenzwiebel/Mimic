@@ -71,7 +71,7 @@
         color #f0e6d2
         font-size 110px
         text-align center
-        font-family "LoL Body"
+        font-family "LoL Body", sans-serif
         border 3px solid #785a28
         background-color black
 </style>
