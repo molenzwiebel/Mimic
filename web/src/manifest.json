@@ -2,7 +2,7 @@
     "background_color": "#9b59b6",
     "display": "standalone",
     "name": "Mimic",
-    "description": "The new League client. Except it's on your phone.",
+    "description": "Get into queue, pick your champion and edit your runes. All from your phone!",
     "short_name": "Mimic",
     "start_url": "/?utm_source=homescreen",
     "theme_color": "#9b59b6",
