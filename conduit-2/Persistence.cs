@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Serialization;
@@ -18,6 +20,7 @@ namespace Conduit
         private static readonly string HUB_TOKEN_PATH = Path.Combine(DATA_DIRECTORY, "token");
         private static readonly string KEYPAIR_PATH = Path.Combine(DATA_DIRECTORY, "keys");
         private static readonly string DEVICES_PATH = Path.Combine(DATA_DIRECTORY, "devices");
+        private static readonly RegistryKey BOOT_KEY = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
         static Persistence()
         {
@@ -104,6 +107,36 @@ namespace Conduit
             catch
             {
                 // Ignore errors.
+            }
+        }
+
+        /**
+         * Checks if conduit is configured to launch at startup.
+         */
+        public static bool LaunchesAtStartup()
+        {
+            // Update path to current executable if we moved.
+            var exists = BOOT_KEY.GetValue(Program.APP_NAME) != null;
+
+            if (exists)
+            {
+                BOOT_KEY.SetValue(Program.APP_NAME, Assembly.GetExecutingAssembly().Location);
+            }
+
+            return exists;
+        }
+
+        /**
+         * Toggles whether or not mimic should launch at startup.
+         */
+        public static void ToggleLaunchAtStartup()
+        {
+            if (LaunchesAtStartup())
+            {
+                BOOT_KEY.DeleteValue(Program.APP_NAME);
+            } else
+            {
+                BOOT_KEY.SetValue(Program.APP_NAME, Assembly.GetExecutingAssembly().Location);
             }
         }
 

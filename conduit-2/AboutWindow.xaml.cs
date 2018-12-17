@@ -17,7 +17,8 @@ namespace Conduit
         public AboutWindow()
         {
             InitializeComponent();
-            Logo.Source = Imaging.CreateBitmapSourceFromHIcon(Conduit.Properties.Resources.mimic.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            Logo.Source = Imaging.CreateBitmapSourceFromHIcon(Properties.Resources.mimic.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            StartOnStartupCheckbox.IsChecked = Persistence.LaunchesAtStartup();
 
             if (Persistence.GetHubCode() != null)
             {
@@ -94,6 +95,11 @@ namespace Conduit
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Persistence.OnHubCodeChanged -= RenderCode;
+        }
+
+        private void HandleStartupChange(object sender, EventArgs e)
+        {
+            Persistence.ToggleLaunchAtStartup();
         }
     }
 }

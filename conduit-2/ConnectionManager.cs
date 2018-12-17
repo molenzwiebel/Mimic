@@ -16,17 +16,24 @@ namespace Conduit
     {
         private static readonly HttpClient httpClient = new HttpClient();
 
+        private App app;
         private LeagueConnection league;
         private HubConnectionHandler hubConnectionHandler;
+        private bool isNewLaunch = true;
 
         private CancellationTokenSource reconnectCancellationTokenSource;
 
-        public ConnectionManager()
+        public ConnectionManager(App app)
         {
-            league = new LeagueConnection();
+            this.app = app;
+            this.league = new LeagueConnection();
 
             // Hook up league events.
-            league.OnConnected += Connect;
+            league.OnConnected += () =>
+            {
+                isNewLaunch = true;
+                Connect();
+            };
             league.OnDisconnected += Close;
         }
 
@@ -74,6 +81,13 @@ namespace Conduit
                 // Connect to hub. Will error if token is invalid or server is down, which will prompt a reconnection.
                 hubConnectionHandler = new HubConnectionHandler(league);
                 hubConnectionHandler.OnClose += CloseAndReconnect;
+
+                // We assume to be connected.
+                if (isNewLaunch)
+                {
+                    app.ShowNotification("Connected to League. Click here for instructions on how to control your League client from your phone.");
+                    isNewLaunch = false;
+                }
             } catch
             {
                 // Something happened that we didn't anticipate for.

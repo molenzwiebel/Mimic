@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Conduit"
         mc:Ignorable="d"
-        Title="Mimic Conduit - About" Height="400" Width="500" ResizeMode="NoResize" Closing="Window_Closing">
+        Title="Mimic Conduit - About" Height="430" Width="500" ResizeMode="NoResize" Closing="Window_Closing">
     <Grid>
         <Image x:Name="Logo" HorizontalAlignment="Left" Height="80" Margin="15,227,0,0" VerticalAlignment="Top" Width="80" />
         <Label Content="Mimic Conduit v2.0.0" HorizontalAlignment="Left" Margin="100,227,0,0" VerticalAlignment="Top" FontSize="24" FontWeight="Bold" FontFamily="Arial"/>
@@ -24,5 +24,6 @@
         </TextBlock>
         <Label x:Name="CodeLabel" Content="562414" HorizontalAlignment="Left" Margin="148,107,0,0" VerticalAlignment="Top" Width="336" FontFamily="Courier New" FontSize="50" HorizontalContentAlignment="Center" Height="64" VerticalContentAlignment="Center" Visibility="Hidden"/>
         <TextBlock x:Name="NoCodeText" Margin="15,46,15,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.122,0.378" FontSize="14"><Run Text="To control League from your phone, please launch League at least once while Conduit is running."/><Run Text=" After that, check back here for instructions on how to connect to "/><Run Text="League from your phone."/></TextBlock>
+        <CheckBox x:Name="StartOnStartupCheckbox" Content="Launch Mimic when your computer starts" HorizontalAlignment="Left" Margin="15,0,0,45" Height="15" VerticalAlignment="Bottom" FontSize="13" Click="HandleStartupChange" />
     </Grid>
 </Window>

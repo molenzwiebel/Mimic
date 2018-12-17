@@ -14,7 +14,7 @@ namespace Conduit
         {
             icon = new NotifyIcon()
             {
-                Text = "Sentinel",
+                Text = "Mimic Conduit",
                 Icon = Conduit.Properties.Resources.mimic,
                 Visible = true,
                 ContextMenu = new ContextMenu(new MenuItem[]
@@ -38,7 +38,25 @@ namespace Conduit
                     new AboutWindow().Show();
             };
 
-            manager = new ConnectionManager();
+            icon.BalloonTipClicked += (a, b) =>
+            {
+                new AboutWindow().Show();
+            };
+
+            manager = new ConnectionManager(this);
+
+            // Unless we automatically launched at startup, display a bubble with info.
+            if (!Persistence.LaunchesAtStartup())
+            {
+                ShowNotification("Mimic will run in the background. Click this notification or the Mimic icon in the system tray for more information and how to connect from your phone.");
+            }
+        }
+
+        public void ShowNotification(string text)
+        {
+            icon.BalloonTipTitle = "Mimic Conduit";
+            icon.BalloonTipText = text;
+            icon.ShowBalloonTip(5000);
         }
     }
 }
