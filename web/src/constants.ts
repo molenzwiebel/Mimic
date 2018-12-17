@@ -25,13 +25,13 @@ export const POSITION_NAMES: { [key: string]: string } = {
     FILL: "Fill"
 };
 
-import RoleUnselected = require("./static/role-unselected.png");
-import RoleTop = require("./static/role-top.png");
-import RoleJungle = require("./static/role-jungle.png");
-import RoleMid = require("./static/role-mid.png");
-import RoleBot = require("./static/role-bot.png");
-import RoleSupport = require("./static/role-support.png");
-import RoleFill = require("./static/role-fill.png");
+import RoleUnselected from "./static/role-unselected.png";
+import RoleTop from "./static/role-top.png";
+import RoleJungle from "./static/role-jungle.png";
+import RoleMid from "./static/role-mid.png";
+import RoleBot from "./static/role-bot.png";
+import RoleSupport from "./static/role-support.png";
+import RoleFill from "./static/role-fill.png";
 
 export type Role = "TOP" | "JUNGLE" | "MIDDLE" | "BOTTOM" | "UTILITY" | "FILL" | "UNSELECTED";
 
@@ -46,10 +46,10 @@ export function roleImage(role: Role) {
     return "";
 }
 
-import HABackground = require("./static/bg-ha.jpg");
-import TTBackground = require("./static/bg-tt.jpg");
-import SRBackground = require("./static/bg-sr.jpg");
-import MagicBackground = require("./static/magic-background.jpg");
+import HABackground from "./static/bg-ha.jpg";
+import TTBackground from "./static/bg-tt.jpg";
+import SRBackground from "./static/bg-sr.jpg";
+import MagicBackground from "./static/magic-background.jpg";
 
 export function mapBackground(mapId: number) {
     if (!mapId) return "";

@@ -1,4 +1,4 @@
-import NodeRSA = require("node-rsa");
+import NodeRSA from "node-rsa";
 import { getDeviceDescription, getDeviceID } from "../../util/device";
 
 /**
@@ -99,7 +99,7 @@ export default class RiftSocket {
         window.crypto.getRandomValues(secret);
 
         // Generate a WebCrypto key.
-        this.key = await window.crypto.subtle.importKey("raw", secret.buffer, {
+        this.key = await window.crypto.subtle.importKey("raw", secret.buffer, <any>{
             name: "AES-CBC"
         }, false, ["encrypt", "decrypt"]);
 

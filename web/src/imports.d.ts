@@ -1,26 +1,26 @@
 declare module "*.vue" {
     import Vue from "vue";
-    export = Vue;
+    export default Vue;
 }
 
 declare module "*.jpg" {
     const path: string;
-    export = path;
+    export default path;
 }
 
 declare module "*.json" {
     const path: string;
-    export = path;
+    export default path;
 }
 
 declare module "*.png" {
     const path: string;
-    export = path;
+    export default path;
 }
 
 declare module "*.mp3" {
     const path: string;
-    export = path;
+    export default path;
 }
 
 declare module "node-rsa" {
@@ -29,5 +29,5 @@ declare module "node-rsa" {
         encrypt(content: string, outFmt: string, inFmt: string): void;
     }
 
-    export = NodeRSA;
+    export default NodeRSA;
 }
