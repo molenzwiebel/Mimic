@@ -910,6 +910,13 @@ namespace Conduit
                 long number;
                 success = long.TryParse(new string(json, index, charLength), NumberStyles.Any, CultureInfo.InvariantCulture, out number);
                 returnNumber = number;
+
+                if (!success)
+                {
+                    ulong unumber;
+                    success = ulong.TryParse(new string(json, index, charLength), NumberStyles.Any, CultureInfo.InvariantCulture, out unumber);
+                    returnNumber = unumber;
+                }
             }
             index = lastIndex + 1;
             return returnNumber;

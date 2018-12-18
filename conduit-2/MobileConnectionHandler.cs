@@ -99,6 +99,7 @@ namespace Conduit
                             // Send the result of the prompt to the device.
                             this.SendRaw("[" + (long)MobileOpcode.SecretResponse + "," + result.ToString().ToLower() + "]");
                         });
+
                         window.Show();
                         window.Focus();
                         Dispatcher.Run();
