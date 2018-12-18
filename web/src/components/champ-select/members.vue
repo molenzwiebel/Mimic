@@ -5,11 +5,11 @@
             <div class="team-member my" v-for="member in state.myTeam">
                 <div class="member-background" :style="getBackgroundStyle(member)"></div>
                 <div class="active-background" :class="getActiveOverlayClass(member)"></div>
-                <div class="summoner-spells">
+                <div class="summoner-spells" v-if="member.playerType !== 'BOT'">
                     <img :src="getSummonerSpellImage(member.spell1Id)">
                     <img :src="getSummonerSpellImage(member.spell2Id)">
                 </div>
-                <div class="info">
+                <div class="info" :class="member.playerType === 'BOT' && 'bot'">
                     <span class="name">{{ member.displayName }}</span>
                     <span class="state">{{ getMemberSubtext(member) }}</span>
                 </div>
@@ -97,7 +97,7 @@
         .state:empty
             height 0
 
-    .enemy .info
+    .enemy .info, .info.bot
         margin-left 20px
 
     .member-background

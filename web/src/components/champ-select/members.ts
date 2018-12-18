@@ -17,7 +17,10 @@ export default class Members extends Vue {
         const act = this.$parent.getActions(member);
         const champId = (act ? act.championId : 0) || member.championId || member.championPickIntent;
         if (!champId) return "background-color: transparent;";
+
         const champ = this.$parent.championDetails[champId];
+        if (!champ) return "background-color: transparent;";
+
         const fade = champId === member.championPickIntent ? "opacity: 0.6;" : "";
         return "background-image: url(http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + champ.id + "_0.jpg);" + fade;
     }
@@ -29,7 +32,7 @@ export default class Members extends Vue {
         if (!this.state) return "";
         if (this.state.timer.phase !== "BAN_PICK") return "";
         const act = this.$parent.getActions(member);
-        if (!act) return "";
+        if (!act || act.completed) return "";
         return act.type === "ban" ? "banning" : "picking";
     }
 
@@ -41,7 +44,7 @@ export default class Members extends Vue {
         let extra = this.state.timer.phase === "PLANNING" && member === this.state.localPlayer ? "Declaring Intent" : "";
 
         const cur = this.$parent.getActions(member);
-        if (cur && !extra) {
+        if (cur && !cur.completed && !extra) {
             extra = cur.type === "ban" ? "Banning..." : "Picking...";
         }
 
@@ -58,6 +61,8 @@ export default class Members extends Vue {
      * @returns the url to the icon for the specified summoner icon id
      */
     getSummonerSpellImage(id: number): string {
+        if (!this.$parent.summonerSpellDetails[id]) return "";
+
         return "http://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
     }
 }

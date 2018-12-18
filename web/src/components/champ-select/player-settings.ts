@@ -16,6 +16,8 @@ export default class PlayerSettings extends Vue {
      * @returns the url to the icon for the specified summoner icon id
      */
     getSummonerSpellImage(id: number): string {
+        if (!this.$parent.summonerSpellDetails[id]) return "";
+
         return "http://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
     }
 

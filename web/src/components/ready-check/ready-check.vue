@@ -8,11 +8,11 @@
 
                 <div class="header">Match Found</div>
 
-                <lcu-button @click="accept" type="confirm" class="accept-button">
+                <lcu-button @click="accept" type="confirm" class="accept-button" :disabled="hasResponded">
                     Accept!
                 </lcu-button>
 
-                <lcu-button @click="decline" class="decline-button">
+                <lcu-button @click="decline" class="decline-button" :disabled="hasResponded">
                     Decline
                 </lcu-button>
             </div>
