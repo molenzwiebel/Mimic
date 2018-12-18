@@ -3,16 +3,16 @@
 // https://medium.com/creative-technology-concepts-code/detect-device-browser-and-version-using-javascript-8b511906745
 const DEVICES = [
     { name: 'Windows Phone', value: 'Windows Phone' },
-    { name: 'Windows', value: 'Win' },
+    { name: 'Windows computer', value: 'Win' },
     { name: 'iPhone', value: 'iPhone' },
     { name: 'iPad', value: 'iPad' },
-    { name: 'Kindle', value: 'Silk' },
-    { name: 'Android', value: 'Android' },
+    { name: 'Kindle device', value: 'Silk' },
+    { name: 'Android device', value: 'Android' },
     { name: 'PlayBook', value: 'PlayBook' },
     { name: 'BlackBerry', value: 'BlackBerry' },
-    { name: 'macOS', value: 'Mac' },
-    { name: 'Linux', value: 'Linux' },
-    { name: 'Palm', value: 'Palm' }
+    { name: 'macOS computer', value: 'Mac' },
+    { name: 'Linux computer', value: 'Linux' },
+    { name: 'Palm device', value: 'Palm' }
 ];
 
 const BROWSERS = [
