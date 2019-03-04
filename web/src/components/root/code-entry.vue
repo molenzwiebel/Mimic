@@ -10,52 +10,56 @@
 </template>
 
 <script lang="ts">
-    export default {
-        props: ["value"],
+    import { Component, Prop, Vue } from "vue-property-decorator";
+
+    @Component({})
+    export default class CodeEntry extends Vue {
+        @Prop()
+        value: string;
+
         mounted() {
             // Import previous value.
             const keys = Object.keys(this.$refs);
 
-            this.value.split("").forEach((digit: string, idx: number) => {
-                this.$refs[keys[idx]].value = digit;
+            this.value.split("").forEach((digit, idx) => {
+                (<any>this.$refs[keys[idx]]).value = digit;
             });
-        },
-        methods: {
-            nextCharacter(ev: KeyboardEvent) {
-                const tgt: HTMLInputElement = <HTMLInputElement> ev.target;
-                const next = tgt.getAttribute("data-next");
+        }
 
-                if (tgt.value.length > 0 && next) {
-                    // Go to next.
-                    this.$refs[next].focus();
-                }
+        nextCharacter(ev: KeyboardEvent) {
+            const tgt: HTMLInputElement = <HTMLInputElement>ev.target;
+            const next = tgt.getAttribute("data-next");
 
-                const total = Object.keys(this.$refs).map(x => this.$refs[x].value).join("");
-                this.$emit("input", total);
-            },
+            if (tgt.value.length > 0 && next) {
+                // Go to next.
+                (<any>this.$refs[next]).focus();
+            }
 
-            maybePreviousCharacter(ev: KeyboardEvent) {
-                const tgt: HTMLInputElement = <HTMLInputElement> ev.target;
+            const total = Object.keys(this.$refs).map(x => (<any>this.$refs[x]).value).join("");
+            this.$emit("input", total);
+        }
 
-                // If this is backspace and we're currently empty, go back to previous.
-                if (ev.which === 8 && !tgt.value) {
-                    const prev = tgt.getAttribute("data-prev");
-                    if (!prev) return;
+        maybePreviousCharacter(ev: KeyboardEvent) {
+            const tgt: HTMLInputElement = <HTMLInputElement>ev.target;
 
-                    // Clear previous and focus.
-                    this.$refs[prev].value = "";
-                    this.$refs[prev].focus();
+            // If this is backspace and we're currently empty, go back to previous.
+            if (ev.which === 8 && !tgt.value) {
+                const prev = tgt.getAttribute("data-prev");
+                if (!prev) return;
 
-                    return;
-                }
+                // Clear previous and focus.
+                (<any>this.$refs[prev]).value = "";
+                (<any>this.$refs[prev]).focus();
 
-                // If there was already a value in here, don't accept another.
-                if (tgt.value.length && ev.which !== 8) {
-                    ev.preventDefault();
-                }
+                return;
+            }
+
+            // If there was already a value in here, don't accept another.
+            if (tgt.value.length && ev.which !== 8) {
+                ev.preventDefault();
             }
         }
-    };
+    }
 </script>
 
 <style lang="stylus">

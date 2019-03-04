@@ -1,5 +1,5 @@
-import NodeRSA from "node-rsa";
 import { getDeviceDescription, getDeviceID } from "../../util/device";
+import { default as NodeRSAType } from "node-rsa";
 
 /**
  * WebSocket-esque class that handles messaging with Conduit through rift.
@@ -103,6 +103,9 @@ export default class RiftSocket {
             name: "AES-CBC"
         }, false, ["encrypt", "decrypt"]);
 
+        // node-rsa is particularly big and we only need it here, so extract it into its own chunk
+        // however, do prefetch it so that it'll be available as quickly as possible
+        const NodeRSA: typeof NodeRSAType = <any>await import(/* webpackPrefetch: true */ /* webpackChunkName: "node-rsa" */ "node-rsa").then(x => x.default);
         const rsa = new NodeRSA();
         rsa.importKey(pubkey, "pkcs8-public-pem");
 

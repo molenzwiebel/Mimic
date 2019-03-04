@@ -172,6 +172,22 @@ export default class Lobby extends Vue {
     }
 
     /**
+     * @returns whether or not we can trigger a prompt for the user to add this application to their homescreen (android only)
+     */
+    get canTriggerHomescreenPrompt(): boolean {
+        return !!((<any>window).installPrompt);
+    }
+
+    /**
+     * Triggers the Android install prompt for the user to add the current app to their homescreen.
+     */
+    triggerInstallPrompt() {
+        if (!this.canTriggerHomescreenPrompt) return;
+
+        (<any>window).installPrompt.prompt();
+    }
+
+    /**
      * Confirms if the user wants to leave the lobby, then leaves if neccessary.
      * If the underlying call fails, this will simply do nothing and leave the user in the lobby.
      */

@@ -48,13 +48,6 @@ export default class Invites extends Vue {
         // Start observing invitation changes.
         this.$root.observe("/lol-lobby/v2/received-invitations", handleInvitationUpdate);
 
-        // Anything below 1.2.0 does not support observing anything that does not return an object.
-        // Opt for polling instead.
-        if (!this.$root.peerVersion.greaterThan(1, 1, 0)) {
-            console.log("Using polling to watch invites.");
-            setInterval(handleInvitationUpdate, 3000);
-        }
-
         // Check for initial pending invites.
         handleInvitationUpdate();
     }

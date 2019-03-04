@@ -54,7 +54,7 @@ export default class Timer extends Vue {
      * @returns all ban actions in this game, concatenated into a single list
      */
     get allBans(): ChampSelectAction[] {
-        return [].concat.apply([], this.$parent.state!.actions.map(x => x.filter(y => y.type === "ban")));
+        return ([] as ChampSelectAction[]).concat(...this.$parent.state!.actions.map(x => x.filter(y => y.type === "ban")));
     }
 
     /**

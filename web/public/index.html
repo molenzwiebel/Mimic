@@ -34,6 +34,18 @@
     <meta name="msapplication-TileColor" content="#9b59b6">
     <meta name="msapplication-tap-highlight" content="no">
 
+    <!-- Splash icons for iOS PWAs -->
+    <link href="splashes/iphone5_splash.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+    <link href="splashes/iphone6_splash.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+    <link href="splashes/iphoneplus_splash.png" media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
+    <link href="splashes/iphonex_splash.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
+    <link href="splashes/iphonexr_splash.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+    <link href="splashes/iphonexsmax_splash.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" rel="apple-touch-startup-image" />
+    <link href="splashes/ipad_splash.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+    <link href="splashes/ipadpro1_splash.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+    <link href="splashes/ipadpro3_splash.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+    <link href="splashes/ipadpro2_splash.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" rel="apple-touch-startup-image" />
+
     <!-- Media hack is applied to make sure these do not block the load -->
     <link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" media="a" onload="this.media='all'">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css" rel="stylesheet" media="a" onload="this.media='all'">
@@ -81,28 +93,24 @@
 </head>
 
 <body>
-    <div id="root">
-        <b>Loading...</b>
-        <span>Just see this as a very quick League loading screen!</span>
-    </div>
+<div id="root">
+    <b>Loading...</b>
+    <span>Just see this as a very quick League loading screen!</span>
+</div>
 
-    <noscript>
-        Javascript is disabled on your device! Please enable javascript to use Mimic.
-    </noscript>
+<noscript>
+    Javascript is disabled on your device! Please enable javascript to use Mimic.
+</noscript>
 
-    <!-- built files will be auto injected -->
-    <script>
-        (function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,"script","https://www.google-analytics.com/analytics.js","ga");
+<!-- built files will be auto injected -->
+<script>
+    (function(i,s,o,g,r,a,m){i["GoogleAnalyticsObject"]=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,"script","https://www.google-analytics.com/analytics.js","ga");
 
-        ga("create", "UA-100816066-1", "auto");
-        ga("send", "pageview");
-
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("./service-worker.js");
-        }
-    </script>
+    ga("create", "UA-100816066-1", "auto");
+    ga("send", "pageview");
+</script>
 </body>
 </html>

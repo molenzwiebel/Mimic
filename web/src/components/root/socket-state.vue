@@ -61,36 +61,39 @@
 </template>
 
 <script lang="ts">
-    import { RiftSocketState } from "./rift-socket";
+    import RiftSocket, { RiftSocketState } from "./rift-socket";
     import CodeEntry from "./code-entry.vue";
+    import { Component, Prop, Vue } from "vue-property-decorator";
 
-    export default {
-        components: { CodeEntry },
-        props: ["socket"],
-        data: () => ({
-            code: localStorage ? localStorage.getItem("conduitID") || "" : ""
-        }),
-        methods: {
-            connect() {
-                if (localStorage) localStorage.setItem("conduitID", this.code);
-                this.$emit("connect", this.code);
-            }
-        },
-        computed: {
-            didFailPubkey() {
-                return this.socket && this.socket.state === RiftSocketState.FAILED_NO_DESKTOP;
-            },
-            didGetDenied() {
-                return this.socket && this.socket.state === RiftSocketState.FAILED_DESKTOP_DENY;
-            },
-            isConnecting() {
-                return this.socket && this.socket.state === RiftSocketState.CONNECTING;
-            },
-            isHandshaking() {
-                return this.socket && this.socket.state === RiftSocketState.HANDSHAKING;
-            }
+    @Component({
+        components: { CodeEntry }
+    })
+    export default class SocketState extends Vue {
+        @Prop()
+        socket: RiftSocket;
+        code = localStorage ? localStorage.getItem("conduitID") || "" : "";
+
+        connect() {
+            if (localStorage) localStorage.setItem("conduitID", this.code);
+            this.$emit("connect", this.code);
         }
-    };
+
+        get didFailPubkey() {
+            return this.socket && this.socket.state === RiftSocketState.FAILED_NO_DESKTOP;
+        }
+
+        get didGetDenied() {
+            return this.socket && this.socket.state === RiftSocketState.FAILED_DESKTOP_DENY;
+        }
+
+        get isConnecting() {
+            return this.socket && this.socket.state === RiftSocketState.CONNECTING;
+        }
+
+        get isHandshaking() {
+            return this.socket && this.socket.state === RiftSocketState.HANDSHAKING;
+        }
+    }
 </script>
 
 <style lang="stylus" scoped>

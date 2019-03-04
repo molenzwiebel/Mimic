@@ -58,7 +58,20 @@
         <div class="no-lobby" v-else>
             <span class="header">No Lobby</span>
             <span class="detail">Wait for an invite, or join a<br> lobby on your desktop.</span>
-            <span v-if="!isStandalone" class="tip"><b>PRO TIP:</b> Add this site to your homescreen <br>to use Mimic in fullscreen.</span>
+
+            <span v-if="!isStandalone" class="tip">
+                <b>PRO TIP: </b>
+
+                <template v-if="canTriggerHomescreenPrompt">
+                    <span style="text-decoration: underline" @click="triggerInstallPrompt">Add this site to your homescreen</span>
+                </template>
+
+                <template v-else>
+                    Add this site to your homescreen
+                </template>
+
+                <br>to use Mimic in fullscreen.
+            </span>
         </div>
     </div>
 </template>
