@@ -69,7 +69,6 @@ namespace Conduit
                 // ... and request a new one if it isn't.
                 if (!valid)
                 {
-                    Console.WriteLine("[~] Requesting new JWT");
                     var payload = "{\"pubkey\":\"" + CryptoHelpers.ExportPublicKey() + "\"}";
                     var responseBlob = await httpClient.PostAsync(Program.HUB + "/register", new StringContent(payload, Encoding.UTF8, "application/json"));
                     var response = SimpleJson.DeserializeObject<dynamic>(await responseBlob.Content.ReadAsStringAsync());

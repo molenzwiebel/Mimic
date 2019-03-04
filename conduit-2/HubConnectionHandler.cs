@@ -81,7 +81,6 @@ namespace Conduit
             if (contents[0] == (long) RiftOpcode.Open)
             {
                 if (connections.ContainsKey(contents[1])) return;
-                Console.WriteLine("Got new mobile connection: " + (string) contents[1]);
 
                 connections.Add(contents[1], new MobileConnectionHandler(league, msg =>
                 {
@@ -98,7 +97,6 @@ namespace Conduit
             {
                 if (!connections.ContainsKey(contents[1])) return;
 
-                Console.WriteLine("Lost mobile connection: " + (string)contents[1]);
                 connections[contents[1]].OnClose();
                 connections.Remove(contents[1]);
             }

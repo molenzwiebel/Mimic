@@ -115,10 +115,7 @@ namespace Conduit
          */
         private async void HandleMimicMessage(dynamic msg)
         {
-            Console.WriteLine(msg.ToString());
-
             if (!(msg is JsonArray)) return;
-
 
             if (msg[0] == (long) MobileOpcode.Subscribe)
             {

@@ -8,22 +8,29 @@ namespace Conduit
     public partial class App : System.Windows.Application
     {
         private NotifyIcon icon;
+        private MenuItem codeMenuItem;
         private ConnectionManager manager;
 
         public App()
         {
-            icon = new NotifyIcon()
+            codeMenuItem = new MenuItem
+            {
+                Enabled = false
+            };
+
+            icon = new NotifyIcon
             {
                 Text = "Mimic Conduit",
                 Icon = Conduit.Properties.Resources.mimic,
                 Visible = true,
-                ContextMenu = new ContextMenu(new MenuItem[]
+                ContextMenu = new ContextMenu(new []
                 {
                     new MenuItem(Program.APP_NAME + " " + Program.VERSION)
                     {
                         Enabled = false
                     },
-                    new MenuItem("Settings", (sender, ev) =>
+                    codeMenuItem,
+                    new MenuItem("Settings & About", (sender, ev) =>
                     {
                         new AboutWindow().Show();
                     }),
@@ -44,6 +51,8 @@ namespace Conduit
             };
 
             manager = new ConnectionManager(this);
+            Persistence.OnHubCodeChanged += UpdateCodeMenuItemText;
+            UpdateCodeMenuItemText();
 
             // Unless we automatically launched at startup, display a bubble with info.
             if (!Persistence.LaunchesAtStartup())
@@ -52,6 +61,25 @@ namespace Conduit
             }
         }
 
+        /**
+         * Updates the code menu item with the current code, if it has changed.
+         */
+        private void UpdateCodeMenuItemText()
+        {
+            var code = Persistence.GetHubCode();
+            if (code == null)
+            {
+                codeMenuItem.Text = "Start League to generate an access code!";
+            }
+            else
+            {
+                codeMenuItem.Text = "Access Code: " + code;
+            }
+        }
+
+        /**
+         * Shows a simple notification with the specified text for 5 seconds.
+         */
         public void ShowNotification(string text)
         {
             icon.BalloonTipTitle = "Mimic Conduit";

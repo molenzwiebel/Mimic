@@ -5,7 +5,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace Conduit
 {
@@ -70,13 +69,16 @@ namespace Conduit
          */
         public void Uninstall(object sender, EventArgs args)
         {
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to uninstall Sentinel? All files will be deleted.", "Sentinel", MessageBoxButton.YesNo);
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to uninstall Mimic Conduit? All files will be deleted.", "Mimic Conduit", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.No) return;
 
             // Step 1: Delete AppData.
             try { Directory.Delete(Persistence.DATA_DIRECTORY, true); } catch { /* ignored */ }
 
-            // Step 2: Delete Executable.
+            // Step 2: Unlink launch-on-start if enabled.
+            if (Persistence.LaunchesAtStartup()) Persistence.ToggleLaunchAtStartup();
+
+            // Step 3: Delete Executable.
             Process.Start(new ProcessStartInfo
             {
                 Arguments = "/C choice /C Y /N /D Y /T 3 & Del " + System.Reflection.Assembly.GetExecutingAssembly().Location,
@@ -85,7 +87,7 @@ namespace Conduit
                 FileName = "cmd.exe"
             });
 
-            // Step 3: Stop Program.
+            // Step 4: Stop Program.
             Application.Current.Shutdown();
         }
 
