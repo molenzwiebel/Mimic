@@ -65,6 +65,8 @@
     import CodeEntry from "./code-entry.vue";
     import { Component, Prop, Vue } from "vue-property-decorator";
 
+    let didFirstMount = false;
+
     @Component({
         components: { CodeEntry }
     })
@@ -72,6 +74,26 @@
         @Prop()
         socket: RiftSocket;
         code = localStorage ? localStorage.getItem("conduitID") || "" : "";
+
+        mounted() {
+            // On our first mount, check if we have a code from the query string. If we do,
+            // automatically enter it and try to connect. Only do it on the first mount so if
+            // the connection attempt fails, we don't end up automatically connecting again.
+            if (!didFirstMount) {
+                didFirstMount = true;
+
+                const match = /\?code=(\d+)$/.exec(location.search);
+                if (!match) return;
+
+                // Clear the code from the URL in case the user ends up adding it to the homescreen.
+                // The code gets saved anyway and this saves us the inconvenience of the user linking it to
+                // their homescreen and then getting their code changed.
+                window.history.replaceState("", "", window.location.pathname);
+
+                this.code = match[1];
+                this.connect();
+            }
+        }
 
         connect() {
             if (localStorage) localStorage.setItem("conduitID", this.code);
