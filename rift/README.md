@@ -1,10 +1,12 @@
 # :sparkles: Mimic - Rift
 
-A server-side component for Mimic that powers automatic conduit discovery. Uses [Node](https://nodejs.org) and [TypeScript](https://www.typescriptlang.org). This component powers the automatic resolving of internal IPs, by serving a simple HTTP service backed by an SQLite database that pairs external with internal IPs.
+The server-side tunneling components for Mimic that faciliates communication between the mobile clients and Conduit instances without those Conduit instances needing to be exposed to the internet. This is also the component responsible for assigning unique identifiers to Conduit instances for them to identify themselves. All traffic going through Rift is encrypted; Rift (and thus whoever is hosting Rift) cannot read your messages or other sensitive traffic.
+
+Rift is built using [Node.js](https://nodejs.org) and [TypeScript](https://www.typescriptlang.org). The database is powered by SQLite.
 
 ## Development
 
-You will need [Yarn](https://yarnpkg.com/lang/en/) for developing the rift component, and at least Node 7+ for the async-await components.
+You will need [Yarn](https://yarnpkg.com/lang/en/) for developing the Rift component, and at least Node 7+ for the async-await components.
 
 After checking out the source, run `yarn install` to install all dependencies. You will only need to do this after pulling updates from Github.
 
@@ -14,4 +16,4 @@ During development, you can use `yarn watch` to automatically compile TypeScript
 
 ## License
 
-The rift component of Mimic is released under the [MIT](https://github.com/molenzwiebel/Mimic/blob/master/LICENSE) license. See the index README for more info.
+The Rift component of Mimic is released under the [MIT](https://github.com/molenzwiebel/Mimic/blob/master/LICENSE) license. See the index README for more info.

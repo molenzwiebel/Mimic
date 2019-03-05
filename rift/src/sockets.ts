@@ -70,7 +70,7 @@ export default class WebSocketManager {
     private verifyConduitClient: VerifyClientCallbackAsync = async (info, cb) => {
         try {
             // If a token or pubkey is missing, abort.
-	    const token = <string>info.req.headers.token;
+            const token = <string>info.req.headers.token;
             const pubkey = <string>info.req.headers["public-key"];
             if (!token || !pubkey) return cb(false, 401, "Unauthorized");
 
@@ -129,7 +129,6 @@ export default class WebSocketManager {
      */
     private handleConduitMessage = (ws: WebSocket) => async (msg: string) => {
         try {
-            console.log("C: " + msg);
             const [op, ...args] = JSON.parse(msg);
 
             if (op === RiftOpcode.REPLY) {
@@ -185,7 +184,6 @@ export default class WebSocketManager {
      */
     private handleMobileMessage = (ws: WebSocket) => async (msg: string) => {
         try {
-            console.log("M: " + msg);
             const [op, ...args] = JSON.parse(msg);
 
             if (op === RiftOpcode.CONNECT) {
