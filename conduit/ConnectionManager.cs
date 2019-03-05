@@ -47,7 +47,7 @@ namespace Conduit
             Console.WriteLine("[+] Connecting to rift...");
 
             if (hubConnectionHandler != null) throw new Exception("Already connected.");
-            if (!league.IsConnected) throw new Exception("Not connected to league.");
+            if (!league.IsConnected) return;
 
             try
             {

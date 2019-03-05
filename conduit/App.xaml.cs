@@ -30,7 +30,7 @@ namespace Conduit
                         Enabled = false
                     },
                     codeMenuItem,
-                    new MenuItem("Settings & About", (sender, ev) =>
+                    new MenuItem("Settings", (sender, ev) =>
                     {
                         new AboutWindow().Show();
                     }),
