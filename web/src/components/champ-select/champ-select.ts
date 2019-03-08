@@ -275,7 +275,7 @@ export default class ChampSelect extends Vue {
                 const map = JSON.parse(req.responseText);
                 resolve(map);
             };
-            req.open("GET", "http://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/data/en_US/" + filename, true);
+            req.open("GET", "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/data/en_US/" + filename, true);
             req.send();
         });
     }

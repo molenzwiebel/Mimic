@@ -84,6 +84,6 @@ export default class Invites extends Vue {
      * @returns the path to the summoner icon for the inviter
      */
     getSummonerIcon(invite: Invite): string {
-        return `http://ddragon.leagueoflegends.com/cdn/${ddragon()}/img/profileicon/${invite.fromSummoner.profileIconId}.png`;
+        return `https://ddragon.leagueoflegends.com/cdn/${ddragon()}/img/profileicon/${invite.fromSummoner.profileIconId}.png`;
     }
 }

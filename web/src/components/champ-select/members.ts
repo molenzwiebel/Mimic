@@ -22,7 +22,7 @@ export default class Members extends Vue {
         if (!champ) return "background-color: transparent;";
 
         const fade = champId === member.championPickIntent ? "opacity: 0.6;" : "";
-        return "background-image: url(http://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + champ.id + "_0.jpg);" + fade;
+        return "background-image: url(https://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + champ.id + "_0.jpg);" + fade;
     }
 
     /**
@@ -63,6 +63,6 @@ export default class Members extends Vue {
     getSummonerSpellImage(id: number): string {
         if (!this.$parent.summonerSpellDetails[id]) return "";
 
-        return "http://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
+        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
     }
 }

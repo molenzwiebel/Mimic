@@ -144,6 +144,6 @@ export default class ChampionPicker extends Vue {
     getChampionImage(id: number) {
         if (!this.$parent.championDetails[id]) return "";
 
-        return "http://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
+        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
     }
 }

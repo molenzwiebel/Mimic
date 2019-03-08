@@ -9,7 +9,7 @@ export function ddragon() {
         const versions: string[] = JSON.parse(req.responseText);
         _ddragon = versions[0]; // newest patch is first in the list
     };
-    req.open("GET", "http://ddragon.leagueoflegends.com/api/versions.json", true);
+    req.open("GET", "https://ddragon.leagueoflegends.com/api/versions.json", true);
     req.send();
 
     // Return default until we've loaded.
