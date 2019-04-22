@@ -38,6 +38,12 @@ export default class WebSocketManager {
             verifyClient: this.verifyConduitClient
         });
         this.conduitServer.on("connection", this.handleConduitConnection);
+
+        setInterval(() => {
+            // Every 10 seconds, ping our connected clients to stay connected.
+            this.mobileServer.clients.forEach(c => c.ping());
+            this.conduitServer.clients.forEach(c => c.ping());
+        }, 10000);
     }
 
     /**
