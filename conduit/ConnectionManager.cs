@@ -20,6 +20,7 @@ namespace Conduit
         private LeagueConnection league;
         private HubConnectionHandler hubConnectionHandler;
         private bool isNewLaunch = true;
+        private bool hasTriedImmediateReconnect = false; // after a DC, we first try to reconnect immediately. If that fails, do a 5s backoff
 
         private CancellationTokenSource reconnectCancellationTokenSource;
 
@@ -87,6 +88,8 @@ namespace Conduit
                     app.ShowNotification("Connected to League. Click here for instructions on how to control your League client from your phone.");
                     isNewLaunch = false;
                 }
+
+                hasTriedImmediateReconnect = false;
             } catch
             {
                 // Something happened that we didn't anticipate for.
@@ -119,12 +122,22 @@ namespace Conduit
         public async void CloseAndReconnect()
         {
             Close();
-            Console.WriteLine("[+] Reconnecting to rift in 5s...");
 
             try
             {
                 reconnectCancellationTokenSource = new CancellationTokenSource();
-                await Task.Delay(5000, reconnectCancellationTokenSource.Token);
+
+                // If this is an immediate reconnect, 
+                if (hasTriedImmediateReconnect)
+                {
+                    Console.WriteLine("[+] Reconnecting to rift in 5s...");
+                    await Task.Delay(5000, reconnectCancellationTokenSource.Token);
+                } else
+                {
+                    Console.WriteLine("[+] Reconnecting to rift immediately...");
+                    hasTriedImmediateReconnect = true;
+                }
+
                 Connect();
             } catch (TaskCanceledException)
             {
