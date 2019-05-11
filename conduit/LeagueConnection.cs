@@ -5,7 +5,6 @@ using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
-using System.Timers;
 using WebSocketSharp;
 
 namespace Conduit
@@ -23,7 +22,6 @@ namespace Conduit
             ServerCertificateCustomValidationCallback = (a, b, c, d) => true
         });
 
-        private readonly Timer leaguePollTimer;
         private WebSocket socketConnection;
         private Tuple<Process, string, string> processInfo;
         private bool connected;
@@ -43,10 +41,8 @@ namespace Conduit
          */
         public LeagueConnection()
         {
-            leaguePollTimer = new Timer();
-            leaguePollTimer.Interval = 2000;
-            leaguePollTimer.Elapsed += TryConnect;
-            leaguePollTimer.Start();
+            // Run after a slight delay.
+            Task.Delay(2000).ContinueWith(e => TryConnectOrRetry());
         }
 
         /**
@@ -61,7 +57,7 @@ namespace Conduit
          * Tries to connect to a currently running league process. Called
          * by the connection timer every 5 seconds.
          */
-        private void TryConnect(object sender, EventArgs args)
+        private void TryConnect()
         {
             // We're already connected.
             if (connected) return;
@@ -71,7 +67,6 @@ namespace Conduit
             if (status == null) return;
 
             // Update local state.
-            leaguePollTimer.Stop();
             processInfo = status;
             connected = true;
 
@@ -96,18 +91,31 @@ namespace Conduit
         }
 
         /**
+         * Wrapper around TryConnect that will retry after a fixed delay if the connection fails.
+         */
+        private void TryConnectOrRetry()
+        {
+            if (connected) return;
+            TryConnect();
+
+            // Call this function again 2s later.
+            Task.Delay(2000).ContinueWith(a => TryConnectOrRetry());
+        }
+
+        /**
          * Called when our websocket connection is closed. Responsible for updating internal state.
          */
         private void HandleDisconnect(object sender, CloseEventArgs args)
         {
             // Update internal state.
-            leaguePollTimer.Start();
             processInfo = null;
             connected = false;
             socketConnection = null;
 
             // Notify observers.
             OnDisconnected?.Invoke();
+
+            TryConnectOrRetry();
         }
 
         /**
