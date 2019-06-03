@@ -1,6 +1,6 @@
 <template>
     <div style="flex: 1; display: flex;">
-        <div v-if="state" class="lobby" :style="backgroundImage">
+        <div v-if="state" class="lobby">
             <!-- This overlays the lobby if we are currently in queue. -->
             <div class="queue-overlay"></div>
 
@@ -80,12 +80,8 @@
 
 <style lang="stylus" scoped>
     .lobby
-        background-image url(../../static/magic-background.jpg)
-        background-size cover
-        background-position center
         position relative
         flex 1
-        transition background-image 0.3s ease // Not a standard, but most mobile browsers (chrome) support it.
         display flex
         flex-direction column
         justify-content space-between

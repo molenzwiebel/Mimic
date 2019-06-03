@@ -71,4 +71,5 @@
     .hidden
         height 0
         border-bottom-width 0
+        visibility hidden
 </style>

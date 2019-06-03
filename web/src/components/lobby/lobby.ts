@@ -79,6 +79,11 @@ export default class Lobby extends Vue {
         this.$root.observe("/lol-matchmaking/v1/search", result => {
             this.matchmakingState = result.status === 200 ? result.content : null;
         });
+
+        // Whenever we should show, set the background image.
+        this.$watch(() => [this.state, this.backgroundImage], () => {
+            document.body.setAttribute("style", this.backgroundImage);
+        });
     }
 
     /**

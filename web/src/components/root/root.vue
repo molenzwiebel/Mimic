@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="height: 100%">
         <div v-if="!connected || !peerVersion" class="intro">
             <!-- TODO -->
             <socket-state
@@ -26,6 +26,14 @@
 </template>
 
 <script lang="ts" src="./root.ts"></script>
+
+<style lang="stylus">
+    // Set up backgrounds for the body.
+    body
+        background-size cover
+        background-position center
+        transition background-image 0.3s ease // Not a standard, but most mobile browsers (chrome) support it.
+</style>
 
 <style lang="stylus" scoped>
     // Position the message in the center.
