@@ -1,5 +1,8 @@
 
 module.exports = {
+    devServer: {
+        https: true
+    },
     pwa: {
         name: "Mimic",
         themeColor: "#9b59b6",
