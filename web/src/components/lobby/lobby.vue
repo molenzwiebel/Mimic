@@ -1,6 +1,6 @@
 <template>
-    <div style="flex: 1; display: flex;">
-        <div v-if="state" class="lobby">
+    <div style="flex: 1; display: flex; height: 100%">
+        <div v-if="state" class="lobby" :style="backgroundImage">
             <!-- This overlays the lobby if we are currently in queue. -->
             <div class="queue-overlay"></div>
 
@@ -78,10 +78,27 @@
 
 <script lang="ts" src="./lobby.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .lobby
+        height 100vh
+
+        padding-top calc(env(safe-area-inset-top) + 25px)
+        padding-bottom calc(env(safe-area-inset-bottom) + 14px)
+</style>
+
 <style lang="stylus" scoped>
     .lobby
-        position relative
+        box-sizing border-box
+        background-image url(../../static/magic-background.jpg)
+        background-size cover
+        background-position center
+        position absolute
+        top 0
+        left 0
+        bottom 0
+        right 0
         flex 1
+        transition background-image 0.3s ease // Not a standard, but most mobile browsers (chrome) support it.
         display flex
         flex-direction column
         justify-content space-between
@@ -143,8 +160,11 @@
         background-image url(../../static/magic-background.jpg)
         background-size cover
         background-position center
-        position relative
-        flex 1
+        position absolute
+        top 0
+        left 0
+        bottom 0
+        right 0
         display flex
         flex-direction column
         justify-content center

@@ -37,8 +37,7 @@
 
     .scrollable-content
         // String interpolation is needed because variables are ignored in calc.
-        max-height "calc(100% - %s)" % (timer-status-height + player-settings-height)
-        min-height "calc(100% - %s)" % (timer-status-height + player-settings-height)
+        flex 1
         overflow-y scroll
         -webkit-overflow-scrolling touch // smooth scrolling on ios
 

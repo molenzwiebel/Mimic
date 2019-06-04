@@ -26,6 +26,11 @@
 
 <script lang="ts" src="./player-settings.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .player-settings
+        padding-bottom calc(env(safe-area-inset-bottom) + 20px) // 10px by default
+</style>
+
 <style lang="stylus" scoped>
     @require "../../common.styl"
 

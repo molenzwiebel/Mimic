@@ -64,6 +64,12 @@
 
 <script lang="ts" src="./rune-editor.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .rune-editor
+        margin-top calc(env(safe-area-inset-top) + 30px)
+        padding-bottom calc(env(safe-area-inset-bottom) + 20px)
+</style>
+
 <style lang="stylus" scoped>
     @import "../../common.styl"
 

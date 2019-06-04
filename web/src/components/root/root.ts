@@ -45,6 +45,31 @@ export default class Root extends Vue {
     observers: { matcher: RegExp, handler: (res: Result) => void }[] = [];
     requests: { [key: number]: Function } = {};
 
+    mounted() {
+        setTimeout(() => {
+            // Check if this device has a notch (currently only iPhone X+) and is running
+            // standalone. If yes, add a class to the body for others to react on.
+            const isStandalone = !!((<any>navigator).standalone || window.matchMedia('(display-mode: standalone)').matches);
+            if (!isStandalone) return;
+
+            const div = document.createElement("div");
+
+            // iOS 11.2+ uses env, earlier versions use constant.
+            div.style.paddingBottom = CSS.supports("padding-top: env(safe-area-inset-top)") ? "env(safe-area-inset-top)" : "constant(safe-area-inset-top)";
+            document.body.appendChild(div);
+
+            const calculatedPadding = parseInt(window.getComputedStyle(div).paddingBottom!, 10);
+            document.body.removeChild(div);
+
+            // No padding means that there's no notch (or no support)
+            if (calculatedPadding <= 0) {
+                return;
+            }
+
+            document.body.classList.add("has-notch");
+        }, 500);
+    }
+
     /**
      * @returns the most recent notification, if there is one
      */

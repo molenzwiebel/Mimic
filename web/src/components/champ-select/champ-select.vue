@@ -12,6 +12,14 @@
 
 <script lang="ts" src="./champ-select.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .champ-select
+        height 100vh
+        box-sizing border-box
+
+        padding-top calc(env(safe-area-inset-top) + 30px)
+</style>
+
 <style lang="stylus" scoped>
     @import "../../common.styl"
 
@@ -24,4 +32,6 @@
         right 0
         background-size cover
         background-repeat no-repeat
+        display flex
+        flex-direction column
 </style>

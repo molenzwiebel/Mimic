@@ -35,6 +35,7 @@
         right 0
         background-color rgba(0, 0, 0, 0.8)
         display flex
+        padding-top calc(env(safe-area-inset-top) + 10px)
         justify-content center
         align-items center
 
