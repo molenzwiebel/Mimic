@@ -33,8 +33,8 @@ export default class PlayerSettings extends Vue {
      * @returns if we are currently able to reroll (queue allows it)
      */
     get allowsReroll(): boolean {
-        if (!this.$parent.gameflowState) return false;
-        return this.$parent.gameflowState.gameData.queue.gameTypeConfig.reroll;
+        if (!this.$parent.state) return false;
+        return this.$parent.state.benchEnabled;
     }
 
     /**

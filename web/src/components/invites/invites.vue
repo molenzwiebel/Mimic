@@ -22,6 +22,11 @@
 
 <script lang="ts" src="./invites.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .invites
+        padding-top calc(env(safe-area-inset-top) + 30px)
+</style>
+
 <style lang="stylus" scoped>
     @keyframes magic-background
         0%
@@ -79,10 +84,13 @@
             white-space nowrap
 
         .actions
-            flex 130px 0
+            flex 140px 0
             margin-right 30px
             font-size 70px
             color #f0e6d2
+
+        .actions > i:first-child
+            margin-right 20px
 
     .expand-enter-active, .expand-leave-active
         transition max-height 0.3s ease

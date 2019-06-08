@@ -61,7 +61,10 @@ export interface ChampSelectState {
         id: number;
         cellId: number;
         state: string; // this is an enum.
-    }
+    };
+
+    benchEnabled: boolean;
+    benchChampionIds: number[];
 }
 
 export interface GameflowState {

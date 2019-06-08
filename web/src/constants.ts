@@ -13,7 +13,7 @@ export function ddragon() {
     req.send();
 
     // Return default until we've loaded.
-    return "8.24.1";
+    return "9.11.1";
 }
 
 export const POSITION_NAMES: { [key: string]: string } = {

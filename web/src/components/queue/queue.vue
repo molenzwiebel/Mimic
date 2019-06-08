@@ -19,7 +19,7 @@
     body.has-notch .queue
         padding-top calc(env(safe-area-inset-top) + 30px)
 
-    body.has-notch .queue-background
+    body.has-notch .queue-overlay 
         height 100vh
 </style>
 
