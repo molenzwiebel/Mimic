@@ -1,11 +1,40 @@
 <template>
     <div class="create-lobby" style="color: white">
-        <div v-for="section in sections">
-            Category {{ section }}
+        <div class="sections">
+            <div class="section" v-for="section in sections">
+                <img
+                        @click="selectSection(section)"
+                        :src="sectionIcon(section, 'default')">
 
-            <div v-for="queue in availableQueues[section]">
-                {{ queue.description }}
+                <img
+                        :class="selectedSection !== section && 'hide'"
+                        @click="selectSection(section)"
+                        :src="sectionIcon(section, 'active')">
             </div>
+        </div>
+
+        <div class="section-title">
+            {{ sectionTitle }}
+        </div>
+
+        <div class="queues">
+            <div
+                class="queue"
+                v-for="queue in availableQueues[selectedSection]"
+                :class="selectedQueueId === queue.id && 'selected'"
+                @click="selectedQueueId = queue.id">
+                <div class="diamond-outer">
+                    <div class="diamond-inner"></div>
+                </div>
+
+                <span>{{ queue.description }}</span>
+            </div>
+        </div>
+
+        <div class="create">
+            <lcu-button @click="createLobby">
+                Create Lobby
+            </lcu-button>
         </div>
 
         <span v-if="!isStandalone" class="tip">
@@ -49,12 +78,90 @@
         transition background-image 0.3s ease // Not a standard, but most mobile browsers (chrome) support it.
         display flex
         flex-direction column
-        justify-content space-between
+
+    .sections
+        display flex
+        justify-content space-around
+
+        .section
+            position relative
+            padding 10px
+            width 20vw
+            height 20vw
+
+        .section img
+            position absolute
+            transition opacity 0.2s ease
+            width 100%
+            height 100%
+
+        .section img.hide
+            opacity 0
+
+    .section-title
+        box-sizing border-box
+        margin-top 20px
+        width 100%
+        padding 30px
+        font-family "LoL Display Bold"
+        font-size 65px
+        color #f0d9a3
+        text-align center
+        border-bottom 1px solid white
+        text-transform uppercase
+
+    .queues
+        display flex
+        flex-direction column
+        width 100%
+        padding 30px
+        flex 1
+
+        .queue
+            display flex
+            align-items center
+            height 75px
+            padding 10px
+
+        .queue span
+            font-family "LoL Display Bold"
+            font-size 50px
+            margin-left 20px
+            text-transform uppercase
+            transition 0.2s ease
+            color #bdb088
+
+        .diamond-outer
+            transform rotate(45deg)
+            width 35px
+            height 35px
+            position relative
+            background-color #87692c
+
+        .diamond-inner
+            position absolute
+            top 6px
+            left 6px
+            width 23px
+            height 23px
+            transition background-color 0.2s ease
+            background-color #08181f
+
+        .queue.selected .diamond-inner
+            box-sizing border-box
+            border 5px solid #08181f
+            background-color #f0e6d2
+
+        .queue.selected span
+            color #efe5d1
+
+    .create
+        align-self center
+        width 100%
+        display flex
+        justify-content center
 
     .tip
-        position absolute
-        bottom 0
-        left 0
         margin 20px
         width 100%
         color #aaaea0

@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Root from "../root/root";
+import { GAMEMODE_NAMES } from "@/constants";
 
 /**
  * Represents a game queue. These are shown based on availability and category.
@@ -28,25 +29,60 @@ type MappedQueueList = { [key: string]: GameQueue[] };
 export default class CreateLobby extends Vue {
     $root: Root;
 
+    iconPaths: { [key: string]: string } = {};
     enabledGameQueues: number[] = [];
     defaultGameQueues: number[] = [];
     queues: GameQueue[] = [];
 
+    selectedSection = "";
+    selectedQueueId = 0;
+
     mounted() {
+        // Helper function to return to the first queue of the first map if
+        // the set of available queues changes. This is easier than diffing and
+        // checking if the current queue is still available, and it is very
+        // unlikely that queues will change while the user is active anyway.
+        const resetCurrentSelection = () => {
+            if (!this.sections.length) {
+                this.selectedSection = "";
+                this.selectedQueueId = 0;
+                return;
+            }
+
+            // Queues changed, update
+            this.selectedSection = this.sections[0];
+            this.selectedQueueId = this.availableQueues[this.selectedSection][0].id;
+        };
+
         // Observe enabled and default game queues.
         this.$root.observe("/lol-platform-config/v1/namespaces/LcuSocial/EnabledGameQueues", data => {
             this.enabledGameQueues = data.status === 200 ? data.content.split(",").map((x: string) => +x) : [];
+            resetCurrentSelection();
         });
 
         // Observe enabled and default game queues.
         this.$root.observe("/lol-platform-config/v1/namespaces/LcuSocial/DefaultGameQueues", data => {
             this.defaultGameQueues = data.status === 200 ? data.content.split(",").map((x: string) => +x) : [];
+            resetCurrentSelection();
         });
 
         // Update queue maps.
         this.$root.observe("/lol-game-queues/v1/queues", data => {
             this.queues = data.status === 200 ? data.content : [];
+            resetCurrentSelection();
         });
+
+        // Prepare icon paths.
+        // Note that even though promises are used, these all resolve synchronously.
+        for (const map of ["sr", "ha", "tt", "rgm"]) {
+            import(/* webpackMode: "eager" */ `../../static/maps/${map}-default.png`).then(result => {
+                this.iconPaths[map + "-default"] = result.default;
+            });
+
+            import(/* webpackMode: "eager" */ `../../static/maps/${map}-active.png`).then(result => {
+                this.iconPaths[map + "-active"] = result.default;
+            });
+        }
     }
 
     /**
@@ -120,6 +156,44 @@ export default class CreateLobby extends Vue {
             // Else, return 0.
             return 0;
         });
+    }
+
+    /**
+     * Selects the specified section, setting the current queue to
+     * the first option within the specified section.
+     */
+    selectSection(section: string) {
+        this.selectedSection = section;
+        this.selectedQueueId = this.availableQueues[section][0].id;
+    }
+
+    /**
+     * @returns the url to the map icon for the specified section
+     */
+    sectionIcon(section: string, extra: string) {
+        const mapName = (<any>{
+            "10-CLASSIC": "tt",
+            "11-CLASSIC": "sr",
+            "12-ARAM": "ha",
+        })[section] || "rgm";
+
+        return this.iconPaths[mapName + "-" + extra];
+    }
+
+    /**
+     * Creates a lobby with the currently chosen queue.
+     */
+    createLobby() {
+        this.$root.request("/lol-lobby/v2/lobby", "POST", JSON.stringify({
+            queueId: this.selectedQueueId
+        }));
+    }
+
+    /**
+     * @returns the gamemode name for the currently selected section
+     */
+    get sectionTitle() {
+        return GAMEMODE_NAMES[this.selectedSection.toLowerCase()] || "Rotating Game Mode";
     }
 
     /**

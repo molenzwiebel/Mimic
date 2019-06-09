@@ -26,6 +26,28 @@ export const POSITION_NAMES: { [key: string]: string } = {
     LANE: "Lane" // nexus blitz
 };
 
+export const GAMEMODE_NAMES: { [key: string]: string } = {
+    "8-ascension": "Ascension",
+    "8-odin": "Definitely Not Dominion",
+    "10-classic": "Twisted Treeline",
+    "11-arsr": "ARSR",
+    "11-assassinate": "Blood Moon",
+    "11-classic": "Summoner’s Rift",
+    "11-urf": "AR URF",
+    "11-siege": "Nexus Siege",
+    "11-lcurgmdisabled": "Rotating Game Mode",
+    "12-aram": "ARAM",
+    "12-portalparty": "Portal Party",
+    "12-kingporo": "Legend of the Poro King",
+    "12-basic_tutorial": "TUTORIAL",
+    "11-battle_training": "BATTLE TRAINING",
+    "11-tutorial_flow": "TUTORIAL",
+    "16-darkstar": "Dark Star: Singularity",
+    "18-starguardian": "Invasion",
+    "11-doombotsteemo": "Doom Bots of Doom",
+    "11-practicetool": "Practice Tool",
+};
+
 import RoleUnselected from "./static/roles/role-unselected.png";
 import RoleTop from "./static/roles/role-top.png";
 import RoleJungle from "./static/roles/role-jungle.png";
