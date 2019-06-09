@@ -26,13 +26,13 @@ export const POSITION_NAMES: { [key: string]: string } = {
     LANE: "Lane" // nexus blitz
 };
 
-import RoleUnselected from "./static/role-unselected.png";
-import RoleTop from "./static/role-top.png";
-import RoleJungle from "./static/role-jungle.png";
-import RoleMid from "./static/role-mid.png";
-import RoleBot from "./static/role-bot.png";
-import RoleSupport from "./static/role-support.png";
-import RoleFill from "./static/role-fill.png";
+import RoleUnselected from "./static/roles/role-unselected.png";
+import RoleTop from "./static/roles/role-top.png";
+import RoleJungle from "./static/roles/role-jungle.png";
+import RoleMid from "./static/roles/role-mid.png";
+import RoleBot from "./static/roles/role-bot.png";
+import RoleSupport from "./static/roles/role-support.png";
+import RoleFill from "./static/roles/role-fill.png";
 
 export type Role = "TOP" | "JUNGLE" | "MIDDLE" | "BOTTOM" | "UTILITY" | "FILL" | "UNSELECTED";
 
@@ -47,9 +47,9 @@ export function roleImage(role: Role) {
     return "";
 }
 
-import HABackground from "./static/bg-ha.jpg";
-import TTBackground from "./static/bg-tt.jpg";
-import SRBackground from "./static/bg-sr.jpg";
+import HABackground from "./static/backgrounds/bg-ha.jpg";
+import TTBackground from "./static/backgrounds/bg-tt.jpg";
+import SRBackground from "./static/backgrounds/bg-sr.jpg";
 import MagicBackground from "./static/magic-background.jpg";
 
 export function mapBackground(mapId: number) {

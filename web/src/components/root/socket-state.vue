@@ -13,7 +13,7 @@
         <!-- Failed getting a public key. Either the computer is offline or the code is incorrect. -->
         <template v-else-if="didFailPubkey">
             <h2>Connection Failed</h2>
-            <img src="../../static/poro-question.png">
+            <img src="../../static/poros/poro-question.png">
 
             <p style="margin-bottom: 40px">The computer belonging to the code you entered could not be found. Make sure
                 that both Conduit and League are running and
@@ -26,7 +26,7 @@
         <!-- Failed because the desktop denied our request.. -->
         <template v-else-if="didGetDenied">
             <h2>Connection Denied</h2>
-            <img src="../../static/poro-angry.png">
+            <img src="../../static/poros/poro-angry.png">
 
             <p style="margin-bottom: 40px">The computer at {{ code }} explicitly denied the connection attempt. When
                 connecting, make sure to press <b>Allow</b> on the window that pops up.</p>
@@ -38,7 +38,7 @@
         <!-- Connecting. This includes both connecting to Rift and talking through rift to the computer. -->
         <template v-else-if="isConnecting">
             <h2>Connecting</h2>
-            <img src="../../static/poro-coolguy.png">
+            <img src="../../static/poros/poro-coolguy.png">
 
             <p style="margin-bottom: 40px">Trying to connect to Mimic HQ... If this takes longer than a few seconds,
                 check your internet connection.</p>
@@ -49,7 +49,7 @@
         <!-- At this point we're waiting for Conduit to accept our connection. -->
         <template v-else-if="isHandshaking">
             <h2>Waiting For Desktop</h2>
-            <img src="../../static/poro-coolguy.png">
+            <img src="../../static/poros/poro-coolguy.png">
 
             <p style="margin-bottom: 40px">Mimic is waiting for your desktop to approve the connection. Simply click the
                 "Allow" button on your computer to accept the connection. Don't worry: you'll only have to do this once
