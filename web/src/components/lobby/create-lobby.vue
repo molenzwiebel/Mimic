@@ -1,5 +1,10 @@
 <template>
-    <div class="create-lobby" style="color: white">
+    <div class="create-lobby">
+        <div class="header">
+            <i @click="$emit('close')" class="ion-chevron-left"></i>
+            <span>Create Lobby</span>
+        </div>
+
         <div class="sections">
             <div class="section" v-for="section in sections">
                 <img
@@ -33,23 +38,9 @@
 
         <div class="create">
             <lcu-button @click="createLobby">
-                Create Lobby
+                Confirm
             </lcu-button>
         </div>
-
-        <span v-if="!isStandalone" class="tip">
-            <b>PRO TIP: </b>
-
-            <template v-if="canTriggerHomescreenPrompt">
-                <span style="text-decoration: underline" @click="triggerInstallPrompt">Add this site to your homescreen</span>
-            </template>
-
-            <template v-else>
-                Add this site to your homescreen
-            </template>
-
-            <br>to use Mimic in fullscreen.
-        </span>
     </div>
 </template>
 
@@ -79,9 +70,27 @@
         display flex
         flex-direction column
 
+    .header
+        display flex
+        align-items center
+        padding 30px
+        background-color rgba(0, 0, 0, 0.7)
+        border-bottom 1px solid white
+
+        & i
+            font-size 70px
+            color #efe5d1
+
+        & span
+            margin-left 30px
+            font-size 65px
+            font-family LoL Display Bold
+            color #f0d9a3
+
     .sections
         display flex
         justify-content space-around
+        margin-top 30px
 
         .section
             position relative
@@ -107,7 +116,7 @@
         font-size 65px
         color #f0d9a3
         text-align center
-        border-bottom 1px solid white
+        border-bottom 1px solid alpha(white, 0.7)
         text-transform uppercase
 
     .queues
@@ -160,12 +169,5 @@
         width 100%
         display flex
         justify-content center
-
-    .tip
-        margin 20px
-        width 100%
-        color #aaaea0
-        font-family "LoL Body"
-        font-size 40px
-        text-align center
+        padding-bottom 20px
 </style>

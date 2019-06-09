@@ -37,6 +37,20 @@ export default class CreateLobby extends Vue {
     selectedSection = "";
     selectedQueueId = 0;
 
+    created() {
+        // Prepare icon paths.
+        // Note that even though promises are used, these all resolve synchronously.
+        for (const map of ["sr", "ha", "tt", "rgm"]) {
+            import(/* webpackMode: "eager" */ `../../static/maps/${map}-default.png`).then(result => {
+                this.iconPaths[map + "-default"] = result.default;
+            });
+
+            import(/* webpackMode: "eager" */ `../../static/maps/${map}-active.png`).then(result => {
+                this.iconPaths[map + "-active"] = result.default;
+            });
+        }
+    }
+
     mounted() {
         // Helper function to return to the first queue of the first map if
         // the set of available queues changes. This is easier than diffing and
@@ -71,18 +85,6 @@ export default class CreateLobby extends Vue {
             this.queues = data.status === 200 ? data.content : [];
             resetCurrentSelection();
         });
-
-        // Prepare icon paths.
-        // Note that even though promises are used, these all resolve synchronously.
-        for (const map of ["sr", "ha", "tt", "rgm"]) {
-            import(/* webpackMode: "eager" */ `../../static/maps/${map}-default.png`).then(result => {
-                this.iconPaths[map + "-default"] = result.default;
-            });
-
-            import(/* webpackMode: "eager" */ `../../static/maps/${map}-active.png`).then(result => {
-                this.iconPaths[map + "-active"] = result.default;
-            });
-        }
     }
 
     /**
@@ -95,7 +97,7 @@ export default class CreateLobby extends Vue {
         // Collect queues.
         for (const queue of this.queues) {
             if (queue.category !== "PvP") continue; // only render pvp queues
-            if (queue.id !== 91 && (queue.queueAvailability !== "Available" || !this.enabledGameQueues.includes(queue.id))) continue;
+            if (queue.queueAvailability !== "Available" || !this.enabledGameQueues.includes(queue.id)) continue;
 
             const key = queue.mapId + "-" + queue.gameMode;
             if (!ret[key]) ret[key] = [];
@@ -194,28 +196,5 @@ export default class CreateLobby extends Vue {
      */
     get sectionTitle() {
         return GAMEMODE_NAMES[this.selectedSection.toLowerCase()] || "Rotating Game Mode";
-    }
-
-    /**
-     * @returns if the website is currently running in "standalone" mode (e.g. added to homescreen)
-     */
-    get isStandalone(): boolean {
-        return !!((<any>navigator).standalone || window.matchMedia('(display-mode: standalone)').matches);
-    }
-
-    /**
-     * @returns whether or not we can trigger a prompt for the user to add this application to their homescreen (android only)
-     */
-    get canTriggerHomescreenPrompt(): boolean {
-        return !!((<any>window).installPrompt);
-    }
-
-    /**
-     * Triggers the Android install prompt for the user to add the current app to their homescreen.
-     */
-    triggerInstallPrompt() {
-        if (!this.canTriggerHomescreenPrompt) return;
-
-        (<any>window).installPrompt.prompt();
     }
 }

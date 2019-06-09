@@ -55,11 +55,35 @@
         </div>
 
         <!-- No lobby -->
-        <create-lobby v-else />
+        <template v-else>
+            <!-- This is a v-show so that queues can already be loaded in the background. -->
+            <div v-show="creatingLobby">
+                <create-lobby @close="creatingLobby = false" />
+            </div>
+
+            <div class="no-lobby" v-show="!creatingLobby">
+                <span class="header">No Lobby</span>
+                <span class="detail">Wait for your friends to invite<br> you, or <span style="text-decoration: underline" @click="creatingLobby = true"> create a new lobby now.</span></span>
+
+                <span v-if="!isStandalone" class="tip">
+                    <b>PRO TIP: </b>
+
+                    <template v-if="canTriggerHomescreenPrompt">
+                        <span style="text-decoration: underline" @click="triggerInstallPrompt">Add this site to your homescreen</span>
+                    </template>
+
+                    <template v-else>
+                        Add this site to your homescreen
+                    </template>
+
+                    <br>to use Mimic in fullscreen.
+                </span>
+            </div>
+        </template>
     </div>
 </template>
 
-<script src="./lobby.ts" lang="ts"></script>
+<script lang="ts" src="./lobby.ts"></script>
 
 <style lang="stylus">
     body.has-notch .lobby
@@ -138,6 +162,46 @@
         margin 10px
         margin-left 14px
         margin-bottom 20px
+
+    .no-lobby
+        background-image url(../../static/magic-background.jpg)
+        background-size cover
+        background-position center
+        position absolute
+        top 0
+        left 0
+        bottom 0
+        right 0
+        display flex
+        flex-direction column
+        justify-content center
+        align-items center
+
+        .header
+            color #f0e6d3
+            font-family "LoL Display"
+            letter-spacing 0.075em
+            text-transform uppercase
+            font-weight bold
+            font-size 70px
+
+        .detail
+            margin-top 10px
+            color #aaaea0
+            font-family "LoL Body"
+            font-size 50px
+            text-align center
+
+        .tip
+            position absolute
+            bottom 0
+            left 0
+            margin 20px
+            width 100%
+            color #aaaea0
+            font-family "LoL Body"
+            font-size 40px
+            text-align center
 </style>
 
 <!-- Note that this style tag is _not_ scoped. -->

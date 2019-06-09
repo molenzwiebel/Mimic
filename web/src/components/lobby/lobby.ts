@@ -72,6 +72,7 @@ export default class Lobby extends Vue {
     pickingFirstRole = false;
 
     showingInvites = false;
+    creatingLobby = false;
 
     mounted() {
         // Start observing the lobby.
@@ -97,6 +98,7 @@ export default class Lobby extends Vue {
     handleLobbyChange = async function(this: Lobby, result: Result) {
         if (result.status !== 200) {
             this.state = null;
+            this.creatingLobby = false;
             return;
         }
 
@@ -164,6 +166,29 @@ export default class Lobby extends Vue {
     get queueDodgeTime(): number {
         if (!this.matchmakingState) return -1;
         return this.matchmakingState.errors.reduce((p, c) => c.penaltyTimeRemaining > p ? c.penaltyTimeRemaining : p, -1);
+    }
+
+    /**
+     * @returns if the website is currently running in "standalone" mode (e.g. added to homescreen)
+     */
+    get isStandalone(): boolean {
+        return !!((<any>navigator).standalone || window.matchMedia('(display-mode: standalone)').matches);
+    }
+
+    /**
+     * @returns whether or not we can trigger a prompt for the user to add this application to their homescreen (android only)
+     */
+    get canTriggerHomescreenPrompt(): boolean {
+        return !!((<any>window).installPrompt);
+    }
+
+    /**
+     * Triggers the Android install prompt for the user to add the current app to their homescreen.
+     */
+    triggerInstallPrompt() {
+        if (!this.canTriggerHomescreenPrompt) return;
+
+        (<any>window).installPrompt.prompt();
     }
 
     /**
