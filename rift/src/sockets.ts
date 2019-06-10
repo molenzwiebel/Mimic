@@ -41,8 +41,13 @@ export default class WebSocketManager {
 
         setInterval(() => {
             // Every 10 seconds, ping our connected clients to stay connected.
-            this.mobileServer.clients.forEach(c => c.ping());
-            this.conduitServer.clients.forEach(c => c.ping());
+            this.mobileServer.clients.forEach(c => {
+                if (c.readyState === WebSocket.OPEN) c.ping();
+            });
+
+            this.conduitServer.clients.forEach(c => {
+                if (c.readyState === WebSocket.OPEN) c.ping();
+            });
         }, 10000);
     }
 
