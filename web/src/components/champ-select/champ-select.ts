@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
-import { ddragon, mapBackground, Role } from "../../constants";
+import { ddragon, mapBackground, Role } from "@/constants";
 
 import Timer from "./timer.vue";
 import Members from "./members.vue";
@@ -9,6 +9,7 @@ import PlayerSettings from "./player-settings.vue";
 import SummonerPicker from "./summoner-picker.vue";
 import ChampionPicker from "./champion-picker.vue";
 import RuneEditor from "./rune-editor.vue";
+import Bench from "./bench.vue";
 
 import MagicBackground from "../../static/magic-background.jpg";
 
@@ -102,7 +103,8 @@ export interface RunePage {
         playerSettings: PlayerSettings,
         summonerPicker: SummonerPicker,
         championPicker: ChampionPicker,
-        runeEditor: RuneEditor
+        runeEditor: RuneEditor,
+        bench: Bench
     }
 })
 export default class ChampSelect extends Vue {
@@ -128,6 +130,9 @@ export default class ChampSelect extends Vue {
 
     // Information for the rune editor.
     showingRuneOverlay = false;
+
+    // Information for the reroll bench.
+    showingBench = false;
 
     mounted() {
         this.loadStatic("champion.json").then(map => {

@@ -2,11 +2,19 @@
     <div class="champ-select" v-if="state && state.localPlayer" :style="background">
         <summoner-picker :state="state" :show="pickingSummonerSpell" :first="pickingFirstSummonerSpell" @close="pickingSummonerSpell = false"></summoner-picker>
         <champion-picker :state="state" :show="pickingChampion" @close="pickingChampion = false"></champion-picker>
+        <bench :state="state" :show="showingBench" @close="showingBench = false"></bench>
 
         <timer :state="state"></timer>
         <members :state="state"></members>
-        <player-settings :state="state" @spell="(pickingSummonerSpell = true, pickingFirstSummonerSpell = $event)" @expand="pickingChampion = true" @runes="showingRuneOverlay = true"></player-settings>
+        <player-settings
+            :state="state"
+            @spell="(pickingSummonerSpell = true, pickingFirstSummonerSpell = $event)"
+            @expand="pickingChampion = true"
+            @runes="showingRuneOverlay = true"
+            @bench="showingBench = true">
+        </player-settings>
         <rune-editor :show="showingRuneOverlay" @close="showingRuneOverlay = false"></rune-editor>
+
     </div>
 </template>
 
