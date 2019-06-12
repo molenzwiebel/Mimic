@@ -1,4 +1,4 @@
-import { getDeviceDescription, getDeviceID } from "../../util/device";
+import { getDeviceDescription, getDeviceID } from "@/util/device";
 import { default as NodeRSAType } from "node-rsa";
 
 /**
@@ -139,9 +139,7 @@ export default class RiftSocket {
             }, this.key!, stringToBuffer(atob(encrypted)));
 
             // Convert to string and dispatch.
-            const decryptedString = String.fromCharCode(...Array.from(new Uint8Array(decrypted)));
-
-            // console.log(decryptedString);
+            const decryptedString = new TextDecoder("utf-8").decode(new Uint8Array(decrypted));
 
             if (this.onmessage !== null) {
                 this.onmessage(<any>{

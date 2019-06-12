@@ -22,7 +22,7 @@
             {{ sectionTitle }}
         </div>
 
-        <div class="queues">
+        <div class="queues" v-if="selectedSection">
             <div
                 class="queue"
                 v-for="queue in availableQueues[selectedSection]"
@@ -49,9 +49,10 @@
 <style lang="stylus">
     body.has-notch .create-lobby
         height 100vh
-
-        padding-top calc(env(safe-area-inset-top) + 25px)
         padding-bottom calc(env(safe-area-inset-bottom) + 14px)
+
+        & .header
+            padding-top calc(env(safe-area-inset-top) + 40px)
 </style>
 
 <style lang="stylus" scoped>
@@ -69,6 +70,7 @@
         transition background-image 0.3s ease // Not a standard, but most mobile browsers (chrome) support it.
         display flex
         flex-direction column
+        overflow hidden
 
     .header
         display flex

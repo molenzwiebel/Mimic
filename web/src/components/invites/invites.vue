@@ -1,5 +1,5 @@
 <template>
-    <div class="invites">
+    <div class="invites" :class="pendingInvites.length > 0 && 'some'">
         <span v-if="pendingInvites.length > 0" class="invite-header">Game Invites</span>
 
         <transition-group name="expand">
@@ -23,7 +23,7 @@
 <script lang="ts" src="./invites.ts"></script>
 
 <style lang="stylus">
-    body.has-notch .invites
+    body.has-notch .invites.some
         padding-top calc(env(safe-area-inset-top) + 30px)
 </style>
 
