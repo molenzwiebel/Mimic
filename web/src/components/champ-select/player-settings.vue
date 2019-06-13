@@ -5,12 +5,12 @@
         </div>
 
         <div class="chevron" v-else>
-            <div class="reroll bordered" @click="reroll()" :class="canReroll || 'disabled'">
+            <div class="reroll-button bordered" @click="reroll()" :class="canReroll || 'disabled'">
                 <i class="ion-loop" style="margin-right: 15px"></i>
                 <span>Reroll {{ rerollState }}</span>
             </div>
 
-            <div class="bench bordered" @click="$emit('bench')">
+            <div class="bench-button bordered" @click="$emit('bench')">
                 <i class="ion-chevron-up" style="margin-right: 15px"></i>
                 Bench
             </div>
@@ -84,10 +84,10 @@
         &.disabled
             color #657a7a
 
-        &.reroll
+        &.reroll-button
             margin-right 20px
 
-        &.bench
+        &.bench-button
             margin-left 20px
 
     .runes

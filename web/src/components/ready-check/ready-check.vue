@@ -22,6 +22,11 @@
 
 <script lang="ts" src="./ready-check.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .ready-check
+        height 100vh
+</style>
+
 <style lang="stylus" scoped>
     .zoomIn, .zoomOut
         animation-duration 0.4s !important
