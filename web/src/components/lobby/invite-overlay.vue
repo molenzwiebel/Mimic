@@ -31,6 +31,8 @@
 <script lang="ts" src="./invite-overlay.ts"></script>
 
 <style lang="stylus" scoped>
+    @import "../../common.styl"
+
     search-border-width = 5px
 
     .fadeInUp, .fadeOutDown

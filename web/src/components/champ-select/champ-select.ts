@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
-import { ddragon, mapBackground, Role } from "../../constants";
+import { ddragon, mapBackground, Role } from "@/constants";
 
 import Timer from "./timer.vue";
 import Members from "./members.vue";
@@ -9,11 +9,13 @@ import PlayerSettings from "./player-settings.vue";
 import SummonerPicker from "./summoner-picker.vue";
 import ChampionPicker from "./champion-picker.vue";
 import RuneEditor from "./rune-editor.vue";
+import Bench from "./bench.vue";
 
 import MagicBackground from "../../static/magic-background.jpg";
 
 export interface ChampSelectMember {
     assignedPosition: Role | ""; // blind pick has no role
+    playerType: string; // either PLAYER or BOT
     cellId: number;
     championId: number;
     championPickIntent: number;
@@ -22,6 +24,9 @@ export interface ChampSelectMember {
     spell1Id: number;
     spell2Id: number;
     team: number;
+
+    // added manually
+    isFriendly: boolean;
 }
 
 export interface ChampSelectAction {
@@ -29,7 +34,7 @@ export interface ChampSelectAction {
     actorCellId: number;
     championId: number;
     completed: boolean;
-    type: "ban" | "pick"; // might be more types, only these two are used in conventional queues
+    type: "ban" | "pick" | "ten_bans_reveal"; // might be more types, only these two are used in conventional queues
 }
 
 // A 'turn' is simply an array of actions that happen at the same time.
@@ -52,18 +57,15 @@ export interface ChampSelectState {
     myTeam: ChampSelectMember[];
     theirTeam: ChampSelectMember[];
 
-    bans: {
-        myTeamBans: number[];
-        theirTeamBans: number[];
-        numBans: number;
-    };
-
     timer: ChampSelectTimer;
     trades: {
         id: number;
         cellId: number;
         state: string; // this is an enum.
-    }
+    };
+
+    benchEnabled: boolean;
+    benchChampionIds: number[];
 }
 
 export interface GameflowState {
@@ -101,7 +103,8 @@ export interface RunePage {
         playerSettings: PlayerSettings,
         summonerPicker: SummonerPicker,
         championPicker: ChampionPicker,
-        runeEditor: RuneEditor
+        runeEditor: RuneEditor,
+        bench: Bench
     }
 })
 export default class ChampSelect extends Vue {
@@ -127,6 +130,9 @@ export default class ChampSelect extends Vue {
 
     // Information for the rune editor.
     showingRuneOverlay = false;
+
+    // Information for the reroll bench.
+    showingBench = false;
 
     mounted() {
         this.loadStatic("champion.json").then(map => {
@@ -182,13 +188,19 @@ export default class ChampSelect extends Vue {
 
         // For everyone on our team, request their summoner name.
         await Promise.all(newState.myTeam.map(async mem => {
-            const summ = (await this.$root.request("/lol-summoner/v1/summoners/" + mem.summonerId)).content;
-            mem.displayName = summ.displayName;
+            if (mem.playerType === "BOT") {
+                mem.displayName = (this.championDetails[mem.championId] || { name: "Unknown" }).name + " Bot";
+            } else {
+                const summ = (await this.$root.request("/lol-summoner/v1/summoners/" + mem.summonerId)).content;
+                mem.displayName = summ.displayName;
+            }
+            mem.isFriendly = true;
         }));
 
         // Give enemy summoners obfuscated names, if we don't know their names
         newState.theirTeam.forEach((mem, idx) => {
             mem.displayName = "Summoner " + (idx + 1);
+            mem.isFriendly = false;
         });
 
         // If we weren't in champ select before, fetch some data.
@@ -271,7 +283,7 @@ export default class ChampSelect extends Vue {
                 const map = JSON.parse(req.responseText);
                 resolve(map);
             };
-            req.open("GET", "http://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/data/en_US/" + filename, true);
+            req.open("GET", "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/data/en_US/" + filename, true);
             req.send();
         });
     }

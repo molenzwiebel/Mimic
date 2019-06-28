@@ -49,7 +49,7 @@
         showModeration: boolean;
 
         get summonerIcon(): string {
-            return `http://ddragon.leagueoflegends.com/cdn/${ddragon()}/img/profileicon/${this.member.summoner.profileIconId}.png`;
+            return `https://ddragon.leagueoflegends.com/cdn/${ddragon()}/img/profileicon/${this.member.summoner.profileIconId}.png`;
         }
 
         get positions(): string {

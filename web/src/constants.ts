@@ -9,11 +9,11 @@ export function ddragon() {
         const versions: string[] = JSON.parse(req.responseText);
         _ddragon = versions[0]; // newest patch is first in the list
     };
-    req.open("GET", "http://ddragon.leagueoflegends.com/api/versions.json", true);
+    req.open("GET", "https://ddragon.leagueoflegends.com/api/versions.json", true);
     req.send();
 
     // Return default until we've loaded.
-    return "8.23.1";
+    return "9.13.1";
 }
 
 export const POSITION_NAMES: { [key: string]: string } = {
@@ -22,16 +22,39 @@ export const POSITION_NAMES: { [key: string]: string } = {
     MIDDLE: "Mid",
     BOTTOM: "Bottom",
     UTILITY: "Support",
-    FILL: "Fill"
+    FILL: "Fill",
+    LANE: "Lane" // nexus blitz
 };
 
-import RoleUnselected = require("./static/role-unselected.png");
-import RoleTop = require("./static/role-top.png");
-import RoleJungle = require("./static/role-jungle.png");
-import RoleMid = require("./static/role-mid.png");
-import RoleBot = require("./static/role-bot.png");
-import RoleSupport = require("./static/role-support.png");
-import RoleFill = require("./static/role-fill.png");
+export const GAMEMODE_NAMES: { [key: string]: string } = {
+    "8-ascension": "Ascension",
+    "8-odin": "Definitely Not Dominion",
+    "10-classic": "Twisted Treeline",
+    "11-arsr": "ARSR",
+    "11-assassinate": "Blood Moon",
+    "11-classic": "Summoner’s Rift",
+    "11-urf": "AR URF",
+    "11-siege": "Nexus Siege",
+    "11-lcurgmdisabled": "Rotating Game Mode",
+    "12-aram": "ARAM",
+    "12-portalparty": "Portal Party",
+    "12-kingporo": "Legend of the Poro King",
+    "12-basic_tutorial": "TUTORIAL",
+    "11-battle_training": "BATTLE TRAINING",
+    "11-tutorial_flow": "TUTORIAL",
+    "16-darkstar": "Dark Star: Singularity",
+    "18-starguardian": "Invasion",
+    "11-doombotsteemo": "Doom Bots of Doom",
+    "11-practicetool": "Practice Tool",
+};
+
+import RoleUnselected from "./static/roles/role-unselected.png";
+import RoleTop from "./static/roles/role-top.png";
+import RoleJungle from "./static/roles/role-jungle.png";
+import RoleMid from "./static/roles/role-mid.png";
+import RoleBot from "./static/roles/role-bot.png";
+import RoleSupport from "./static/roles/role-support.png";
+import RoleFill from "./static/roles/role-fill.png";
 
 export type Role = "TOP" | "JUNGLE" | "MIDDLE" | "BOTTOM" | "UTILITY" | "FILL" | "UNSELECTED";
 
@@ -46,10 +69,10 @@ export function roleImage(role: Role) {
     return "";
 }
 
-import HABackground = require("./static/bg-ha.jpg");
-import TTBackground = require("./static/bg-tt.jpg");
-import SRBackground = require("./static/bg-sr.jpg");
-import MagicBackground = require("./static/magic-background.jpg");
+import HABackground from "./static/backgrounds/bg-ha.jpg";
+import TTBackground from "./static/backgrounds/bg-tt.jpg";
+import SRBackground from "./static/backgrounds/bg-sr.jpg";
+import MagicBackground from "./static/magic-background.jpg";
 
 export function mapBackground(mapId: number) {
     if (!mapId) return "";

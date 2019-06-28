@@ -77,6 +77,13 @@ export default class ReadyCheck extends Vue {
     }
 
     /**
+     * Checks whether or not the user has already responded to the current ready check.
+     */
+    get hasResponded() {
+        return this.state && (this.state.playerResponse === "Accepted" || this.state.playerResponse === "Declined");
+    }
+
+    /**
      * Accepts the ready check.
      */
     accept() {

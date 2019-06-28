@@ -40,6 +40,8 @@ export default class Timer extends Vue {
 
         // Only a single person is picking.
         if (stillBusy.length === 1) {
+            if (stillBusy[0].type === "ten_bans_reveal") return "Bans are revealed!";
+
             const member = this.$parent.getMember(stillBusy[0].actorCellId);
             return member.displayName + " is " + (stillBusy[0].type === "ban" ? "banning" : "picking");
         }
@@ -49,32 +51,37 @@ export default class Timer extends Vue {
     }
 
     /**
+     * @returns all ban actions in this game, concatenated into a single list
+     */
+    get allBans(): ChampSelectAction[] {
+        return ([] as ChampSelectAction[]).concat(...this.$parent.state!.actions.map(x => x.filter(y => y.type === "ban")));
+    }
+
+    /**
      * @returns the bans of our team, with uncompleted bans represented as an id of 0
      */
     get ourBans(): number[] {
-        const bans = this.$parent.state!.bans.myTeamBans.slice();
-        while (bans.length < this.$parent.state!.bans.numBans / 2) {
-            bans.push(0);
-        }
-        return bans;
+        return this.allBans
+            .filter(x => this.$parent.getMember(x.actorCellId).isFriendly)
+            .map(x => x.completed ? x.championId : 0);
     }
 
     /**
      * @returns the bans of the enemy team, with uncompleted bans represented as an id of 0
      */
     get enemyBans(): number[] {
-        const bans = this.$parent.state!.bans.theirTeamBans.slice();
-        while (bans.length < this.$parent.state!.bans.numBans / 2) {
-            bans.push(0);
-        }
-        return bans;
+        return this.allBans
+            .filter(x => !this.$parent.getMember(x.actorCellId).isFriendly)
+            .map(x => x.completed ? x.championId : 0);
     }
 
     /**
      * @returns the path to the icon for the specified champion id
      */
     getChampionIcon(id: number) {
-        return "http://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
+        if (!this.$parent.championDetails[id]) return "";
+
+        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
     }
 
     @Watch("state.timer")

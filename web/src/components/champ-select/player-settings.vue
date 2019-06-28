@@ -4,9 +4,16 @@
             <i class="ion-chevron-up"></i>
         </div>
 
-        <div class="chevron reroll-button" @click="reroll()" v-else :class="canReroll || 'disabled'">
-            <i class="ion-loop" style="margin-right: 15px"></i>
-            Reroll {{ rerollState }}
+        <div class="chevron" v-else>
+            <div class="reroll-button bordered" @click="reroll()" :class="canReroll || 'disabled'">
+                <i class="ion-loop" style="margin-right: 15px"></i>
+                <span>Reroll {{ rerollState }}</span>
+            </div>
+
+            <div class="bench-button bordered" @click="$emit('bench')">
+                <i class="ion-chevron-up" style="margin-right: 15px"></i>
+                Bench
+            </div>
         </div>
 
         <div class="runes">
@@ -26,6 +33,11 @@
 
 <script lang="ts" src="./player-settings.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .player-settings
+        padding-bottom calc(env(safe-area-inset-bottom) + 20px) // 10px by default
+</style>
+
 <style lang="stylus" scoped>
     @require "../../common.styl"
 
@@ -43,12 +55,14 @@
         position absolute
         top 0
         left 50%
+        width 100%
         transform translate(-50%, -100%)
         font-size 50px
         border-top-left-radius 8px
         border-top-right-radius 8px
         display flex
         align-items center
+        justify-content center
         text-transform uppercase
 
     .expand-button
@@ -57,8 +71,9 @@
         border 1px solid rgba(240, 230, 210, 0.7)
         border-bottom-width 0
         background-color rgba(0, 0, 0, 0.5)
+        width 40px
 
-    .reroll-button
+    .bordered
         padding 6px 30px
         color #b6dbdb
         border 2px solid #0596aa
@@ -68,6 +83,12 @@
 
         &.disabled
             color #657a7a
+
+        &.reroll-button
+            margin-right 20px
+
+        &.bench-button
+            margin-left 20px
 
     .runes
         flex 1

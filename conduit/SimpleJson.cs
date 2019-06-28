@@ -26,7 +26,7 @@
 //#define SIMPLE_JSON_OBJARRAYINTERNAL
 
 // NOTE: uncomment the following line to enable dynamic support.
-//#define SIMPLE_JSON_DYNAMIC
+#define SIMPLE_JSON_DYNAMIC
 
 // NOTE: uncomment the following line to enable DataContract support.
 //#define SIMPLE_JSON_DATACONTRACT
@@ -66,12 +66,12 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
-using MimicConduit.Reflection;
+using Conduit.Reflection;
 
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable RedundantExplicitArrayCreation
 // ReSharper disable SuggestUseVarKeywordEvident
-namespace MimicConduit
+namespace Conduit
 {
     /// <summary>
     /// Represents the json array.
@@ -484,7 +484,7 @@ namespace MimicConduit
     }
 }
 
-namespace MimicConduit
+namespace Conduit
 {
     /// <summary>
     /// This class encodes and decodes JSON strings.
@@ -910,6 +910,13 @@ namespace MimicConduit
                 long number;
                 success = long.TryParse(new string(json, index, charLength), NumberStyles.Any, CultureInfo.InvariantCulture, out number);
                 returnNumber = number;
+
+                if (!success)
+                {
+                    ulong unumber;
+                    success = ulong.TryParse(new string(json, index, charLength), NumberStyles.Any, CultureInfo.InvariantCulture, out unumber);
+                    returnNumber = unumber;
+                }
             }
             index = lastIndex + 1;
             return returnNumber;

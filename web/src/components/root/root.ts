@@ -1,12 +1,14 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 
+import SocketState from "./socket-state.vue";
 import Lobby from "../lobby/lobby.vue";
 import Queue from "../queue/queue.vue";
 import ReadyCheck from "../ready-check/ready-check.vue";
 import ChampSelect from "../champ-select/champ-select.vue";
 import Invites from "../invites/invites.vue";
 import Version from "../../util/version";
+import RiftSocket, { MobileOpcode } from "./rift-socket";
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -27,24 +29,46 @@ type WebsocketMessage = [1, string, number, any] | [2, number, number, any] | [3
         queue: Queue,
         readyCheck: ReadyCheck,
         champSelect: ChampSelect,
-        invites: Invites
+        invites: Invites,
+        socketState: SocketState
     }
 })
 export default class Root extends Vue {
     connected = false;
-    socket: WebSocket;
+    socket: RiftSocket | null = null;
     peerVersion: Version = <any>null; // null is required to allow vue to observe
     notifications: string[] = [];
 
-    discoveryButtonType = "normal";
-    manualButtonType = "confirm";
-    discoveringConduit = false;
     connecting = false;
-    hostname = (localStorage && localStorage.getItem("hostname")) || "";
 
     idCounter = 0;
     observers: { matcher: RegExp, handler: (res: Result) => void }[] = [];
     requests: { [key: number]: Function } = {};
+
+    mounted() {
+        setTimeout(() => {
+            // Check if this device has a notch (currently only iPhone X+) and is running
+            // standalone. If yes, add a class to the body for others to react on.
+            const isStandalone = !!((<any>navigator).standalone || window.matchMedia('(display-mode: standalone)').matches);
+            if (!isStandalone) return;
+
+            const div = document.createElement("div");
+
+            // iOS 11.2+ uses env, earlier versions use constant.
+            div.style.paddingBottom = CSS.supports("padding-top: env(safe-area-inset-top)") ? "env(safe-area-inset-top)" : "constant(safe-area-inset-top)";
+            document.body.appendChild(div);
+
+            const calculatedPadding = parseInt(window.getComputedStyle(div).paddingBottom!, 10);
+            document.body.removeChild(div);
+
+            // No padding means that there's no notch (or no support)
+            if (calculatedPadding <= 0) {
+                return;
+            }
+
+            document.body.classList.add("has-notch");
+        }, 500);
+    }
 
     /**
      * @returns the most recent notification, if there is one
@@ -67,7 +91,7 @@ export default class Root extends Vue {
         }
 
         this.observers.push({ matcher: path, handler });
-        this.socket.send(JSON.stringify([1, path.source])); // ask to observe the specified path.
+        this.socket!.send(JSON.stringify([MobileOpcode.SUBSCRIBE, path.source])); // ask to observe the specified path.
     }
 
     /**
@@ -80,7 +104,13 @@ export default class Root extends Vue {
         this.observers = this.observers.filter(x => {
             if (x.matcher.toString() !== path.toString()) return true;
 
-            if (this.socket.readyState === WebSocket.OPEN) this.socket.send(JSON.stringify([2, (path as RegExp).source])); // ask to stop observing
+            // Ensure that the websocket is open, which might not be the case if the unmount
+            // happened due to a disconnection.
+            if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                // ask to stop observing
+                this.socket!.send(JSON.stringify([MobileOpcode.UNSUBSCRIBE, (path as RegExp).source]));
+            }
+
             return false;
         });
     }
@@ -94,7 +124,7 @@ export default class Root extends Vue {
     request(path: string, method: string = "GET", body?: string): Promise<Result> {
         return new Promise(resolve => {
             const id = this.idCounter++;
-            this.socket.send(JSON.stringify([3, id, path, method, body]));
+            this.socket!.send(JSON.stringify([MobileOpcode.REQUEST, id, path, method, body]));
             this.requests[id] = resolve;
         });
     }
@@ -106,18 +136,18 @@ export default class Root extends Vue {
     handleWebsocketMessage = (msg: MessageEvent) => {
         const data: WebsocketMessage = JSON.parse(msg.data);
 
-        if (data[0] === 1) {
+        if (data[0] === MobileOpcode.UPDATE) {
             this.observers
                 .filter(x => !!x.matcher.exec(data[1] as string))
                 .forEach(x => x.handler({ status: +data[2], content: data[3] }));
         }
 
-        if (data[0] === 2 && this.requests[data[1] as number]) {
+        if (data[0] === MobileOpcode.RESPONSE && this.requests[data[1] as number]) {
             this.requests[data[1] as number]({ status: data[2], content: data[3] });
             delete this.requests[data[1] as number];
         }
 
-        if (data[0] === 3) {
+        if (data[0] === MobileOpcode.VERSION_RESPONSE) {
             this.showNotification("Connected to " + data[2]);
             this.setPeerVersion(<string>data[1]);
         }
@@ -132,73 +162,36 @@ export default class Root extends Vue {
     }
 
     /**
-     * Makes a request to the discovery service to try and determine the IP automatically.
-     */
-    discoverConduit() {
-        if (this.discoveringConduit) return;
-        this.discoveringConduit = true;
-
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "https://discovery.mimic.molenzwiebel.xyz/discovery");
-        xhr.send();
-
-        xhr.onreadystatechange = ev => {
-            if (xhr.readyState !== XMLHttpRequest.DONE) return;
-
-            this.discoveringConduit = false;
-            const res: string | null = JSON.parse(xhr.responseText);
-            if (!res) {
-                this.discoveryButtonType = "deny";
-                setTimeout(() => this.discoveryButtonType = "normal", 2500);
-                this.showNotification("Failed to find Conduit. Is it running?");
-                return;
-            }
-
-            this.hostname = res;
-            this.connect();
-        };
-    }
-
-    /**
      * Automatically (re)connects to the websocket.
      */
-    private connect() {
-        localStorage && localStorage.setItem("hostname", this.hostname);
+    private connect(code: string) {
         this.connecting = true;
 
         try {
-            this.socket = new WebSocket("ws://" + this.hostname + ":8182/league");
+            this.socket = new RiftSocket(code);
 
             this.socket.onopen = () => {
                 this.connected = true;
                 this.connecting = false;
-                this.socket.send("[4]");
+                this.socket!.send("[" + MobileOpcode.VERSION + "]");
             };
 
             this.socket.onmessage = this.handleWebsocketMessage;
 
-            this.socket.onclose = ev => {
+            this.socket.onclose = () => {
                 if (this.connecting) {
-                    this.showConnectingError("Closed unexpectedly (" + ev.reason + ")");
+                    this.showNotification("The connection closed unexpectedly. Check your connection?");
+                    this.socket = null;
                     return;
                 }
 
                 this.connected = false;
+                this.socket = null;
                 this.showNotification("Connection to host closed.");
             };
         } catch (e) {
-            this.showConnectingError(e.message);
+            this.showNotification("Unexpected error.");
         }
-    }
-
-    /**
-     * Shows a connecting error in the second button.
-     */
-    private showConnectingError(message: string) {
-        this.connecting = false;
-        this.manualButtonType = "deny";
-        setTimeout(() => this.manualButtonType = "confirm", 2500);
-        this.showNotification("Failed to connect: " + message + ". Is Conduit running?");
     }
 
     /**

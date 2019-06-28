@@ -17,6 +17,12 @@
 
 <script lang="ts" src="./champion-picker.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .champion-selector
+        margin-top calc(env(safe-area-inset-top) + 30px)
+        padding-bottom calc(env(safe-area-inset-bottom) + 20px)
+</style>
+
 <style lang="stylus" scoped>
     @import "../../common.styl"
 

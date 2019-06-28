@@ -1,0 +1,18 @@
+﻿<Window x:Class="Conduit.DeviceConnectionPrompt"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Conduit"
+        mc:Ignorable="d"
+        Title="Mimic" Height="353.697" Width="280.879" ResizeMode="NoResize">
+    <Grid>
+        <Button x:Name="AllowButton" Content="Allow" Margin="10,234,10,0" VerticalAlignment="Top" FontSize="16" Height="30"/>
+        <Button x:Name="DenyButton" Content="Deny" Margin="10,273,10,0" FontSize="16" Height="30" VerticalAlignment="Top"/>
+
+        <Label Content="New Incoming Connection" Margin="5,5,5,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" FontWeight="Bold" FontSize="18"/>
+        <TextBlock x:Name="TextField" TextWrapping="WrapWithOverflow" Margin="15,39,15,0" VerticalAlignment="Top" Height="175" TextAlignment="Justify" FontSize="14">
+            <Run Text="A DEVICE running BROWSER is trying to control your League client remotely using Mimic. Do you want to allow access?"/><LineBreak/><Run/><LineBreak/><Run Text="Pressing allow will remember your choice"/><Run Text=" and not prompt the next time. Only press allow if you recognize the device."/><LineBreak/><Run/>
+        </TextBlock>
+    </Grid>
+</Window>

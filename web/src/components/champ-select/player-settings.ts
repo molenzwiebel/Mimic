@@ -16,7 +16,9 @@ export default class PlayerSettings extends Vue {
      * @returns the url to the icon for the specified summoner icon id
      */
     getSummonerSpellImage(id: number): string {
-        return "http://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
+        if (!this.$parent.summonerSpellDetails[id]) return "";
+
+        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
     }
 
     /**
@@ -31,8 +33,8 @@ export default class PlayerSettings extends Vue {
      * @returns if we are currently able to reroll (queue allows it)
      */
     get allowsReroll(): boolean {
-        if (!this.$parent.gameflowState) return false;
-        return this.$parent.gameflowState.gameData.queue.gameTypeConfig.reroll;
+        if (!this.$parent.state) return false;
+        return this.$parent.state.benchEnabled;
     }
 
     /**
