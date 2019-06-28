@@ -46,6 +46,7 @@ export const GAMEMODE_NAMES: { [key: string]: string } = {
     "18-starguardian": "Invasion",
     "11-doombotsteemo": "Doom Bots of Doom",
     "11-practicetool": "Practice Tool",
+    "22-tft": "Teamfight Tactics"
 };
 
 import RoleUnselected from "./static/roles/role-unselected.png";

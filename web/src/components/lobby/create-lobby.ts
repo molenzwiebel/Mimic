@@ -40,7 +40,7 @@ export default class CreateLobby extends Vue {
     created() {
         // Prepare icon paths.
         // Note that even though promises are used, these all resolve synchronously.
-        for (const map of ["sr", "ha", "tt", "rgm"]) {
+        for (const map of ["sr", "ha", "tt", "tft", "rgm"]) {
             import(/* webpackMode: "eager" */ `../../static/maps/${map}-default.png`).then(result => {
                 this.iconPaths[map + "-default"] = result.default;
             });
@@ -173,10 +173,12 @@ export default class CreateLobby extends Vue {
      * @returns the url to the map icon for the specified section
      */
     sectionIcon(section: string, extra: string) {
+        console.log(section);
         const mapName = (<any>{
             "10-CLASSIC": "tt",
             "11-CLASSIC": "sr",
             "12-ARAM": "ha",
+            "22-TFT": "tft"
         })[section] || "rgm";
 
         return this.iconPaths[mapName + "-" + extra];
