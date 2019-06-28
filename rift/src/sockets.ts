@@ -224,7 +224,7 @@ export default class WebSocketManager {
 
                 // Send the public key to client, inform conduit of new connection.
                 conduit.send(JSON.stringify([RiftOpcode.OPEN, connectionID]));
-                return done(pubkey);
+                return done(pubkey.public_key);
             } else if (op === RiftOpcode.SEND) {
                 // Abort if not connected.
                 const peerDetails = this.mobileToConduitMap.get(ws);

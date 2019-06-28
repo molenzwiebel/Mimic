@@ -50,11 +50,11 @@ export async function generateCode(pubkey: string): Promise<string> {
  * Looks up the public key belonging to the specified code. Returns either the
  * key, or null if not found.
  */
-export async function lookup(code: string): Promise<string | null> {
+export async function lookup(code: string): Promise<{ public_key: string, code: string } | null> {
     if (!database) throw new Error("Database not loaded yet.");
 
     const entry = await database.get(`SELECT * FROM conduit_instances WHERE code = ? LIMIT 1`, code);
-    return entry ? entry.public_key : null;
+    return entry || null;
 }
 
 /**
