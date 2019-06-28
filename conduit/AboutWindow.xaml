@@ -18,9 +18,9 @@
         <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="1" Margin="0,184,-6,0" Stroke="Black" VerticalAlignment="Top" Width="500"/>
         <Image x:Name="ConnectionQR" HorizontalAlignment="Left" Margin="15,46,0,206" Width="120" Height="120" Visibility="Hidden" />
         <TextBlock x:Name="ConnectionSteps" Margin="148,46,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="56" FontSize="13" Visibility="Hidden">
-            <Run Text="To control League from your phone, either scan the QR code on the left with your phone or go to "/>
-            <Run FontWeight="Bold" Text="https://mimic.lol"/>
-            <Run Text=" on your phone and enter the following digits:"/>
+            <Run Text="To control League from your phone, either scan the QR code on the left or browse to"/>
+            <Run FontWeight="Bold" Text="https://app.mimic.lol"/>
+            <Run Text="on your phone and enter the following code:"/>
         </TextBlock>
         <Label x:Name="CodeLabel" Content="562414" HorizontalAlignment="Left" Margin="148,107,0,0" VerticalAlignment="Top" Width="336" FontFamily="Courier New" FontSize="50" HorizontalContentAlignment="Center" Height="64" VerticalContentAlignment="Center" Visibility="Hidden"/>
         <TextBlock x:Name="NoCodeText" Margin="15,46,15,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.122,0.378" FontSize="14"><Run Text="To control League from your phone, please launch League at least once while Conduit is running."/><Run Text=" After that, check back here for instructions on how to connect to "/><Run Text="League from your phone."/></TextBlock>
