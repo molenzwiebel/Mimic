@@ -44,6 +44,9 @@
   <PropertyGroup>
     <ApplicationIcon>mimic.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Costura">
       <HintPath>packages\Costura.Fody.3.3.3\lib\net40\Costura.dll</HintPath>
@@ -100,6 +103,7 @@
     </Compile>
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="CryptoHelpers.cs" />
+    <Compile Include="DebugLogger.cs" />
     <Compile Include="DeviceConnectionPrompt.xaml.cs">
       <DependentUpon>DeviceConnectionPrompt.xaml</DependentUpon>
     </Compile>
@@ -127,6 +131,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

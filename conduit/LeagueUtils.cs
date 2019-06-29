@@ -42,6 +42,7 @@ namespace Conduit
                     }
                     catch (Exception e)
                     {
+                        DebugLogger.Global.WriteError($"Error while trying to get the status for LeagueClientUx: {e.ToString()}\n\n(CommandLine = {commandLine})");
                     }
                 }
             }
