@@ -58,35 +58,44 @@ namespace Conduit
          */
         private void TryConnect()
         {
-            // We're already connected.
-            if (connected) return;
+            try
+            {
+                // We're already connected.
+                if (connected) return;
 
-            // Check league status, abort if league is not running.
-            var status = LeagueUtils.GetLeagueStatus();
-            if (status == null) return;
+                // Check league status, abort if league is not running.
+                var status = LeagueUtils.GetLeagueStatus();
+                if (status == null) return;
 
-            // Update local state.
-            processInfo = status;
-            connected = true;
+                // Set the password and base address for our httpclient so we don't have to specify it every time.
+                var byteArray = Encoding.ASCII.GetBytes("riot:" + status.Item2);
+                HTTP_CLIENT.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
-            // Set the password and base address for our httpclient so we don't have to specify it every time.
-            var byteArray = Encoding.ASCII.GetBytes("riot:" + status.Item2);
-            HTTP_CLIENT.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                // Connect to our websocket.
+                socketConnection = new WebSocket("wss://127.0.0.1:" + status.Item3 + "/", "wamp");
+                socketConnection.SetCredentials("riot", status.Item2, true);
 
-            // Connect to our websocket.
-            socketConnection = new WebSocket("wss://127.0.0.1:" + status.Item3 + "/", "wamp");
-            socketConnection.SetCredentials("riot", status.Item2, true);
-            socketConnection.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
-            socketConnection.SslConfiguration.ServerCertificateValidationCallback = (a, b, c, d) => true;
-            socketConnection.OnMessage += HandleMessage;
-            socketConnection.OnClose += HandleDisconnect;
-            socketConnection.Connect();
+                socketConnection.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
+                socketConnection.SslConfiguration.ServerCertificateValidationCallback = (a, b, c, d) => true;
+                socketConnection.OnMessage += HandleMessage;
+                socketConnection.OnClose += HandleDisconnect;
+                socketConnection.Connect();
+                // Subscribe to Json API events from the LCU.
+                socketConnection.Send("[5,\"OnJsonApiEvent\"]");
 
-            // Subscribe to Json API events from the LCU.
-            socketConnection.Send("[5,\"OnJsonApiEvent\"]");
+                // Update local state.
+                processInfo = status;
+                connected = true;
 
-            // Emit our events.
-            OnConnected?.Invoke();
+                // Emit our events.
+                OnConnected?.Invoke();
+            }
+            catch (Exception e)
+            {
+                processInfo = null;
+                connected = false;
+                DebugLogger.Global.WriteError($"Exception occurred trying to connect to League of Legends: {e.ToString()}");
+            }
         }
 
         /**
