@@ -68,6 +68,12 @@ export default class Root extends Vue {
 
             document.body.classList.add("has-notch");
         }, 500);
+
+        // Add a class to the body if we're on iOS. We use it to selectively turn off some things.
+        const iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+        if (iOS) {
+            document.body.classList.add("is-ios");
+        }
     }
 
     /**
