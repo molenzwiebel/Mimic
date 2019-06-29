@@ -8,11 +8,11 @@
 
                 <div class="header">Match Found</div>
 
-                <lcu-button @click="accept" type="confirm" class="accept-button">
+                <lcu-button @click="accept" type="confirm" class="accept-button" :disabled="hasResponded">
                     Accept!
                 </lcu-button>
 
-                <lcu-button @click="decline" class="decline-button">
+                <lcu-button @click="decline" class="decline-button" :disabled="hasResponded">
                     Decline
                 </lcu-button>
             </div>
@@ -21,6 +21,11 @@
 </template>
 
 <script lang="ts" src="./ready-check.ts"></script>
+
+<style lang="stylus">
+    body.has-notch .ready-check
+        height 100vh
+</style>
 
 <style lang="stylus" scoped>
     .zoomIn, .zoomOut
@@ -35,6 +40,7 @@
         right 0
         background-color rgba(0, 0, 0, 0.8)
         display flex
+        padding-top calc(env(safe-area-inset-top) + 10px)
         justify-content center
         align-items center
 

@@ -1,25 +1,32 @@
 import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
-import { DDRAGON_VERSION, mapBackground, Role } from "../../constants";
+import { ddragon, mapBackground, Role } from "@/constants";
 
-import Timer = require("./timer.vue");
-import Members = require("./members.vue");
-import PlayerSettings = require("./player-settings.vue");
-import SummonerPicker = require("./summoner-picker.vue");
-import ChampionPicker = require("./champion-picker.vue");
+import Timer from "./timer.vue";
+import Members from "./members.vue";
+import PlayerSettings from "./player-settings.vue";
+import SummonerPicker from "./summoner-picker.vue";
+import ChampionPicker from "./champion-picker.vue";
+import RuneEditor from "./rune-editor.vue";
+import Bench from "./bench.vue";
 
-import MagicBackground = require("../../static/magic-background.jpg");
+import MagicBackground from "../../static/magic-background.jpg";
 
 export interface ChampSelectMember {
     assignedPosition: Role | ""; // blind pick has no role
+    playerType: string; // either PLAYER or BOT
     cellId: number;
     championId: number;
     championPickIntent: number;
     displayName: string;
+    summonerId: number;
     spell1Id: number;
     spell2Id: number;
     team: number;
+
+    // added manually
+    isFriendly: boolean;
 }
 
 export interface ChampSelectAction {
@@ -27,7 +34,7 @@ export interface ChampSelectAction {
     actorCellId: number;
     championId: number;
     completed: boolean;
-    type: "ban" | "pick"; // might be more types, only these two are used in conventional queues
+    type: "ban" | "pick" | "ten_bans_reveal"; // might be more types, only these two are used in conventional queues
 }
 
 // A 'turn' is simply an array of actions that happen at the same time.
@@ -55,14 +62,38 @@ export interface ChampSelectState {
         id: number;
         cellId: number;
         state: string; // this is an enum.
-    }
+    };
+
+    benchEnabled: boolean;
+    benchChampionIds: number[];
 }
 
 export interface GameflowState {
     map: { id: number };
     gameData: {
-        queue: { gameMode: string };
+        queue: {
+            gameMode: string;
+            gameTypeConfig: {
+                reroll: boolean;
+            };
+        };
     }
+}
+
+export interface RerollState {
+    numberOfRolls: number;
+    maxRolls: number;
+}
+
+export interface RunePage {
+    id: number;
+    name: string;
+    isEditable: boolean;
+    isActive: boolean;
+    order: number;
+    primaryStyleId: number; // -1 if not selected
+    subStyleId: number; // -1 if not selected
+    selectedPerkIds: number[]; // 0 or not included if not selected
 }
 
 @Component({
@@ -71,7 +102,9 @@ export interface GameflowState {
         members: Members,
         playerSettings: PlayerSettings,
         summonerPicker: SummonerPicker,
-        championPicker: ChampionPicker
+        championPicker: ChampionPicker,
+        runeEditor: RuneEditor,
+        bench: Bench
     }
 })
 export default class ChampSelect extends Vue {
@@ -79,6 +112,10 @@ export default class ChampSelect extends Vue {
 
     state: ChampSelectState | null = null;
     gameflowState: GameflowState | null = null;
+    rerollState: RerollState = { numberOfRolls: 0, maxRolls: 2 };
+
+    runePages: RunePage[] = [];
+    currentRunePage: RunePage | null = null;
 
     // These two are used to map summoner/champion id -> data.
     championDetails: { [id: number]: { id: string, key: string, name: string } };
@@ -90,6 +127,12 @@ export default class ChampSelect extends Vue {
 
     // Information for the champion picker.
     pickingChampion = false;
+
+    // Information for the rune editor.
+    showingRuneOverlay = false;
+
+    // Information for the reroll bench.
+    showingBench = false;
 
     mounted() {
         this.loadStatic("champion.json").then(map => {
@@ -108,6 +151,26 @@ export default class ChampSelect extends Vue {
 
         // Start observing champion select.
         this.$root.observe("/lol-champ-select/v1/session", this.handleChampSelectChange.bind(this));
+
+        // Keep track of reroll points for if we play ARAM.
+        this.$root.observe("/lol-summoner/v1/current-summoner/rerollPoints", result => {
+            this.rerollState = result.status === 200 ? result.content : { numberOfRolls: 0, maxRolls: 2 };
+        });
+
+        // Observe runes
+        this.$root.observe("/lol-perks/v1/pages", response => {
+            response.status === 200 && (this.runePages = response.content);
+            response.status === 200 && (this.runePages.sort((a, b) => a.order - b.order));
+        });
+
+        this.$root.observe("/lol-perks/v1/currentpage", response => {
+            this.currentRunePage = response.status === 200 ? response.content : null;
+
+            // Update the isActive param if needed.
+            if (this.currentRunePage) {
+                this.runePages.forEach(x => x.isActive = x.id === this.currentRunePage!.id);
+            }
+        });
     }
 
     /**
@@ -119,13 +182,25 @@ export default class ChampSelect extends Vue {
             this.state = null;
             return;
         }
-
+        
         const newState: ChampSelectState = result.content;
         newState.localPlayer = newState.myTeam.filter(x => x.cellId === newState.localPlayerCellId)[0];
 
+        // For everyone on our team, request their summoner name.
+        await Promise.all(newState.myTeam.map(async mem => {
+            if (mem.playerType === "BOT") {
+                mem.displayName = (this.championDetails[mem.championId] || { name: "Unknown" }).name + " Bot";
+            } else {
+                const summ = (await this.$root.request("/lol-summoner/v1/summoners/" + mem.summonerId)).content;
+                mem.displayName = summ.displayName;
+            }
+            mem.isFriendly = true;
+        }));
+
         // Give enemy summoners obfuscated names, if we don't know their names
         newState.theirTeam.forEach((mem, idx) => {
-            mem.displayName = mem.displayName || ("Summoner " + (idx + 1));
+            mem.displayName = "Summoner " + (idx + 1);
+            mem.isFriendly = false;
         });
 
         // If we weren't in champ select before, fetch some data.
@@ -189,9 +264,18 @@ export default class ChampSelect extends Vue {
     }
 
     /**
+     * Selects the specified rune page, by setting its `current` property to true and calling the collections backend.
+     */
+    selectRunePage(event: Event) {
+        const id = +(event.target as HTMLSelectElement).value;
+        this.runePages.forEach(r => r.isActive = r.id === id);
+        this.$root.request("/lol-perks/v1/currentpage", "PUT", "" + id);
+    }
+
+    /**
      * Helper method to load the specified json name from the ddragon static data.
      */
-    private loadStatic(filename: string): Promise<any> {
+    public loadStatic(filename: string): Promise<any> {
         return new Promise(resolve => {
             const req = new XMLHttpRequest();
             req.onreadystatechange = () => {
@@ -199,7 +283,7 @@ export default class ChampSelect extends Vue {
                 const map = JSON.parse(req.responseText);
                 resolve(map);
             };
-            req.open("GET", "http://ddragon.leagueoflegends.com/cdn/" + DDRAGON_VERSION + "/data/en_GB/" + filename, true);
+            req.open("GET", "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/data/en_US/" + filename, true);
             req.send();
         });
     }

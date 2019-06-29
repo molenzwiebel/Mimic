@@ -1,11 +1,13 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Root, { Result } from "../root/root";
-import { mapBackground, MAPS, QUEUES, Role } from "../../constants";
+import { mapBackground, Role } from "../../constants";
 
-import LobbyMemberComponent = require("./lobby-member.vue");
-import RolePicker = require("./role-picker.vue");
-import InviteOverlay = require("./invite-overlay.vue");
+import LobbyMemberComponent from "./lobby-member.vue";
+import RolePicker from "./role-picker.vue";
+import InviteOverlay from "./invite-overlay.vue";
+import CreateLobby from "./create-lobby.vue";
+import { QueueState } from "../queue/queue";
 
 /**
  * Represents a member of the lobby. The summoner
@@ -14,14 +16,12 @@ import InviteOverlay = require("./invite-overlay.vue");
  */
 export interface LobbyMember {
     summoner: { displayName: string, profileIconId: number };
-    canInviteOthers: boolean;
-    id: number;
-    isOwner: boolean;
+    allowedInviteOthers: boolean;
+    summonerId: number;
+    isLeader: boolean;
     isLocalMember: boolean;
-    positionPreferences: {
-        firstPreference: Role;
-        secondPreference: Role;
-    }
+    firstPositionPreference: Role;
+    secondPositionPreference: Role;
 }
 
 /**
@@ -39,12 +39,14 @@ export interface InvitationMetadata {
  * list of properties that only contain the ones we are using.
  */
 export interface LobbyState {
-    queueId: number;
-    mapId: number;
-    canStartMatchmaking: boolean;
-    showPositionSelector: boolean;
+    gameConfig: {
+        queueId: number;
+        mapId: number;
+        showPositionSelector: boolean;
+        maxLobbySize: number;
+    };
+    canStartActivity: boolean;
     localMember: LobbyMember;
-    maximumParticipantListSize: number;
     members: LobbyMember[];
     invitations: InvitationMetadata[];
 }
@@ -53,21 +55,33 @@ export interface LobbyState {
     components: {
         lobbyMember: LobbyMemberComponent,
         rolePicker: RolePicker,
-        lobbyInvites: InviteOverlay
+        lobbyInvites: InviteOverlay,
+        createLobby: CreateLobby
     }
 })
 export default class Lobby extends Vue {
     $root: Root;
+
     state: LobbyState | null = null;
+    matchmakingState: QueueState | null = null;
+
+    queueName = "";
+    mapName = "";
 
     showingRolePicker = false;
     pickingFirstRole = false;
 
     showingInvites = false;
+    creatingLobby = false;
 
     mounted() {
         // Start observing the lobby.
-        this.$root.observe("/lol-lobby/v1/lobby", this.handleLobbyChange.bind(this));
+        this.$root.observe("/lol-lobby/v2/lobby", this.handleLobbyChange.bind(this));
+
+        // Observe matchmaking state for queue dodge timer.
+        this.$root.observe("/lol-matchmaking/v1/search", result => {
+            this.matchmakingState = result.status === 200 ? result.content : null;
+        });
     }
 
     /**
@@ -84,6 +98,7 @@ export default class Lobby extends Vue {
     handleLobbyChange = async function(this: Lobby, result: Result) {
         if (result.status !== 200) {
             this.state = null;
+            this.creatingLobby = false;
             return;
         }
 
@@ -91,7 +106,7 @@ export default class Lobby extends Vue {
         const state: LobbyState = result.content;
         for (const member of state.members) {
             member.isLocalMember = false;
-            member.summoner = (await this.$root.request("/lol-summoner/v1/summoners/" + member.id)).content;
+            member.summoner = (await this.$root.request("/lol-summoner/v1/summoners/" + member.summonerId)).content;
         }
 
         for (const invite of state.invitations) {
@@ -99,8 +114,15 @@ export default class Lobby extends Vue {
         }
 
         // Update localMember to also contain the summoner.
-        state.localMember = state.members.filter(x => x.id === state.localMember.id)[0];
+        state.localMember = state.members.filter(x => x.summonerId === state.localMember.summonerId)[0];
         state.localMember.isLocalMember = true;
+
+        // Load queue/map info.
+        const queueInfo = await this.$root.request("/lol-game-queues/v1/queues/" + state.gameConfig.queueId);
+        this.queueName = queueInfo.content.description;
+
+        const mapInfo = await this.$root.request("/lol-maps/v1/map/" + state.gameConfig.mapId);
+        this.mapName = mapInfo.content.name;
 
         // Propagate changes.
         this.state = state;
@@ -111,7 +133,7 @@ export default class Lobby extends Vue {
      */
     get lobbySubtitle(): string {
         if (!this.state) return "";
-        return (QUEUES[this.state.queueId] || "Unknown Queue") + " - " + (MAPS[this.state.mapId] || "Unknown Map");
+        return (this.queueName || "Unknown Queue") + " - " + (this.mapName || "Unknown Map");
     }
 
     /**
@@ -119,7 +141,7 @@ export default class Lobby extends Vue {
      */
     get backgroundImage(): string {
         if (!this.state) return "";
-        return mapBackground(this.state.mapId);
+        return mapBackground(this.state.gameConfig.mapId);
     }
 
     /**
@@ -135,7 +157,15 @@ export default class Lobby extends Vue {
      */
     get showInvitePrompt(): boolean {
         if (!this.state) return false;
-        return this.state.localMember.canInviteOthers;
+        return this.state.localMember.allowedInviteOthers;
+    }
+
+    /**
+     * @returns the current queue dodge timer, or -1 if there is none
+     */
+    get queueDodgeTime(): number {
+        if (!this.matchmakingState) return -1;
+        return this.matchmakingState.errors.reduce((p, c) => c.penaltyTimeRemaining > p ? c.penaltyTimeRemaining : p, -1);
     }
 
     /**
@@ -146,12 +176,28 @@ export default class Lobby extends Vue {
     }
 
     /**
+     * @returns whether or not we can trigger a prompt for the user to add this application to their homescreen (android only)
+     */
+    get canTriggerHomescreenPrompt(): boolean {
+        return !!((<any>window).installPrompt);
+    }
+
+    /**
+     * Triggers the Android install prompt for the user to add the current app to their homescreen.
+     */
+    triggerInstallPrompt() {
+        if (!this.canTriggerHomescreenPrompt) return;
+
+        (<any>window).installPrompt.prompt();
+    }
+
+    /**
      * Confirms if the user wants to leave the lobby, then leaves if neccessary.
      * If the underlying call fails, this will simply do nothing and leave the user in the lobby.
      */
     leaveLobby() {
         if (confirm("Leave the lobby? You cannot rejoin unless you are invited again.")) {
-            this.$root.request("/lol-lobby/v1/lobby", "DELETE");
+            this.$root.request("/lol-lobby/v2/lobby", "DELETE");
         }
     }
 
@@ -160,7 +206,7 @@ export default class Lobby extends Vue {
      */
     promoteMember(member: LobbyMember) {
         if (confirm("Promote " + member.summoner.displayName + " to lobby owner?")) {
-            this.$root.request("/lol-lobby/v1/lobby/members/" + member.id + "/promote", "POST");
+            this.$root.request("/lol-lobby/v2/lobby/members/" + member.summonerId + "/promote", "POST");
         }
     }
 
@@ -168,7 +214,7 @@ export default class Lobby extends Vue {
      * Toggles inviting for the specified member.
      */
     toggleInvite(member: LobbyMember) {
-        this.$root.request("/lol-lobby/v1/lobby/members/" + member.id + (member.canInviteOthers ? "/revoke-invite" : "/grant-invite"), "POST");
+        this.$root.request("/lol-lobby/v2/lobby/members/" + member.summonerId + (member.allowedInviteOthers ? "/revoke-invite" : "/grant-invite"), "POST");
     }
 
     /**
@@ -176,7 +222,7 @@ export default class Lobby extends Vue {
      */
     kickMember(member: LobbyMember) {
         if (confirm("Kick " + member.summoner.displayName + " from the lobby?")) {
-            this.$root.request("/lol-lobby/v1/lobby/members/" + member.id + "/kick", "POST");
+            this.$root.request("/lol-lobby/v2/lobby/members/" + member.summonerId + "/kick", "POST");
         }
     }
 
@@ -192,7 +238,7 @@ export default class Lobby extends Vue {
      * Invoked from the role picker, updates the user with the new roles.
      */
     updateRoles(newRoles: any) {
-        this.$root.request("/lol-lobby/v1/lobby/members/localMember/position-preferences", "PUT", JSON.stringify(newRoles));
+        this.$root.request("/lol-lobby/v2/lobby/members/localMember/position-preferences", "PUT", JSON.stringify(newRoles));
         this.showingRolePicker = false;
     }
 
@@ -200,6 +246,13 @@ export default class Lobby extends Vue {
      * Joins the matchmaking queue with the current party.
      */
     joinMatchmaking() {
-        this.$root.request("/lol-matchmaking/v1/search", "POST");
+        this.$root.request("/lol-lobby/v2/lobby/matchmaking/search", "POST");
+    }
+
+    /**
+     * Formats the provided number of seconds into a XX:YY format.
+     */
+    formatSeconds(secs: number) {
+        return (Math.floor(secs / 60)) + ":" + ("00" + (Math.round(secs) % 60).toFixed(0)).slice(-2);
     }
 }

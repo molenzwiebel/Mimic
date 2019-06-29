@@ -15,6 +15,14 @@
 
 <script lang="ts" src="./queue.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .queue
+        padding-top calc(env(safe-area-inset-top) + 30px)
+
+    body.has-notch .queue-overlay 
+        height 100vh
+</style>
+
 <style lang="stylus" scoped>
     @keyframes queue-background
         0%
@@ -27,6 +35,7 @@
     .queue
         transition 0.3s ease
         height 200px
+        z-index 200
         border-bottom 3px solid #785a28
         background linear-gradient(186deg, #197e99, #134b6d, #197e99, #1e465d)
         background-size 400% 400%
@@ -71,4 +80,5 @@
     .hidden
         height 0
         border-bottom-width 0
+        visibility hidden
 </style>

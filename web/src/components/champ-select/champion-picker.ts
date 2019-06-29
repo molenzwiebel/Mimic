@@ -2,17 +2,17 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { ChampSelectAction, ChampSelectState, default as ChampSelect } from "./champ-select";
 import Root from "../root/root";
-import { DDRAGON_VERSION } from "../../constants";
+import { ddragon } from "../../constants";
 
 @Component
 export default class ChampionPicker extends Vue {
     $root: Root;
     $parent: ChampSelect;
 
-    @Prop
+    @Prop()
     state: ChampSelectState;
 
-    @Prop
+    @Prop()
     show: boolean;
 
     // List of champions that the current user can select. Includes banned champions.
@@ -142,6 +142,8 @@ export default class ChampionPicker extends Vue {
      * @returns the path to the icon of the specified champion
      */
     getChampionImage(id: number) {
-        return "http://ddragon.leagueoflegends.com/cdn/" + DDRAGON_VERSION + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
+        if (!this.$parent.championDetails[id]) return "";
+
+        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
     }
 }

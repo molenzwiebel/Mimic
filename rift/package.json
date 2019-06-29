@@ -1,14 +1,14 @@
 {
   "name": "rift",
-  "version": "1.0.0",
-  "description": "Server-side component for Mimic that associates external with internal IPs.",
+  "version": "2.0.0",
+  "description": "Server-side Mimic component responsible for securely tunneling WebSocket connections.",
   "main": "dist/index.js",
   "repository": {
     "url": "https://github.com/molenzwiebel/mimic",
     "type": "git"
   },
   "scripts": {
-    "start": "tsc -p . && node --harmony-async-await ./dist/index.js",
+    "start": "tsc -p . && node ./dist/index.js",
     "watch": "tsc -p . -w",
     "bundle": "tsc -p ."
   },
@@ -18,13 +18,19 @@
     "@types/body-parser": "^1.16.3",
     "@types/cors": "^2.8.1",
     "@types/express": "^4.0.35",
+    "@types/jsonwebtoken": "^7.2.8",
     "@types/node": "^7.0.29",
-    "typescript": "^2.3.4"
+    "@types/uuid": "^3.4.4",
+    "@types/ws": "^6.0.1",
+    "typescript": "^3.1.2"
   },
   "dependencies": {
-    "basie": "^1.1.0",
-    "body-parser": "^1.17.2",
-    "cors": "^2.8.3",
-    "express": "^4.15.3"
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.3.0",
+    "sqlite": "^3.0.0",
+    "uuid": "^3.3.2",
+    "ws": "^6.1.0"
   }
 }

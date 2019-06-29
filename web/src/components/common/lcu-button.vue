@@ -1,5 +1,5 @@
 <template>
-    <button class="button" :class="className + ' ' + type" @click="$emit('click')" :disabled="disabled">
+    <button class="button" :class="className + ' ' + type" @click="!disabled && $emit('click')" :disabled="disabled">
         <div class="button-border"></div>
         <slot></slot>
     </button>
@@ -32,7 +32,7 @@
         background-color rgb(30, 35, 40)
         text-transform uppercase
         font-size 60px
-        font-family "LoL Display Bold"
+        font-family "LoL Display Bold", serif
         transition 0.3s ease
 
         &.normal

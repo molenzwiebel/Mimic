@@ -8,6 +8,11 @@ export interface QueueState {
     isCurrentlyInQueue: boolean;
     estimatedQueueTime: number;
     timeInQueue: number;
+    searchState: string;
+    errors: {
+        errorType: string;
+        penaltyTimeRemaining: number;
+    }[];
 }
 
 @Component
@@ -26,7 +31,7 @@ export default class Queue extends Vue {
      * Note: this cannot be an arrow function for various changes. See the lobby component for more info.
      */
     handleMatchmakingChange = async function(this: Queue, result: Result) {
-        if (result.status !== 200) {
+        if (result.status !== 200 || !result.content.isCurrentlyInQueue) {
             this.state = null;
             document.body.classList.remove("in-queue");
             return;
@@ -47,7 +52,7 @@ export default class Queue extends Vue {
      * Leaves the current matchmaking queue.
      */
     leaveQueue() {
-        this.$root.request("/lol-matchmaking/v1/search", "DELETE");
+        this.$root.request("/lol-lobby/v2/lobby/matchmaking/search", "DELETE");
     }
 
     /**

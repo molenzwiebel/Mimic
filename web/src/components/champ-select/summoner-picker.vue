@@ -19,8 +19,14 @@
 
 <script lang="ts" src="./summoner-picker.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .spell-selector
+        margin-top calc(env(safe-area-inset-top) + 30px)
+        padding-bottom calc(env(safe-area-inset-bottom) + 20px)
+</style>
+
 <style lang="stylus" scoped>
-    @import "./style.styl"
+    @import "../../common.styl"
 
     .fadeInUp, .fadeOutDown
         animation-duration 0.4s !important

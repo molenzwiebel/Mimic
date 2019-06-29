@@ -1,5 +1,5 @@
 <template>
-    <div style="flex: 1; display: flex;">
+    <div style="flex: 1; display: flex; height: 100%">
         <div v-if="state" class="lobby" :style="backgroundImage">
             <!-- This overlays the lobby if we are currently in queue. -->
             <div class="queue-overlay"></div>
@@ -10,8 +10,8 @@
             <role-picker
                     :show="showingRolePicker"
                     :selecting-first="pickingFirstRole"
-                    :first-role="state.localMember.positionPreferences.firstPreference"
-                    :second-role="state.localMember.positionPreferences.secondPreference"
+                    :first-role="state.localMember.firstPositionPreference"
+                    :second-role="state.localMember.secondPositionPreference"
                     @selected="updateRoles($event)">
             </role-picker>
 
@@ -28,10 +28,10 @@
                 <transition-group enter-active-class="slideInLeft" leave-active-class="slideOutRight">
                     <lobby-member
                             v-for="member in lobbyMembers"
-                            :key="member.id"
+                            :key="member.summonerId"
                             :member="member"
-                            :show-positions="state.showPositionSelector"
-                            :show-moderation="state.localMember.isOwner"
+                            :show-positions="state.gameConfig.showPositionSelector"
+                            :show-moderation="state.localMember.isLeader"
                             @promote="promoteMember(member)"
                             @invite="toggleInvite(member)"
                             @kick="kickMember(member)"
@@ -47,29 +47,63 @@
 
             <div class="bottom">
                 <!-- We can join matchmaking if we can start, and we are the owner -->
-                <lcu-button class="queue-button" @click="joinMatchmaking()" :disabled="!(state.canStartMatchmaking && state.localMember.isOwner)">
-                    Find Match
+                <lcu-button class="queue-button" @click="joinMatchmaking()" :disabled="!(state.canStartActivity && queueDodgeTime === -1 && state.localMember.isLeader)">
+                    <template v-if="queueDodgeTime === -1">Find Match</template>
+                    <template v-else>Blocked {{ formatSeconds(queueDodgeTime) }}</template>
                 </lcu-button>
             </div>
         </div>
 
         <!-- No lobby -->
-        <div class="no-lobby" v-else>
-            <span class="header">No Lobby</span>
-            <span class="detail">Wait for an invite, or join a<br> lobby on your desktop.</span>
-            <span v-if="!isStandalone" class="tip"><b>PRO TIP:</b> Add this site to your homescreen <br>to use Mimic in fullscreen.</span>
-        </div>
+        <template v-else>
+            <!-- This is a v-show so that queues can already be loaded in the background. -->
+            <div v-show="creatingLobby">
+                <create-lobby @close="creatingLobby = false" />
+            </div>
+
+            <div class="no-lobby" v-show="!creatingLobby">
+                <span class="header">No Lobby</span>
+                <span class="detail">Wait for your friends to invite<br> you, or <span style="text-decoration: underline" @click="creatingLobby = true"> create a new lobby now.</span></span>
+
+                <span v-if="!isStandalone" class="tip">
+                    <b>PRO TIP: </b>
+
+                    <template v-if="canTriggerHomescreenPrompt">
+                        <span style="text-decoration: underline" @click="triggerInstallPrompt">Add this site to your homescreen</span>
+                    </template>
+
+                    <template v-else>
+                        Add this site to your homescreen
+                    </template>
+
+                    <br>to use Mimic in fullscreen.
+                </span>
+            </div>
+        </template>
     </div>
 </template>
 
 <script lang="ts" src="./lobby.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .lobby
+        height 100vh
+
+        padding-top calc(env(safe-area-inset-top) + 25px)
+        padding-bottom calc(env(safe-area-inset-bottom) + 14px)
+</style>
+
 <style lang="stylus" scoped>
     .lobby
+        box-sizing border-box
         background-image url(../../static/magic-background.jpg)
         background-size cover
         background-position center
-        position relative
+        position absolute
+        top 0
+        left 0
+        bottom 0
+        right 0
         flex 1
         transition background-image 0.3s ease // Not a standard, but most mobile browsers (chrome) support it.
         display flex
@@ -133,8 +167,11 @@
         background-image url(../../static/magic-background.jpg)
         background-size cover
         background-position center
-        position relative
-        flex 1
+        position absolute
+        top 0
+        left 0
+        bottom 0
+        right 0
         display flex
         flex-direction column
         justify-content center

@@ -1,9 +1,9 @@
 <template>
-    <div class="invites">
+    <div class="invites" :class="pendingInvites.length > 0 && 'some'">
         <span v-if="pendingInvites.length > 0" class="invite-header">Game Invites</span>
 
         <transition-group name="expand">
-            <div v-for="invite in pendingInvites" :key="invite.id" class="invite">
+            <div v-for="invite in pendingInvites" :key="invite.invitationId" class="invite">
                 <img :src="getSummonerIcon(invite)">
 
                 <div class="info">
@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="actions">
-                    <i @click="acceptInvite(invite)" v-if="invite.eligibility.eligible" class="ion-checkmark"></i>
+                    <i @click="acceptInvite(invite)" v-if="invite.canAcceptInvitation" class="ion-checkmark"></i>
                     <i @click="declineInvite(invite)" class="ion-close"></i>
                 </div>
             </div>
@@ -21,6 +21,11 @@
 </template>
 
 <script lang="ts" src="./invites.ts"></script>
+
+<style lang="stylus">
+    body.has-notch .invites.some
+        padding-top calc(env(safe-area-inset-top) + 30px)
+</style>
 
 <style lang="stylus" scoped>
     @keyframes magic-background
@@ -79,10 +84,13 @@
             white-space nowrap
 
         .actions
-            flex 130px 0
+            flex 140px 0
             margin-right 30px
             font-size 70px
             color #f0e6d2
+
+        .actions > i:first-child
+            margin-right 20px
 
     .expand-enter-active, .expand-leave-active
         transition max-height 0.3s ease

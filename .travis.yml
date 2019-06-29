@@ -5,4 +5,4 @@ script:
   - cd web/
   - npm install -g yarn
   - yarn install
-  - yarn bundle
+  - yarn build

@@ -3,7 +3,6 @@ import Root from "../root/root";
 import { Component, Prop } from "vue-property-decorator";
 import Lobby, { InvitationMetadata, LobbyState } from "./lobby";
 
-
 interface InvitationSuggestion {
     summonerId: number;
     summonerName: string;

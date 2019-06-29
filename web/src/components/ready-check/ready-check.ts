@@ -2,7 +2,7 @@ import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
 
-import AudioPath = require("../../static/queue-pop.mp3");
+import AudioPath from "../../static/queue-pop.mp3";
 
 interface ReadyCheckState {
     timer: number;
@@ -74,6 +74,13 @@ export default class ReadyCheck extends Vue {
     get progressWidth() {
         if (!this.state) return "width: 0%;";
         return "width: " + ((12 - this.state.timer) * (100 / 12)) + "%;";
+    }
+
+    /**
+     * Checks whether or not the user has already responded to the current ready check.
+     */
+    get hasResponded() {
+        return this.state && (this.state.playerResponse === "Accepted" || this.state.playerResponse === "Declined");
     }
 
     /**

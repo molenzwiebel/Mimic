@@ -1,17 +1,27 @@
 <template>
     <div class="player-settings">
-        <div class="expand-champion-chevron" @click="$emit('expand')">
+        <div class="chevron expand-button" @click="$emit('expand')" v-if="!allowsReroll">
             <i class="ion-chevron-up"></i>
         </div>
 
-        <div class="rune-mastery">
-            <select @change="selectRunePage($event)">
-                <option :value="rune.id" :selected="rune.current" v-for="rune in runePages">{{ rune.name }}</option>
+        <div class="chevron" v-else>
+            <div class="reroll-button bordered" @click="reroll()" :class="canReroll || 'disabled'">
+                <i class="ion-loop" style="margin-right: 15px"></i>
+                <span>Reroll {{ rerollState }}</span>
+            </div>
+
+            <div class="bench-button bordered" @click="$emit('bench')">
+                <i class="ion-chevron-up" style="margin-right: 15px"></i>
+                Bench
+            </div>
+        </div>
+
+        <div class="runes">
+            <select class="league" @change="$parent.selectRunePage($event)">
+                <option :value="rune.id" :selected="rune.isActive" v-for="rune in $parent.runePages">{{ rune.name }}</option>
             </select>
 
-            <select @change="selectMasteryPage($event)">
-                <option :value="mastery.id" :selected="mastery.current" v-for="mastery in masteryPages">{{ mastery.name }}</option>
-            </select>
+            <div class="circular-button" @click="$emit('runes')"><i class="ion-edit"></i></div>
         </div>
 
         <div class="summoners">
@@ -23,8 +33,13 @@
 
 <script lang="ts" src="./player-settings.ts"></script>
 
+<style lang="stylus">
+    body.has-notch .player-settings
+        padding-bottom calc(env(safe-area-inset-bottom) + 20px) // 10px by default
+</style>
+
 <style lang="stylus" scoped>
-    @require "./style.styl"
+    @require "../../common.styl"
 
     .player-settings
         position relative
@@ -36,41 +51,57 @@
         align-items center
         padding 10px
 
-    .expand-champion-chevron
+    .chevron
         position absolute
         top 0
         left 50%
+        width 100%
         transform translate(-50%, -100%)
-        color white
         font-size 50px
-        padding 4px 40px
         border-top-left-radius 8px
         border-top-right-radius 8px
+        display flex
+        align-items center
+        justify-content center
+        text-transform uppercase
+
+    .expand-button
+        padding 4px 40px
+        color white
         border 1px solid rgba(240, 230, 210, 0.7)
         border-bottom-width 0
         background-color rgba(0, 0, 0, 0.5)
+        width 40px
 
-    .rune-mastery
+    .bordered
+        padding 6px 30px
+        color #b6dbdb
+        border 2px solid #0596aa
+        border-bottom-width 0
+        background-color rgba(0, 0, 0, 0.7)
+        font-family LoL Display
+
+        &.disabled
+            color #657a7a
+
+        &.reroll-button
+            margin-right 20px
+
+        &.bench-button
+            margin-left 20px
+
+    .runes
         flex 1
         display flex
-        flex-direction column
+        flex-direction row
+        align-items center
 
         select
-            box-sizing border-box
-            -webkit-appearance none
-            font-family "LoL Body"
-            color #a09b8c
-            font-size 35px
-            height player-dropdown-height
-            width 100%
-            margin 5px
-            padding 7px 15px
-            border-width 2px
-            border-style solid
-            border-image linear-gradient(to top,#695625 0%,#a9852d 23%,#b88d35 93%,#c8aa6e 100%) 1
-            background url(../../static/dropdown_arrows.png) no-repeat right rgb(30, 35, 40)
-            background-size auto player-dropdown-height - 30px
-            background-position right 10px center
+            flex 1
+
+        .circular-button
+            flex 0 90px
+            margin 0 0 0 6px
 
     .summoners
         display flex

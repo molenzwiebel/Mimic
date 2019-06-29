@@ -2,20 +2,20 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { ChampSelectState, default as ChampSelect } from "./champ-select";
 import Root from "../root/root";
-import { DDRAGON_VERSION } from "../../constants";
+import { ddragon } from "../../constants";
 
 @Component
 export default class SummonerPicker extends Vue {
     $root: Root;
     $parent: ChampSelect;
 
-    @Prop
+    @Prop()
     state: ChampSelectState;
 
-    @Prop
+    @Prop()
     show: boolean;
 
-    @Prop
+    @Prop()
     first: boolean;
 
     // Loaded from LCU assets, contains information about which spells are available in which queues.
@@ -63,6 +63,8 @@ export default class SummonerPicker extends Vue {
      * @returns the url to the icon for the specified summoner icon id
      */
     getSummonerSpellImage(id: number): string {
-        return "http://ddragon.leagueoflegends.com/cdn/" + DDRAGON_VERSION + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
+        if (!this.$parent.summonerSpellDetails[id]) return "";
+
+        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
     }
 }

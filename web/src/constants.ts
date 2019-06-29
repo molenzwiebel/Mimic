@@ -1,29 +1,20 @@
-export const DDRAGON_VERSION = "7.11.1";
+let _ddragon: string | undefined;
+export function ddragon() {
+    if (_ddragon) return _ddragon;
 
-export const QUEUES: { [key: number]: string } = {
-    2: "Normal 5v5",
-    8: "Normal 3v3",
-    14: "Draft 5v5",
-    31: "Coop vs AI - Intro",
-    32: "Coop vs AI - Beginner",
-    65: "ARAM 5v5",
-    76: "URF 5v5",
-    96: "Ascension 5v5",
-    315: "Nexus Siege 5v5",
-    300: "King Poro 5v5",
-    318: "ARURF 5v5",
-    400: "Draft 5v5",
-    415: "Ranked 5v5",
-    420: "Ranked Solo/Duo",
-    440: "Ranked Flex"
-};
+    // Load ddragon async.
+    const req = new XMLHttpRequest();
+    req.onreadystatechange = () => {
+        if (req.status !== 200 || !req.responseText || req.readyState !== 4) return;
+        const versions: string[] = JSON.parse(req.responseText);
+        _ddragon = versions[0]; // newest patch is first in the list
+    };
+    req.open("GET", "https://ddragon.leagueoflegends.com/api/versions.json", true);
+    req.send();
 
-export const MAPS: { [key: number]: string } = {
-    8: "The Crystal Scar",
-    10: "The Twisted Treeline",
-    11: "Summoner's Rift",
-    12: "The Howling Abyss"
-};
+    // Return default until we've loaded.
+    return "9.13.1";
+}
 
 export const POSITION_NAMES: { [key: string]: string } = {
     TOP: "Top",
@@ -31,16 +22,40 @@ export const POSITION_NAMES: { [key: string]: string } = {
     MIDDLE: "Mid",
     BOTTOM: "Bottom",
     UTILITY: "Support",
-    FILL: "Fill"
+    FILL: "Fill",
+    LANE: "Lane" // nexus blitz
 };
 
-import RoleUnselected = require("./static/role-unselected.png");
-import RoleTop = require("./static/role-top.png");
-import RoleJungle = require("./static/role-jungle.png");
-import RoleMid = require("./static/role-mid.png");
-import RoleBot = require("./static/role-bot.png");
-import RoleSupport = require("./static/role-support.png");
-import RoleFill = require("./static/role-fill.png");
+export const GAMEMODE_NAMES: { [key: string]: string } = {
+    "8-ascension": "Ascension",
+    "8-odin": "Definitely Not Dominion",
+    "10-classic": "Twisted Treeline",
+    "11-arsr": "ARSR",
+    "11-assassinate": "Blood Moon",
+    "11-classic": "Summoner’s Rift",
+    "11-urf": "AR URF",
+    "11-siege": "Nexus Siege",
+    "11-lcurgmdisabled": "Rotating Game Mode",
+    "12-aram": "ARAM",
+    "12-portalparty": "Portal Party",
+    "12-kingporo": "Legend of the Poro King",
+    "12-basic_tutorial": "TUTORIAL",
+    "11-battle_training": "BATTLE TRAINING",
+    "11-tutorial_flow": "TUTORIAL",
+    "16-darkstar": "Dark Star: Singularity",
+    "18-starguardian": "Invasion",
+    "11-doombotsteemo": "Doom Bots of Doom",
+    "11-practicetool": "Practice Tool",
+    "22-tft": "Teamfight Tactics"
+};
+
+import RoleUnselected from "./static/roles/role-unselected.png";
+import RoleTop from "./static/roles/role-top.png";
+import RoleJungle from "./static/roles/role-jungle.png";
+import RoleMid from "./static/roles/role-mid.png";
+import RoleBot from "./static/roles/role-bot.png";
+import RoleSupport from "./static/roles/role-support.png";
+import RoleFill from "./static/roles/role-fill.png";
 
 export type Role = "TOP" | "JUNGLE" | "MIDDLE" | "BOTTOM" | "UTILITY" | "FILL" | "UNSELECTED";
 
@@ -55,10 +70,10 @@ export function roleImage(role: Role) {
     return "";
 }
 
-import HABackground = require("./static/bg-ha.jpg");
-import TTBackground = require("./static/bg-tt.jpg");
-import SRBackground = require("./static/bg-sr.jpg");
-import MagicBackground = require("./static/magic-background.jpg");
+import HABackground from "./static/backgrounds/bg-ha.jpg";
+import TTBackground from "./static/backgrounds/bg-tt.jpg";
+import SRBackground from "./static/backgrounds/bg-sr.jpg";
+import MagicBackground from "./static/magic-background.jpg";
 
 export function mapBackground(mapId: number) {
     if (!mapId) return "";
