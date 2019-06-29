@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Authentication;
@@ -16,10 +17,7 @@ namespace Conduit
      */
     class LeagueConnection
     {
-        private static readonly HttpClient HTTP_CLIENT = new HttpClient(new HttpClientHandler()
-        {
-            ServerCertificateCustomValidationCallback = (a, b, c, d) => true
-        });
+        private static HttpClient HTTP_CLIENT;
 
         private WebSocket socketConnection;
         private Tuple<Process, string, string> processInfo;
@@ -40,6 +38,24 @@ namespace Conduit
          */
         public LeagueConnection()
         {
+            try
+            {
+                HTTP_CLIENT = new HttpClient(new HttpClientHandler()
+                {
+                    SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls,
+                    ServerCertificateCustomValidationCallback = (a, b, c, d) => true
+                });
+            }
+            catch
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
+                HTTP_CLIENT = new HttpClient(new HttpClientHandler()
+                {
+                    ServerCertificateCustomValidationCallback = (a, b, c, d) => true
+                });
+            }
+
             // Run after a slight delay.
             Task.Delay(2000).ContinueWith(e => TryConnectOrRetry());
         }
