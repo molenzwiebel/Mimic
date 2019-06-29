@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Security.Principal;
+using System.Windows.Forms;
 
 namespace Conduit
 {
@@ -18,6 +19,14 @@ namespace Conduit
 
         public static void Elevate()
         {
+            MessageBox.Show(
+                "Your League client is running as administrator, and Mimic cannot access it. Mimic will now attempt to restart as administrator. Press 'Yes' on the Windows prompt to allow this.",
+                "Mimic",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error,
+                MessageBoxDefaultButton.Button1
+            );
+
             var currentProcessInfo = new ProcessStartInfo
             {
                 UseShellExecute = true,
