@@ -28,6 +28,19 @@ namespace Conduit
                 using (var moc = mos.Get())
                 {
                     var commandLine = (string)moc.OfType<ManagementObject>().First()["CommandLine"];
+                    if (commandLine == null) // We can't get the commandline sometimes without admin access, so let's elevate
+                    {
+                        if (Administrator.IsAdmin())
+                        {
+                            DebugLogger.Global.WriteError("We cannot determine why the commandline is null! Cannot get the League of Legends information from this process!");
+                            continue;
+                        }
+                        else
+                        {
+                            Administrator.Elevate();
+                        }
+                    }
+
                     try
                     {
                         var authToken = AUTH_TOKEN_REGEX.Match(commandLine).Groups[1].Value;
