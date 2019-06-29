@@ -22,7 +22,7 @@ export default class Members extends Vue {
         if (!champ) return "background-color: transparent;";
 
         const fade = champId === member.championPickIntent ? "opacity: 0.6;" : "";
-        return "background-image: url(https://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + champ.id + "_0.jpg);" + fade;
+        return `background-image: url(https://cdn.communitydragon.org/latest/champion/${champ.key}/splash-art/centered), url(https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_0.jpg); ${fade}`;
     }
 
     /**

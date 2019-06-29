@@ -73,6 +73,7 @@ export function roleImage(role: Role) {
 import HABackground from "./static/backgrounds/bg-ha.jpg";
 import TTBackground from "./static/backgrounds/bg-tt.jpg";
 import SRBackground from "./static/backgrounds/bg-sr.jpg";
+import TFTBackground from "./static/backgrounds/bg-tft.jpg";
 import MagicBackground from "./static/magic-background.jpg";
 
 export function mapBackground(mapId: number) {
@@ -80,5 +81,6 @@ export function mapBackground(mapId: number) {
     if (mapId === 10) return "background-image: url(" + TTBackground + ");";
     if (mapId === 11) return "background-image: url(" + SRBackground + ");";
     if (mapId === 12) return "background-image: url(" + HABackground + ");";
+    if (mapId === 22) return "background-image: url(" + TFTBackground + ");";
     return "background-image: url(" + MagicBackground + ");";
 }

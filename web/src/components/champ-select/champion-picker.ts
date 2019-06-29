@@ -52,7 +52,9 @@ export default class ChampionPicker extends Vue {
         const bannedChamps = allActions.filter(x => x.type === "ban" && x.completed).map(x => x.championId);
         const selectable = (isCurrentlyBanning ? this.bannableChampions : this.pickableChampions).filter(x => bannedChamps.indexOf(x) === -1);
 
-        return selectable.filter(x => this.$parent.championDetails[x].name.toLowerCase().includes(this.searchTerm.toLowerCase()));
+        return selectable
+            .filter(x => this.$parent.championDetails[x].name.toLowerCase().includes(this.searchTerm.toLowerCase()))
+            .sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
     }
 
     /**
@@ -60,7 +62,7 @@ export default class ChampionPicker extends Vue {
      */
     get header(): string {
         const act = this.$parent.getActions(this.state.localPlayer);
-        if (!act && this.firstUncompletedPickAction) return "Declare your Champion!";
+        if (!act && this.firstUncompletedPickAction) return "Declare Your Champion!";
         if (!act || act.type !== "ban") return "Pick a Champion";
         return "Ban a Champion";
     }
