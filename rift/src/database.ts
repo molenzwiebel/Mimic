@@ -30,6 +30,9 @@ export async function create() {
 export async function generateCode(pubkey: string): Promise<string> {
     if (!database) throw new Error("Database not loaded yet.");
 
+    const existing = await database.get(`SELECT * FROM conduit_instances WHERE public_key = ? LIMIT 1`, pubkey);
+    if (existing) return existing.code;
+
     let code: string;
     while (true) {
         // Generate a random 6 digit number as code.

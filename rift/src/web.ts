@@ -26,8 +26,7 @@ app.post("/register", async (req, res) => {
     }
 
     // Generate a new unique code.
-    const existing = await db.lookup(req.body.pubkey);
-    const code = existing ? existing.code : await db.generateCode(req.body.pubkey);
+    const code = await db.generateCode(req.body.pubkey);
     console.log("[+] New Conduit registered. Code: " + code);
 
     // Sign a JWT and return it.
