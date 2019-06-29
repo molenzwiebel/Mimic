@@ -18,7 +18,6 @@ namespace Conduit
     {
         private static readonly HttpClient HTTP_CLIENT = new HttpClient(new HttpClientHandler()
         {
-            SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls11 | SslProtocols.Tls,
             ServerCertificateCustomValidationCallback = (a, b, c, d) => true
         });
 
