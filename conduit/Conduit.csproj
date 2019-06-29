@@ -98,8 +98,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Administrator.cs" />
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="CryptoHelpers.cs" />
+    <Compile Include="DebugLogger.cs" />
     <Compile Include="DeviceConnectionPrompt.xaml.cs">
       <DependentUpon>DeviceConnectionPrompt.xaml</DependentUpon>
     </Compile>
