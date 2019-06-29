@@ -21,6 +21,8 @@ export default class ChampionPicker extends Vue {
     // List of champions that the current user can ban. Includes already banned champions.
     bannableChampions: number[] = [];
 
+    searchTerm = "";
+
     created() {
         // Observe the list of pickable and bannable champions. The list is sorted by name.
         this.$root.observe("/lol-champ-select/v1/pickable-champions", result => {
@@ -48,7 +50,9 @@ export default class ChampionPicker extends Vue {
 
         const allActions = (<ChampSelectAction[]>[]).concat(...this.state.actions);
         const bannedChamps = allActions.filter(x => x.type === "ban" && x.completed).map(x => x.championId);
-        return (isCurrentlyBanning ? this.bannableChampions : this.pickableChampions).filter(x => bannedChamps.indexOf(x) === -1);
+        const selectable = (isCurrentlyBanning ? this.bannableChampions : this.pickableChampions).filter(x => bannedChamps.indexOf(x) === -1);
+
+        return selectable.filter(x => this.$parent.championDetails[x].name.toLowerCase().includes(this.searchTerm.toLowerCase()));
     }
 
     /**
@@ -145,5 +149,13 @@ export default class ChampionPicker extends Vue {
         if (!this.$parent.championDetails[id]) return "";
 
         return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
+    }
+
+    /**
+     * @returns the name for the specified champion
+     */
+    championName(id: number) {
+        const entry = this.$parent.championDetails[id];
+        return entry ? entry.name : "???";
     }
 }
