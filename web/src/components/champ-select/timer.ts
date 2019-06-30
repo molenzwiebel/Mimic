@@ -79,8 +79,10 @@ export default class Timer extends Vue {
      * @returns the path to the icon for the specified champion id
      */
     getChampionIcon(id: number) {
-        if (!this.$parent.championDetails[id]) return "";
+        // -1 is the no-ban icon. It is not included in ddragon.
+        if (id === -1) return "https://raw.communitydragon.org/8.1/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/-1.png";
 
+        if (!this.$parent.championDetails[id]) return "";
         return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
     }
 
