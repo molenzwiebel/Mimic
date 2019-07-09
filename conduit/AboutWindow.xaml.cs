@@ -1,4 +1,5 @@
-﻿using QRCoder;
+﻿using Microsoft.Win32;
+using QRCoder;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -26,6 +27,21 @@ namespace Conduit
                 RenderCode();
             }
             Persistence.OnHubCodeChanged += RenderCode;
+
+            CheckDotnet();
+        }
+
+        /**
+         * Checks if .NET framework is installed on this PC
+         */
+        private void CheckDotnet()
+        {
+            var version = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\NET Framework Setup\\NDP\\v4\\Full", "Release", null);
+            if ((int)version >= 394254) // .NET 4.6.1
+            {
+                NoDotNetText.Visibility = Visibility.Hidden;
+                NoCodeText.Visibility = Visibility.Visible;
+            }
         }
 
         /**

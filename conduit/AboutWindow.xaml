@@ -23,7 +23,8 @@
             <Run Text="on your phone and enter the following code:"/>
         </TextBlock>
         <Label x:Name="CodeLabel" Content="562414" HorizontalAlignment="Left" Margin="148,107,0,0" VerticalAlignment="Top" Width="336" FontFamily="Courier New" FontSize="50" HorizontalContentAlignment="Center" Height="64" VerticalContentAlignment="Center" Visibility="Hidden"/>
-        <TextBlock x:Name="NoCodeText" Margin="15,46,15,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.122,0.378" FontSize="14"><Run Text="To control League from your phone, please launch League at least once while Conduit is running."/><Run Text=" After that, check back here for instructions on how to connect to "/><Run Text="League from your phone."/></TextBlock>
+        <TextBlock x:Name="NoCodeText" Margin="15,46,15,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.122,0.378" FontSize="14" Visibility="Hidden"><Run Text="To control League from your phone, please launch League at least once while Conduit is running."/><Run Text=" After that, check back here for instructions on how to connect to "/><Run Text="League from your phone."/></TextBlock>
+        <TextBlock x:Name="NoDotNetText" Margin="15,46,15,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.122,0.378" FontSize="14"><Run Text="To control League from your phone, please install latest .NET framework."/><Run Text=" To do that visit "/><Hyperlink NavigateUri="https://go.microsoft.com/fwlink/?LinkId=2085155">this</Hyperlink><Run Text=" link to download and then install downloaded executable. Mimic needs to be restarted after this process is finished."/></TextBlock>
         <CheckBox x:Name="StartOnStartupCheckbox" Content="Launch Mimic when your computer starts" HorizontalAlignment="Left" Margin="15,0,0,45" Height="15" VerticalAlignment="Bottom" FontSize="13" Click="HandleStartupChange" />
     </Grid>
 </Window>
