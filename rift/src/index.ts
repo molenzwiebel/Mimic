@@ -2,6 +2,7 @@ import * as db from "./database";
 import * as http from "http";
 import app from "./web";
 import WebSocketManager from "./sockets";
+const PORT = process.env.PORT || 51001;
 
 (async() => {
     if (!process.env.RIFT_JWT_SECRET) {
@@ -17,6 +18,6 @@ import WebSocketManager from "./sockets";
     const sockets = new WebSocketManager();
     server.on("upgrade", sockets.handleUpgradeRequest);
 
-    console.log("[+] Listening on 0.0.0.0:51001... ^C to exit.");
-    server.listen(51001);
+    console.log("[+] Listening on 0.0.0.0:" + PORT + "... ^C to exit.");
+    server.listen(PORT);
 })();
