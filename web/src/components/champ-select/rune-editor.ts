@@ -64,7 +64,10 @@ export default class RuneEditor extends Vue {
         if (!this.currentPage) return;
         this.currentPage.primaryStyleId = id;
         this.currentPage.subStyleId = this.runes.filter(x => x.id !== id)[0].id;
-        this.currentPage.selectedPerkIds = [0, 0, 0, 0, 0, 0];
+
+        // Reset all runes except the stat shards.
+        this.currentPage.selectedPerkIds = [0, 0, 0, 0, 0, 0, this.currentPage.selectedPerkIds[6], this.currentPage.selectedPerkIds[7], this.currentPage.selectedPerkIds[8]];
+
         this.secondaryIndex = 0;
         this.savePage();
     }

@@ -5,7 +5,7 @@
             <div class="header">Select Your Skin</div>
 
             <div class="content">
-                <div class="skin" :class="!skin.ownership.owned && 'unowned'" v-for="skin in availableSkins" @click="selectSkin(skin)">
+                <div class="skin" v-if="skin.ownership.owned" v-for="skin in availableSkins" @click="selectSkin(skin)">
                     <div class="skin-image" :style="getSkinImage(skin)"></div>
                     <div class="name">{{ skin.name }}</div>
                 </div>
@@ -73,9 +73,6 @@
             color white
             width 100%
             margin 25px 0
-
-            &.unowned .skin-image
-                filter grayscale()
 
             .skin-image
                 background white

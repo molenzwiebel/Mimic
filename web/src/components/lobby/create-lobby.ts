@@ -173,7 +173,6 @@ export default class CreateLobby extends Vue {
      * @returns the url to the map icon for the specified section
      */
     sectionIcon(section: string, extra: string) {
-        console.log(section);
         const mapName = (<any>{
             "10-CLASSIC": "tt",
             "11-CLASSIC": "sr",

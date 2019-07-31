@@ -12,4 +12,13 @@ window.addEventListener("beforeinstallprompt", e => {
     (<any>window).installPrompt = e;
 });
 
+// Check for some things we require that aren't in all browsers.
+if (typeof window.crypto === "undefined"
+    || (typeof window.crypto.subtle === "undefined" && typeof window.crypto.webkitSubtle === "undefined")
+    || typeof TextEncoder === "undefined"
+    || typeof [].includes === "undefined"
+    || typeof Uint8Array === "undefined") {
+    alert("Your device is missing critical features required for Mimic to work. Please make sure that you have updated your phone to the newest version. You can proceed on your own risk, but it is very likely that things will break.");
+}
+
 new (<any>Root)().$mount("#root");
