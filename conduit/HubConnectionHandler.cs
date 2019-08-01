@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using WebSocketSharp;
 
 namespace Conduit
@@ -23,12 +24,12 @@ namespace Conduit
         {
             this.league = league;
 
-            socket = new WebSocket(Program.HUB_WS);
-            socket.CustomHeaders = new Dictionary<string, string>()
-            {
-                {"Token", Persistence.GetHubToken()},
-                {"Public-Key", CryptoHelpers.ExportPublicKey()}
-            };
+            // Pass parameters in the URL.
+            socket = new WebSocket(
+                Program.HUB_WS
+                    + "?token=" + HttpUtility.UrlEncode(Persistence.GetHubToken())
+                    + "&publicKey=" + HttpUtility.UrlEncode(CryptoHelpers.ExportPublicKey())
+            );
 
             socket.OnMessage += HandleMessage;
             socket.OnClose += (sender, ev) =>
