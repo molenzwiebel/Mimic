@@ -6,6 +6,7 @@ import * as db from "./database";
 import * as uuid from "uuid";
 import { Socket } from "net";
 import { IncomingMessage } from "http";
+import { URL } from "url";
 import { RiftOpcode } from "./types";
 
 /**
@@ -80,9 +81,15 @@ export default class WebSocketManager {
      */
     private verifyConduitClient: VerifyClientCallbackAsync = async (info, cb) => {
         try {
+            // The URL constructor needs a full URL, but we only get a relative one.
+            // Since we don't care about anything but the query params anyway, we can use
+            // any URL here, since we won't read it back.
+            const url = new URL("https://foo.com" + info.req.url!);
+            
+            // Load token and pubkey from header (legacy) or URL query.
             // If a token or pubkey is missing, abort.
-            const token = <string>info.req.headers.token;
-            const pubkey = <string>info.req.headers["public-key"];
+            const token = <string>info.req.headers.token || url.searchParams.get("token");
+            const pubkey = <string>info.req.headers["public-key"] || url.searchParams.get("publicKey");
             if (!token || !pubkey) return cb(false, 401, "Unauthorized");
 
             // Verify given JWT token.
@@ -99,6 +106,7 @@ export default class WebSocketManager {
             info.req.code = decoded.code;
             cb(true);
         } catch (e) {
+            console.log("[-] Disconnected Conduit due to failed handshake: " + e);
             cb(false, 400, "Invalid Request");
         }
     };
