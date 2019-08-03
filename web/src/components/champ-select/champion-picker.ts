@@ -36,6 +36,16 @@ export default class ChampionPicker extends Vue {
         });
     }
 
+    mounted() {
+        (<any>this.$refs.searchInput).addEventListener("focus", () => {
+            document.body.classList.add("in-input");
+        });
+
+        (<any>this.$refs.searchInput).addEventListener("blur", () => {
+            document.body.classList.remove("in-input");
+        });
+    }
+
     destroyed() {
         this.$root.unobserve("/lol-champ-select/v1/pickable-champions");
         this.$root.unobserve("/lol-champ-select/v1/bannable-champions");

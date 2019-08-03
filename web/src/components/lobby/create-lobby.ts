@@ -143,17 +143,17 @@ export default class CreateLobby extends Vue {
             const [aMap, aGameMode] = a.split("-");
             const [bMap, bGameMode] = b.split("-");
 
-            // First: prefer classic over anything other.
+            // First, prefer map 11 (rift) over anything else.
+            if (aMap === "11" && bMap !== "11") return -1;
+            if (bMap === "11") return 1;
+
+            // Then, prefer classic over anything other.
             if (aGameMode === "CLASSIC" && bGameMode !== "CLASSIC") return -1;
             if (bGameMode === "CLASSIC") return 1;
 
-            // Then, prefer ARAM over anything else.
+            // Finally, prefer ARAM over anything else.
             if (aGameMode === "ARAM" && bGameMode !== "ARAM") return -1;
             if (bGameMode === "ARAM") return 1;
-
-            // Finally, prefer map 11 (rift) over anything else.
-            if (aMap === "11" && bMap !== "11") return -1;
-            if (bMap === "11") return 1;
 
             // Else, return 0.
             return 0;

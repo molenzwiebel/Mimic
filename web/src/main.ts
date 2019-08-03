@@ -3,6 +3,7 @@ import Vue from "vue";
 import Root from "./components/root/root.vue";
 import "vue2-animate/dist/vue2-animate.min.css";
 import "./registerServiceWorker";
+import "./root.styl";
 
 import LcuButton from "./components/common/lcu-button.vue";
 Vue.component("lcu-button", LcuButton);
@@ -11,6 +12,9 @@ Vue.component("lcu-button", LcuButton);
 window.addEventListener("beforeinstallprompt", e => {
     (<any>window).installPrompt = e;
 });
+
+// Register a dummy event listener to enable use of :active on iOS.
+document.addEventListener("touchstart", () => {},false);
 
 // Check for some things we require that aren't in all browsers.
 if (typeof window.crypto === "undefined"

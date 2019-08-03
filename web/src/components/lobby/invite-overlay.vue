@@ -5,12 +5,12 @@
             <div class="header">Invites</div>
 
             <div class="invite-summoner">
-                <input v-model="inviteName" type="text" autocomplete="off" spellcheck="false" placeholder="Summoner Name" maxlength="24" autocorrect="off" autocapitalize="off">
+                <input ref="inviteField" v-model="inviteName" type="text" autocomplete="off" spellcheck="false" placeholder="Summoner Name" maxlength="24" autocorrect="off" autocapitalize="off">
                 <div class="circular-button" @click="inviteManually"><i class="ion-plus"></i></div>
             </div>
 
             <span class="section-header">Invited</span>
-            <div class="content">
+            <div class="content">i
                 <div class="invite" v-for="invite in state.invitations">
                     <i :class="getInvitationIcon(invite)"></i>
                     <span>{{ invite.toSummoner.displayName }}</span>
