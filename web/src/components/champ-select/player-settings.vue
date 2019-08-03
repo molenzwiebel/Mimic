@@ -1,19 +1,19 @@
 <template>
     <div class="player-settings">
-        <div class="chevron expand-button" @click="$emit('expand')" v-if="!allowsReroll">
+        <a class="chevron expand-button" @click="$emit('expand')" v-if="!allowsReroll">
             <i class="ion-chevron-up"></i>
-        </div>
+        </a>
 
         <div class="chevron" v-else>
-            <div class="reroll-button bordered" @click="reroll()" :class="canReroll || 'disabled'">
+            <a class="reroll-button bordered" @click="reroll()" :class="canReroll || 'disabled'">
                 <i class="ion-loop" style="margin-right: 15px"></i>
                 <span>Reroll {{ rerollState }}</span>
-            </div>
+            </a>
 
-            <div class="bench-button bordered" @click="$emit('bench')">
+            <a class="bench-button bordered" @click="$emit('bench')">
                 <i class="ion-chevron-up" style="margin-right: 15px"></i>
                 Bench
-            </div>
+            </a>
         </div>
 
         <div class="runes">
@@ -31,8 +31,8 @@
         </div>
 
         <div class="summoners">
-            <img :src="getSummonerSpellImage(state.localPlayer.spell1Id)" @click="$emit('spell', true)">
-            <img :src="getSummonerSpellImage(state.localPlayer.spell2Id)" @click="$emit('spell', false)">
+            <highlightable><img :src="getSummonerSpellImage(state.localPlayer.spell1Id)" @click="$emit('spell', true)"></highlightable>
+            <highlightable><img :src="getSummonerSpellImage(state.localPlayer.spell2Id)" @click="$emit('spell', false)"></highlightable>
         </div>
     </div>
 </template>
@@ -55,6 +55,9 @@
 
         &::after
             border-radius 0
+
+    .reroll-button:active, .bench-button:active, .expand-button:active
+        opacity 0.7
 
     .player-settings
         position relative

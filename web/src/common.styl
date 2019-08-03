@@ -38,6 +38,12 @@ select.league
     color #cebf93
     border-radius 50%
 
+    &:active
+        color darken(#cebf93, 60%)
+
+    &:active:after
+        background linear-gradient(to top, darken(#785b28, 30%) 0%, darken(#c89c3c, 30%) 55%, darken(#c8a355, 30%) 71%, darken(#c8aa6e, 30%) 100%)
+
     &:after
         position absolute
         content ""

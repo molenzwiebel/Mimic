@@ -12,8 +12,8 @@
                 </div>
 
                 <div class="actions">
-                    <i @click="acceptInvite(invite)" v-if="invite.canAcceptInvitation" class="ion-checkmark"></i>
-                    <i @click="declineInvite(invite)" class="ion-close"></i>
+                    <highlightable><i @click="acceptInvite(invite)" v-if="invite.canAcceptInvitation" class="ion-checkmark"></i></highlightable>
+                    <highlightable><i @click="declineInvite(invite)" class="ion-close"></i></highlightable>
                 </div>
             </div>
         </transition-group>

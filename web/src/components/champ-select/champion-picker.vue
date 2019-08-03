@@ -7,10 +7,10 @@
             <input ref="searchInput" v-model="searchTerm" type="text" class="search" autocomplete="off" spellcheck="false" placeholder="Search..." maxlength="24" autocorrect="off" autocapitalize="off">
 
             <div class="content">
-                <div class="champion-option" v-for="champId in selectableChampions">
+                <a class="champion-option" v-for="champId in selectableChampions">
                     <img @click="selectChampion(champId)" :class="selectedChampion === champId && 'selected'" :src="getChampionImage(champId)">
                     <div class="name">{{ championName(champId) }}</div>
-                </div>
+                </a>
             </div>
 
             <lcu-button @click="completeAction" :disabled="!canCompleteAction" :type="buttonType">
@@ -78,6 +78,10 @@
             display flex
             flex-direction column
             align-items center
+            transition 0.2s ease
+
+            &:active
+                opacity 0.7
 
             .name
                 color #f0e6d3

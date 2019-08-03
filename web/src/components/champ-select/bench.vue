@@ -5,11 +5,11 @@
             <div class="header">Reroll Bench</div>
 
             <div class="content">
-                <div class="bench-champion" v-for="championId in state.benchChampionIds" @click="swapWithChampion(championId)">
+                <a class="bench-champion" v-for="championId in state.benchChampionIds" @click="swapWithChampion(championId)">
                     <div class="background" :style="getChampionBackground(championId)"></div>
                     <div class="darken"></div>
                     <div class="name">{{ getChampionName(championId) }}</div>
-                </div>
+                </a>
             </div>
         </div>
     </transition>
@@ -72,6 +72,9 @@
             border-bottom 1px solid #785a28
             display flex
             align-items center
+
+            &:active
+                opacity 0.7
 
             .name
                 font-size 60px

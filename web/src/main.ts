@@ -6,7 +6,10 @@ import "./registerServiceWorker";
 import "./root.styl";
 
 import LcuButton from "./components/common/lcu-button.vue";
+import Highlightable from "./components/common/highlightable.vue";
+
 Vue.component("lcu-button", LcuButton);
+Vue.component("highlightable", Highlightable);
 
 // Catch the Android install prompt so that it can be triggered from the tip.
 window.addEventListener("beforeinstallprompt", e => {

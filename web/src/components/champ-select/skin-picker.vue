@@ -5,10 +5,10 @@
             <div class="header">Select Your Skin</div>
 
             <div class="content">
-                <div class="skin" v-if="skin.ownership.owned" v-for="skin in availableSkins" @click="selectSkin(skin)">
+                <a class="skin" v-if="skin.ownership.owned" v-for="skin in availableSkins" @click="selectSkin(skin)">
                     <div class="skin-image" :style="getSkinImage(skin)"></div>
                     <div class="name">{{ skin.name }}</div>
-                </div>
+                </a>
             </div>
         </div>
     </transition>
@@ -73,6 +73,10 @@
             color white
             width 100%
             margin 25px 0
+            transition opacity 0.2s ease
+
+            &:active
+                opacity 0.7
 
             .skin-image
                 background white
