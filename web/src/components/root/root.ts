@@ -187,7 +187,6 @@ export default class Root extends Vue {
         try {
             this.socket = new RiftSocket(code);
 
-            this.socket.onopen = () => {
             this.socket.onopen = async () => {
                 this.connected = true;
                 this.connecting = false;
