@@ -19,6 +19,15 @@ export async function create() {
                 PRIMARY KEY(\`code\`)
             );
         `);
+
+        await database.exec(`
+            CREATE TABLE \`push_notification_tokens\` (
+                \`token\`       TEXT,
+                \`type\`        TEXT,
+                \`code\`        TEXT,
+                PRIMARY KEY(\`token\`)
+            );
+        `);
     }
 }
 
@@ -73,4 +82,26 @@ export async function potentiallyUpdate(code: string, pubkey: string): Promise<b
 
     await database.run(`UPDATE conduit_instances SET public_key = ? WHERE code = ?`, pubkey, code);
     return true;
+}
+
+/**
+ * Registers the specified push token for the specified device type (ios/android) to
+ * receive notifications from any computer that authenticates with the specified code.
+ */
+export async function registerPushNotificationToken(token: string, type: string, code: string): Promise<void> {
+    if (!database) throw new Error("Database not loaded yet.");
+
+    // Check if it already existed.
+    const existed = await database.get(`SELECT COUNT(*) as count FROM push_notification_tokens WHERE token = ? AND code = ?`, token, code);
+    if (existed.count) return;
+
+    // Add to database.
+    await database.run(`INSERT INTO push_notification_tokens VALUES (?, ?, ?)`, token, type, code);
+}
+
+/**
+ * Returns a list of all registered notification tokens for the specified conduit code.
+ */
+export async function getRegisteredNotificationTokens(code: string): Promise<{ token: string, type: string }[]> {
+    return database.all(`SELECT * FROM push_notification_tokens WHERE code = ?`, code);
 }
