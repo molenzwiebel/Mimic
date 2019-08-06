@@ -42,4 +42,7 @@ export const enum RiftOpcode {
 
     // Conduit sends a push notification to all subscribed devices.
     PN_SEND = 10,
+
+    // Conduit receives an instant response to an emitted push notification.
+    PN_RESPONSE = 11
 }

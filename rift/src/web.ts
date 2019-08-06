@@ -2,7 +2,6 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as jwt from "jsonwebtoken";
 import * as cors from "cors";
-
 import * as db from "./database";
 
 // Create a new express app using CORS and JSON bodies.
@@ -54,6 +53,33 @@ app.get("/check", async (req, res) => {
 
         // Return whether or not the code exists in our database.
         res.json(!!await db.lookup(obj.code));
+    });
+});
+
+// POST /respond?token=jY..&response=X Deliver an instant response for a notification
+app.post("/respond", async (req, res) => {
+    if (typeof req.query.token !== "string" || typeof req.query.response !== "string") {
+        return res.status(400).json({
+            ok: false,
+            error: "Missing token or response."
+        });
+    }
+
+    jwt.verify(req.query.token, process.env.RIFT_JWT_SECRET!, async (err: Error | null, obj: any) => {
+        // If the token could not be decoded, or if it doesn't contain a code field, return false.
+        if (err || !obj || typeof obj.code !== "string") return res.status(400).json({
+            ok: false,
+            error: "Invalid token supplied."
+        });
+
+        console.log("[+] Got response " + req.query.response + " for computer " + obj.code);
+
+        // Emit this so it can be picked up by the socket end.
+        app.emit("notificationResponse", {
+            code: obj.code,
+            type: obj.type,
+            response: req.query.response
+        });
     });
 });
 

@@ -2,6 +2,7 @@ import * as db from "./database";
 import * as http from "http";
 import app from "./web";
 import WebSocketManager from "./sockets";
+
 const PORT = process.env.PORT || 51001;
 
 (async() => {
@@ -17,6 +18,10 @@ const PORT = process.env.PORT || 51001;
 
     const sockets = new WebSocketManager();
     server.on("upgrade", sockets.handleUpgradeRequest);
+
+    app.on("notificationResponse", (data: any) => {
+        sockets.handleNotificationResponse(data);
+    });
 
     console.log("[+] Listening on 0.0.0.0:" + PORT + "... ^C to exit.");
     server.listen(PORT);

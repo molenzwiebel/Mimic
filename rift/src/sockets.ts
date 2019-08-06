@@ -77,6 +77,21 @@ export default class WebSocketManager {
     };
 
     /**
+     * Relays a response for a notification back to the conduit that triggered it.
+     * Does nothing if that conduit is not currently connected.
+     */
+    public handleNotificationResponse(data: {
+        code: string,
+        type: string,
+        response: string
+    }) {
+        const conn = this.conduitConnections.get(data.code);
+        if (!conn || conn.readyState !== WebSocket.OPEN) return;
+
+        conn.send(JSON.stringify([RiftOpcode.PN_RESPONSE, data.type, data.response]));
+    }
+
+    /**
      * Ensures that a Conduit client connecting to us has a valid JWT
      * and a proper public key. Closes the connection if the request is invalid.
      */
