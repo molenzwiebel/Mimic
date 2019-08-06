@@ -8,6 +8,7 @@ import ReadyCheck from "../ready-check/ready-check.vue";
 import ChampSelect from "../champ-select/champ-select.vue";
 import Invites from "../invites/invites.vue";
 import RiftSocket, { MobileOpcode } from "./rift-socket";
+import * as native from "@/util/native";
 import * as device from "@/util/device";
 import Version from "@/util/version";
 
@@ -48,6 +49,8 @@ export default class Root extends Vue {
 
     mounted() {
         setTimeout(() => {
+            native.signalLoadComplete();
+
             // Check if this device has a notch (currently only iPhone X+) and is running
             // standalone. If yes, add a class to the body for others to react on.
             if (!device.isRunningStandalone()) return;
@@ -185,9 +188,18 @@ export default class Root extends Vue {
             this.socket = new RiftSocket(code);
 
             this.socket.onopen = () => {
+            this.socket.onopen = async () => {
                 this.connected = true;
                 this.connecting = false;
                 this.socket!.send("[" + MobileOpcode.VERSION + "]");
+
+                // TODO: Prompt user in UI before doing this.
+                if (native.areNotificationsSupported()) {
+                    const token = await native.requestNotificationAccess();
+                    if (token) {
+                        this.socket!.send(JSON.stringify([MobileOpcode.PN_SUBSCRIBE, ...token]));
+                    }
+                }
             };
 
             this.socket.onmessage = this.handleWebsocketMessage;
