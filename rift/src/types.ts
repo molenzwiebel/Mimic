@@ -35,5 +35,11 @@ export const enum RiftOpcode {
     REPLY = 7,
 
     // Mobile receives a message from the connected Conduit instance.
-    RECEIVE = 8
+    RECEIVE = 8,
+
+    // Conduit subscribes on behalf of web to push notifications.
+    PN_SUBSCRIBE = 9,
+
+    // Conduit sends a push notification to all subscribed devices.
+    PN_SEND = 10,
 }

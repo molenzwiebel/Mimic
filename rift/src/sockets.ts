@@ -8,6 +8,7 @@ import { Socket } from "net";
 import { IncomingMessage } from "http";
 import { URL } from "url";
 import { RiftOpcode } from "./types";
+import * as notifications from "./notifications";
 
 /**
  * Represents a single mobile connection to a specific Conduit instance. The
@@ -140,13 +141,13 @@ export default class WebSocketManager {
             this.conduitToMobileMap.delete(ws);
         });
 
-        ws.on("message", this.handleConduitMessage(ws));
+        ws.on("message", this.handleConduitMessage(ws, code));
     };
 
     /**
      * Handles a websocket message sent by a Conduit instance to Rift.
      */
-    private handleConduitMessage = (ws: WebSocket) => async (msg: string) => {
+    private handleConduitMessage = (ws: WebSocket, code: string) => async (msg: string) => {
         try {
             const [op, ...args] = JSON.parse(msg);
 
@@ -159,12 +160,28 @@ export default class WebSocketManager {
                 if (!entry) return;
 
                 entry.socket.send(JSON.stringify([RiftOpcode.RECEIVE, message]));
+            } else if (op === RiftOpcode.PN_SUBSCRIBE) {
+                const [token, type] = args;
+                if (type !== "ios" && type !== "android") throw new Error("Invalid push notification device type: " + type);
+
+                console.log("[+] Registering push notification " + token + " (" + type + ") for " + code);
+                await db.registerPushNotificationToken(token, type, code);
+            } else if (op === RiftOpcode.PN_SEND) {
+                const [type, data] = args;
+                if (type !== "readyCheck") throw new Error("Unknown push notification type: " + type);
+
+                // If data is not null, broadcast it. Else, remove the notification.
+                if (data) {
+                    await notifications.broadcastReadyCheckNotification(data, code);
+                } else {
+                    await notifications.removeReadyCheckNotifications(code);
+                }
             } else {
                 // Just disconnect them.
                 throw new Error("Conduit sent invalid opcode.");
             }
         } catch (e) {
-            console.log("[-] Error handling conduit message: " + e.message);
+            console.log("[-] Error handling conduit message '" + msg + "':");
             console.log(e);
             ws.close();
         }
