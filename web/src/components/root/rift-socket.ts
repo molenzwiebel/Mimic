@@ -243,7 +243,10 @@ export const enum MobileOpcode {
     RESPONSE = 8,
 
     // Conduit -> Mobile, when any subscribed endpoint gets an update
-    UPDATE = 9
+    UPDATE = 9,
+
+    // Mobile -> Conduit, subscribe to push notifications for that device
+    PN_SUBSCRIBE = 10
 }
 
 declare global {

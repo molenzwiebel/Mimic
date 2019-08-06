@@ -7,8 +7,9 @@ import Queue from "../queue/queue.vue";
 import ReadyCheck from "../ready-check/ready-check.vue";
 import ChampSelect from "../champ-select/champ-select.vue";
 import Invites from "../invites/invites.vue";
-import Version from "../../util/version";
 import RiftSocket, { MobileOpcode } from "./rift-socket";
+import * as device from "@/util/device";
+import Version from "@/util/version";
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -49,8 +50,7 @@ export default class Root extends Vue {
         setTimeout(() => {
             // Check if this device has a notch (currently only iPhone X+) and is running
             // standalone. If yes, add a class to the body for others to react on.
-            const isStandalone = !!((<any>navigator).standalone || window.matchMedia('(display-mode: standalone)').matches);
-            if (!isStandalone) return;
+            if (!device.isRunningStandalone()) return;
 
             const div = document.createElement("div");
 
@@ -133,6 +133,14 @@ export default class Root extends Vue {
             this.socket!.send(JSON.stringify([MobileOpcode.REQUEST, id, path, method, body]));
             this.requests[id] = resolve;
         });
+    }
+
+    /**
+     * Registers for push notifications for the currently connected device. It
+     * is assumed that we already have prompted the user to allow this in the UI.
+     */
+    registerPushNotification() {
+        this.socket!.send(JSON.stringify([MobileOpcode.PN_SUBSCRIBE, "aaa", "ios"]));
     }
 
     /**

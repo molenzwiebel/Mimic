@@ -1,7 +1,8 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Root, { Result } from "../root/root";
-import { mapBackground, Role } from "../../constants";
+import { mapBackground, Role } from "@/constants";
+import * as device from "@/util/device";
 
 import LobbyMemberComponent from "./lobby-member.vue";
 import RolePicker from "./role-picker.vue";
@@ -172,7 +173,7 @@ export default class Lobby extends Vue {
      * @returns if the website is currently running in "standalone" mode (e.g. added to homescreen)
      */
     get isStandalone(): boolean {
-        return !!((<any>navigator).standalone || window.matchMedia('(display-mode: standalone)').matches);
+        return device.isRunningStandalone();
     }
 
     /**

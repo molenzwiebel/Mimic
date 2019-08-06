@@ -119,7 +119,7 @@
     .lobby-header
         box-sizing border-box
         height 165px
-        padding 20px
+        padding 20px 25px
         display flex
         flex-direction row
         color white

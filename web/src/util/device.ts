@@ -27,6 +27,20 @@ const BROWSERS = [
 ];
 
 /**
+ * Returns whether or not this device is running Mimic standalone (outside
+ * of the normal browser interface, such as when added to the homescreen or
+ * when running in the native apps).
+ */
+export function isRunningStandalone() {
+    return !!(
+        (<any>navigator).standalone
+        || window.matchMedia('(display-mode: standalone)').matches
+        || (typeof (<any>window).webkit !== "undefined" && typeof (<any>window).webkit.messageHandlers !== "undefined")
+        || (typeof (<any>window).AndroidMimic !== "undefined")
+    );
+}
+
+/**
  * Returns a simple object containing the browser and device of the current session.
  */
 export function getDeviceDescription(): { browser: string, device: string } {
