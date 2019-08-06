@@ -1,6 +1,7 @@
 import * as apn from "apn";
 import * as db from "./database";
 import * as jwt from "jsonwebtoken";
+import * as admin from "firebase-admin";
 
 // iOS notifications.
 const apnProvider = new apn.Provider({
@@ -11,6 +12,12 @@ const apnProvider = new apn.Provider({
     },
     production: false
 });
+
+// Android/Firebase notifications.
+admin.initializeApp({
+    credential: admin.credential.cert(process.env.RIFT_FIREBASE_KEY_PATH!)
+});
+const messaging = admin.messaging();
 
 /**
  * Broadcasts a ready check notification with appropriate content to all devices registered
@@ -39,6 +46,16 @@ export async function broadcastReadyCheckNotification(content: string, code: str
     iosNotification.collapseId = "READY_CHECK";
     iosNotification.aps.category = "READY_CHECK";
     await apnProvider.send(iosNotification, tokens.filter(x => x.type === "ios").map(x => x.token));
+
+    // Send android notification.
+    await messaging.sendToDevice(tokens.filter(x => x.type === "android").map(x => x.token), {
+        data: {
+            type: "readyCheck",
+            title: content,
+            respondToken,
+            code
+        }
+    });
 }
 
 /**
@@ -55,4 +72,12 @@ export async function removeReadyCheckNotifications(code: string) {
     iosNotification.contentAvailable = true; // run in the background
     iosNotification.topic = process.env.RIFT_IOS_PN_BUNDLE_ID!;
     await apnProvider.send(iosNotification, tokens.filter(x => x.type === "ios").map(x => x.token));
+
+    // Send android notification.
+    await messaging.sendToDevice(tokens.filter(x => x.type === "android").map(x => x.token), {
+        data: {
+            type: "dismiss",
+            dismissType: "readyCheck"
+        }
+    });
 }
