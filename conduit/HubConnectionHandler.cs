@@ -20,9 +20,13 @@ namespace Conduit
         public event Action OnClose;
         private bool hasClosed = false;
 
+        private string readyCheckState = "Invalid";
+
         public HubConnectionHandler(LeagueConnection league)
         {
             this.league = league;
+
+            league.Observe("/lol-matchmaking/v1/ready-check", HandleReadyCheckChange);
 
             // Pass parameters in the URL.
             socket = new WebSocket(
@@ -82,6 +86,17 @@ namespace Conduit
             socket.Send("[" + (long)RiftOpcode.PNSubscribe + ",\"" + token + "\",\"" + type + "\"]");
         }
 
+        /**
+         * Sends a ready check push notification with the specified content. Specify null to
+         * remove all outstanding push notifications instead.
+         */
+        public void SendReadyCheckPushNotification(string content)
+        {
+            if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
+
+            socket.Send("[" + (long)RiftOpcode.PNSend + ", \"readyCheck\", " + (content == null ? "null" : "\"" + content + "\"") + "]");
+        }
+
         private void HandleMessage(object sender, MessageEventArgs ev)
         {
             if (!ev.IsText) return;
@@ -112,6 +127,34 @@ namespace Conduit
                 connections[contents[1]].OnClose();
                 connections.Remove(contents[1]);
             }
+            else if (contents[0] == (long) RiftOpcode.PNResponse)
+            {
+                Console.WriteLine("User responded with " + (string)contents[2] + " to " + (string)contents[1]);
+
+                if (contents[1].Equals("readyCheck"))
+                {
+                    league.Request("POST", "/lol-matchmaking/v1/ready-check/" + (string) contents[2], null);
+                }
+            }
+        }
+
+        private void HandleReadyCheckChange(dynamic data)
+        {
+            var newState = data == null ? "Invalid" : (string)data.state;
+
+            // Ready check just popped.
+            if (newState == "InProgress" && readyCheckState != "InProgress")
+            {
+                this.SendReadyCheckPushNotification("🔔 Your queue has popped! Tap here to open Mimic.");
+            }
+
+            // Ready check just got accepted/denied.
+            if (newState != "InProgress" && readyCheckState == "InProgress")
+            {
+                this.SendReadyCheckPushNotification(null);
+            }
+
+            readyCheckState = newState;
         }
     }
 
