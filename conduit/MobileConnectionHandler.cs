@@ -17,6 +17,7 @@ namespace Conduit
     {
         public delegate void SendMessageDelegate(string s);
 
+        private HubConnectionHandler hub;
         private LeagueConnection league;
         private byte[] key;
         private Dictionary<string, Regex> observedPaths = new Dictionary<string, Regex>();
@@ -24,8 +25,9 @@ namespace Conduit
         private SendMessageDelegate Send;
         private SendMessageDelegate SendRaw;
 
-        public MobileConnectionHandler(LeagueConnection league, SendMessageDelegate send)
+        public MobileConnectionHandler(HubConnectionHandler hub, LeagueConnection league, SendMessageDelegate send)
         {
+            this.hub = hub;
             this.league = league;
             this.league.OnWebsocketEvent += HandleLeagueEvent;
 
@@ -144,6 +146,13 @@ namespace Conduit
             {
                 Send("[" + (long) MobileOpcode.VersionResponse + ", \"" + Program.VERSION + "\", \"" + Environment.MachineName + "\"]");
             }
+            else if (msg[0] == (long) MobileOpcode.PNSubscribe)
+            {
+                var token = (string) msg[1];
+                var type = (string) msg[2];
+
+                hub.RegisterPushNotificationToken(token, type);
+            }
         }
 
         /**
@@ -185,7 +194,10 @@ namespace Conduit
         Response = 8,
 
         // Conduit -> Mobile, when any subscribed endpoint gets an update
-        Update = 9
+        Update = 9,
+
+        // Mobile -> Conduit, subscribe to push notifications for that device
+        PNSubscribe = 10
     }
 }
  

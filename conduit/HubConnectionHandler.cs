@@ -71,6 +71,17 @@ namespace Conduit
             connections = null;
         }
 
+        /**
+         * Sends a message to Rift to register the specified PN token and device type for the
+         * current conduit instance. Does nothing if we don't have a Rift connection.
+         */
+        public void RegisterPushNotificationToken(string token, string type)
+        {
+            if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
+
+            socket.Send("[" + (long)RiftOpcode.PNSubscribe + ",\"" + token + "\",\"" + type + "\"]");
+        }
+
         private void HandleMessage(object sender, MessageEventArgs ev)
         {
             if (!ev.IsText) return;
@@ -83,7 +94,7 @@ namespace Conduit
             {
                 if (connections.ContainsKey(contents[1])) return;
 
-                connections.Add(contents[1], new MobileConnectionHandler(league, msg =>
+                connections.Add(contents[1], new MobileConnectionHandler(this, league, msg =>
                 {
                     socket.Send("[" + (long) RiftOpcode.Reply + ",\"" + contents[1] + "\"," + msg + "]");
                 }));
@@ -119,6 +130,15 @@ namespace Conduit
         Close = 3,
 
         // Send a message to a mobile connected peer.
-        Reply = 7
+        Reply = 7,
+
+        // Subscribe a phone to notifications for the current conduit.
+        PNSubscribe = 9,
+
+        // Send a push notification for the current conduit.
+        PNSend = 10,
+
+        // Receive an instant response to an emitted push notification.
+        PNResponse = 11
     }
 }
