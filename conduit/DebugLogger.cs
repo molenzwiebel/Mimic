@@ -19,16 +19,19 @@ namespace Conduit
 
         public void WriteError(string error)
         {
+            Console.WriteLine(error);
             writer.WriteLine($"[ERROR {DateTime.Now.ToString("HH:mm:ss")}] {error}");
         }
 
         public void WriteMessage(string message)
         {
+            Console.WriteLine(message);
             writer.WriteLine($"[MSG {DateTime.Now.ToString("HH:mm:ss")}] {message}");
         }
 
         public void WriteWarning(string warning)
         {
+            Console.WriteLine(warning);
             writer.WriteLine($"[WRN {DateTime.Now.ToString("HH:mm:ss")}] {warning}");
         }
     }

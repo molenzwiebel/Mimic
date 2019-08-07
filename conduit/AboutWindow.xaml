@@ -14,7 +14,7 @@
         <Label Content="ABOUT" HorizontalAlignment="Left" Margin="10,184,0,0" VerticalAlignment="Top" FontSize="16"/>
         <Button Content="Source Code" Click="OpenGithub" HorizontalAlignment="Left" Margin="15,0,0,15" VerticalAlignment="Bottom" Width="97" FontSize="14"/>
         <Button Content="Discord Server" Click="OpenDiscord" HorizontalAlignment="Left" Margin="117,0,0,15" Width="105" FontSize="14" Height="23" VerticalAlignment="Bottom"/>
-        <Button Content="Uninstall Conduit" Click="Uninstall" Margin="0,0,15,15" FontSize="14" HorizontalAlignment="Right" Width="123" Height="23" VerticalAlignment="Bottom"/>
+        <Button x:Name="UninstallButton" Content="Uninstall Conduit" Click="Uninstall" Margin="0,0,15,15" FontSize="14" HorizontalAlignment="Right" Width="123" Height="23" VerticalAlignment="Bottom"/>
         <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="1" Margin="0,184,-6,0" Stroke="Black" VerticalAlignment="Top" Width="500"/>
         <Image x:Name="ConnectionQR" HorizontalAlignment="Left" Margin="15,46,0,206" Width="120" Height="120" Visibility="Hidden" />
         <TextBlock x:Name="ConnectionSteps" Margin="148,46,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="56" FontSize="13" Visibility="Hidden">

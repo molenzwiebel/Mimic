@@ -26,6 +26,10 @@ namespace Conduit
                 RenderCode();
             }
             Persistence.OnHubCodeChanged += RenderCode;
+
+#if DEBUG
+            UninstallButton.Content = "Test Notification";
+#endif
         }
 
         /**
@@ -71,6 +75,9 @@ namespace Conduit
          */
         public void Uninstall(object sender, EventArgs args)
         {
+#if DEBUG
+            HubConnectionHandler.Instance.SendReadyCheckPushNotification("This is a test notification!");
+#else
             MessageBoxResult result = MessageBox.Show("Are you sure you want to uninstall Mimic Conduit? All files will be deleted.", "Mimic Conduit", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.No) return;
 
@@ -91,6 +98,7 @@ namespace Conduit
 
             // Step 4: Stop Program.
             Application.Current.Shutdown();
+#endif
         }
 
         /**

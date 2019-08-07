@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web;
+using System.Windows;
 using WebSocketSharp;
 
 namespace Conduit
@@ -13,6 +14,10 @@ namespace Conduit
      */
     class HubConnectionHandler
     {
+#if DEBUG
+        public static HubConnectionHandler Instance;
+#endif
+
         private WebSocket socket;
         private LeagueConnection league;
         private Dictionary<string, MobileConnectionHandler> connections = new Dictionary<string, MobileConnectionHandler>();
@@ -24,6 +29,10 @@ namespace Conduit
 
         public HubConnectionHandler(LeagueConnection league)
         {
+#if DEBUG
+            Instance = this;
+#endif
+
             this.league = league;
 
             league.Observe("/lol-matchmaking/v1/ready-check", HandleReadyCheckChange);
@@ -129,12 +138,16 @@ namespace Conduit
             }
             else if (contents[0] == (long) RiftOpcode.PNResponse)
             {
-                Console.WriteLine("User responded with " + (string)contents[2] + " to " + (string)contents[1]);
+                DebugLogger.Global.WriteMessage("User responded with " + (string)contents[2] + " to " + (string)contents[1]);
 
                 if (contents[1].Equals("readyCheck"))
                 {
                     league.Request("POST", "/lol-matchmaking/v1/ready-check/" + (string) contents[2], null);
                 }
+
+#if DEBUG
+                MessageBox.Show("Received push notification response: " + (string)contents[2], "Mimic Conduit", MessageBoxButton.OK);
+#endif
             }
         }
 
