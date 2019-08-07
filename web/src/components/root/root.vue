@@ -10,11 +10,12 @@
         </div>
 
         <div v-else="" class="body">
-            <champ-select></champ-select>
-            <ready-check></ready-check>
-            <invites></invites>
-            <queue></queue>
-            <lobby></lobby>
+            <champ-select />
+            <ready-check />
+            <notification-prompt />
+            <invites />
+            <queue />
+            <lobby />
         </div>
 
         <transition enter-active-class="slideInUp" leave-active-class="slideOutDown">

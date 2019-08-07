@@ -7,6 +7,7 @@ import Queue from "../queue/queue.vue";
 import ReadyCheck from "../ready-check/ready-check.vue";
 import ChampSelect from "../champ-select/champ-select.vue";
 import Invites from "../invites/invites.vue";
+import NotificationPrompt from "../notification-prompt/notification-prompt.vue";
 import RiftSocket, { MobileOpcode } from "./rift-socket";
 import * as native from "@/util/native";
 import * as device from "@/util/device";
@@ -32,13 +33,16 @@ type WebsocketMessage = [1, string, number, any] | [2, number, number, any] | [3
         readyCheck: ReadyCheck,
         champSelect: ChampSelect,
         invites: Invites,
-        socketState: SocketState
+        socketState: SocketState,
+        notificationPrompt: NotificationPrompt
     }
 })
 export default class Root extends Vue {
     connected = false;
     socket: RiftSocket | null = null;
     peerVersion: Version = <any>null; // null is required to allow vue to observe
+    peerName = "";
+    peerCode = "";
     notifications: string[] = [];
 
     connecting = false;
@@ -166,7 +170,7 @@ export default class Root extends Vue {
 
         if (data[0] === MobileOpcode.VERSION_RESPONSE) {
             this.showNotification("Connected to " + data[2]);
-            this.setPeerVersion(<string>data[1]);
+            this.setPeerInformation(<string>data[1], <string>data[2]);
         }
     };
 
@@ -174,8 +178,9 @@ export default class Root extends Vue {
      * Weirdly enough, setting this directly in handleWebsocketManage makes vue go
      * haywire. This works fine though, so we use this instead.
      */
-    private setPeerVersion(version: string) {
+    private setPeerInformation(version: string, name: string) {
         this.peerVersion = new Version(version);
+        this.peerName = name;
     }
 
     /**
@@ -183,6 +188,7 @@ export default class Root extends Vue {
      */
     private connect(code: string) {
         this.connecting = true;
+        this.peerCode = code;
 
         try {
             this.socket = new RiftSocket(code);

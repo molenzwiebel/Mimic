@@ -1,3 +1,4 @@
+import { isiOSApp, isAndroidApp } from "@/util/native";
 
 // The following arrays are adapted from:
 // https://medium.com/creative-technology-concepts-code/detect-device-browser-and-version-using-javascript-8b511906745
@@ -35,8 +36,8 @@ export function isRunningStandalone() {
     return !!(
         (<any>navigator).standalone
         || window.matchMedia('(display-mode: standalone)').matches
-        || (typeof (<any>window).webkit !== "undefined" && typeof (<any>window).webkit.messageHandlers !== "undefined")
-        || (typeof (<any>window).AndroidMimic !== "undefined")
+        || isiOSApp
+        || isAndroidApp
     );
 }
 
@@ -45,7 +46,11 @@ export function isRunningStandalone() {
  */
 export function getDeviceDescription(): { browser: string, device: string } {
     const device = DEVICES.filter(x => navigator.userAgent.indexOf(x.value) !== -1);
-    const browser = BROWSERS.filter(x => navigator.userAgent.indexOf(x.value) !== -1);
+
+    let browser = BROWSERS.filter(x => navigator.userAgent.indexOf(x.value) !== -1);
+    if (isiOSApp || isAndroidApp) {
+        browser = [{ name: "the Mimic app", value: "" }];
+    }
 
     return {
         browser: (browser.length ? browser[0].name : "Unknown Browser"),

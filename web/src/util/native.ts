@@ -4,8 +4,8 @@
  * Android. It is responsible for checking if notifications are supported and
  * retrieving the tokens needed to send them.
  */
-const isiOSApp = typeof window.webkit !== "undefined" && typeof window.webkit.messageHandlers !== "undefined" && typeof window.webkit.messageHandlers.mimic !== "undefined";
-const isAndroidApp = typeof window.MimicAndroid !== "undefined";
+export const isiOSApp = typeof window.webkit !== "undefined" && typeof window.webkit.messageHandlers !== "undefined" && typeof window.webkit.messageHandlers.mimic !== "undefined";
+export const isAndroidApp = typeof window.MimicAndroid !== "undefined";
 
 let resolve!: Function;
 
