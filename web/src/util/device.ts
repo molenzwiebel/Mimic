@@ -1,4 +1,5 @@
 import { isiOSApp, isAndroidApp } from "@/util/native";
+import Vue from "vue";
 
 // The following arrays are adapted from:
 // https://medium.com/creative-technology-concepts-code/detect-device-browser-and-version-using-javascript-8b511906745
@@ -26,6 +27,16 @@ const BROWSERS = [
     { name: 'BlackBerry', value: 'CLDC' },
     { name: 'Mozilla', value: 'Mozilla' }
 ];
+
+// The user's response to asking for PN approval for a specific code.
+type DevicePNApprovalState = "notAsked" | "approved" | "denied";
+
+// Local copy of the pushNotificationApprovals object, but made reactive
+// so that Vue can pick up on calls to setPushNotificationApprovalState.
+const hasLocalStorage = "localStorage" in window && localStorage;
+const pushNotificationApprovals = Vue.observable(
+    hasLocalStorage ? JSON.parse(localStorage.getItem("pushNotificationApprovals") || "{}") : {}
+);
 
 /**
  * Returns whether or not this device is running Mimic standalone (outside
@@ -64,7 +75,6 @@ export function getDeviceDescription(): { browser: string, device: string } {
  * so private browsing may forget us.
  */
 export function getDeviceID(): string {
-    const hasLocalStorage = "localStorage" in window && localStorage;
     if (hasLocalStorage && localStorage.getItem("deviceID")) {
         return localStorage.getItem("deviceID")!;
     }
@@ -80,4 +90,31 @@ export function getDeviceID(): string {
     }
 
     return uuid;
+}
+
+/**
+ * Returns the push notification approval state for the machine with the
+ * specified code.
+ */
+export function getPushNotificationApprovalState(code: string): DevicePNApprovalState {
+    if (!hasLocalStorage) return "denied";
+
+    // We need to set here so that Vue can pick up on the
+    // property read below. Otherwise it will not detect that
+    // a view depends on the return value of this function.
+    if (!pushNotificationApprovals[code]) {
+        Vue.set(pushNotificationApprovals, code, "notAsked");
+    }
+
+    return pushNotificationApprovals[code];
+}
+
+/**
+ * Records the specified user response for push notification approval or denial.
+ */
+export function setPushNotificationApprovalState(code: string, state: DevicePNApprovalState) {
+    if (!hasLocalStorage) return;
+
+    Vue.set(pushNotificationApprovals, code, state);
+    localStorage.setItem("pushNotificationApprovals", JSON.stringify(pushNotificationApprovals));
 }

@@ -146,8 +146,8 @@ export default class Root extends Vue {
      * Registers for push notifications for the currently connected device. It
      * is assumed that we already have prompted the user to allow this in the UI.
      */
-    registerPushNotification() {
-        this.socket!.send(JSON.stringify([MobileOpcode.PN_SUBSCRIBE, "aaa", "ios"]));
+    registerPushNotification(token: string, platform: string) {
+        this.socket!.send(JSON.stringify([MobileOpcode.PN_SUBSCRIBE, token, platform]));
     }
 
     /**
@@ -198,12 +198,12 @@ export default class Root extends Vue {
                 this.connecting = false;
                 this.socket!.send("[" + MobileOpcode.VERSION + "]");
 
-                // TODO: Prompt user in UI before doing this.
-                if (native.areNotificationsSupported()) {
-                    const token = await native.requestNotificationAccess();
-                    if (token) {
-                        this.socket!.send(JSON.stringify([MobileOpcode.PN_SUBSCRIBE, ...token]));
-                    }
+                // If we already got approval for push notifications here, send the updated code to the server.
+                if (native.areNotificationsSupported() && device.getPushNotificationApprovalState(code) === "approved") {
+                    const code = await native.requestNotificationAccess();
+                    if (!code) return;
+
+                    this.registerPushNotification(code[0], code[1]);
                 }
             };
 

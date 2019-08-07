@@ -27,8 +27,8 @@
                 You will never receive marketing notifications.
             </span>
 
-            <lcu-button class="button" type="confirm">Allow</lcu-button>
-            <lcu-button class="button">No Thanks</lcu-button>
+            <lcu-button @click="approve" class="button" type="confirm">Allow</lcu-button>
+            <lcu-button @click="deny" class="button">No Thanks</lcu-button>
         </div>
 
         <div class="device-container">

@@ -84,6 +84,10 @@
 
                     <br>to use Mimic in fullscreen.
                 </span>
+
+                <span v-if="shouldDisplayNotificationTip" class="tip">
+                    <highlightable><span style="text-decoration: underline" @click="openNotificationSettings">Push Notification Settings</span></highlightable>
+                </span>
             </div>
         </template>
     </div>
@@ -97,6 +101,9 @@
 
         padding-top calc(env(safe-area-inset-top) + 25px)
         padding-bottom calc(env(safe-area-inset-bottom) + 14px)
+
+    body.has-notch .no-lobby .tip
+        bottom 30px
 </style>
 
 <style lang="stylus" scoped>

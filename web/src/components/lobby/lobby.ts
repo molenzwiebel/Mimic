@@ -3,6 +3,7 @@ import Component from "vue-class-component";
 import Root, { Result } from "../root/root";
 import { mapBackground, Role } from "@/constants";
 import * as device from "@/util/device";
+import * as native from "@/util/native";
 
 import LobbyMemberComponent from "./lobby-member.vue";
 import RolePicker from "./role-picker.vue";
@@ -184,12 +185,26 @@ export default class Lobby extends Vue {
     }
 
     /**
+     * @returns whether or not we should show the notification tip (notifications are supported and user denied)
+     */
+    get shouldDisplayNotificationTip() {
+        return native.areNotificationsSupported() && device.getPushNotificationApprovalState(this.$root.peerCode) === "denied";
+    }
+
+    /**
      * Triggers the Android install prompt for the user to add the current app to their homescreen.
      */
     triggerInstallPrompt() {
         if (!this.canTriggerHomescreenPrompt) return;
 
         (<any>window).installPrompt.prompt();
+    }
+
+    /**
+     * Marks the notification response for the current device as notAsked, so that the notification screen show up.
+     */
+    openNotificationSettings() {
+        device.setPushNotificationApprovalState(this.$root.peerCode, "notAsked");
     }
 
     /**
