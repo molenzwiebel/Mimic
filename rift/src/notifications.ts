@@ -28,6 +28,8 @@ const messaging = admin.messaging();
  */
 export async function broadcastReadyCheckNotification(content: string, code: string) {
     const tokens = await db.getRegisteredNotificationTokens(code);
+    const iosTokens = tokens.filter(x => x.type === "ios").map(x => x.token);
+    const androidTokens = tokens.filter(x => x.type === "android").map(x => x.token);
 
     const respondToken = jwt.sign({
         code,
@@ -36,26 +38,30 @@ export async function broadcastReadyCheckNotification(content: string, code: str
         expiresIn: 10 // expire 10 seconds from now
     });
 
-    // Send iOS notification.
-    const iosNotification = new apn.Notification();
-    iosNotification.expiry = Math.floor(Date.now() / 1000) + 10; // expire in 10 seconds (ready check takes 8s)
-    iosNotification.sound = "queue-pop.aiff";
-    iosNotification.alert = content;
-    iosNotification.payload = { respondToken, code };
-    iosNotification.topic = process.env.RIFT_IOS_PN_BUNDLE_ID!;
-    iosNotification.collapseId = "READY_CHECK";
-    iosNotification.aps.category = "READY_CHECK";
-    await apnProvider.send(iosNotification, tokens.filter(x => x.type === "ios").map(x => x.token));
+    if (iosTokens.length) {
+        // Send iOS notification.
+        const iosNotification = new apn.Notification();
+        iosNotification.expiry = Math.floor(Date.now() / 1000) + 10; // expire in 10 seconds (ready check takes 8s)
+        iosNotification.sound = "queue-pop.aiff";
+        iosNotification.alert = content;
+        iosNotification.payload = { respondToken, code };
+        iosNotification.topic = process.env.RIFT_IOS_PN_BUNDLE_ID!;
+        iosNotification.collapseId = "READY_CHECK";
+        iosNotification.aps.category = "READY_CHECK";
+        await apnProvider.send(iosNotification, iosTokens);
+    }
 
-    // Send android notification.
-    await messaging.sendToDevice(tokens.filter(x => x.type === "android").map(x => x.token), {
-        data: {
-            type: "readyCheck",
-            title: content,
-            respondToken,
-            code
-        }
-    });
+    if (androidTokens.length) {
+        // Send android notification.
+        await messaging.sendToDevice(androidTokens, {
+            data: {
+                type: "readyCheck",
+                title: content,
+                respondToken,
+                code
+            }
+        });
+    }
 }
 
 /**
@@ -65,19 +71,25 @@ export async function broadcastReadyCheckNotification(content: string, code: str
  */
 export async function removeReadyCheckNotifications(code: string) {
     const tokens = await db.getRegisteredNotificationTokens(code);
+    const iosTokens = tokens.filter(x => x.type === "ios").map(x => x.token);
+    const androidTokens = tokens.filter(x => x.type === "android").map(x => x.token);
 
-    // Send iOS notification.
-    const iosNotification = new apn.Notification();
-    iosNotification.payload = { remove: "READY_CHECK" };
-    iosNotification.contentAvailable = true; // run in the background
-    iosNotification.topic = process.env.RIFT_IOS_PN_BUNDLE_ID!;
-    await apnProvider.send(iosNotification, tokens.filter(x => x.type === "ios").map(x => x.token));
+    if (iosTokens.length) {
+        // Send iOS notification.
+        const iosNotification = new apn.Notification();
+        iosNotification.payload = { remove: "READY_CHECK" };
+        iosNotification.contentAvailable = true; // run in the background
+        iosNotification.topic = process.env.RIFT_IOS_PN_BUNDLE_ID!;
+        await apnProvider.send(iosNotification, iosTokens);
+    }
 
-    // Send android notification.
-    await messaging.sendToDevice(tokens.filter(x => x.type === "android").map(x => x.token), {
-        data: {
-            type: "dismiss",
-            dismissType: "readyCheck"
-        }
-    });
+    if (androidTokens.length) {
+        // Send android notification.
+        await messaging.sendToDevice(androidTokens, {
+            data: {
+                type: "dismiss",
+                dismissType: "readyCheck"
+            }
+        });
+    }
 }

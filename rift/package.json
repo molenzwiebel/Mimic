@@ -8,7 +8,7 @@
     "type": "git"
   },
   "scripts": {
-    "start": "tsc -p . && node -r dotenv/config ./dist/index.js",
+    "start": "tsc -p . && node ./dist/index.js",
     "watch": "tsc -p . -w",
     "bundle": "tsc -p ."
   },
