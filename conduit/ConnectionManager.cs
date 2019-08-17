@@ -19,6 +19,7 @@ namespace Conduit
         private App app;
         private LeagueConnection league;
         private HubConnectionHandler hubConnectionHandler;
+        private bool attemptingConnection = false;
         private bool isNewLaunch = true;
         private bool hasTriedImmediateReconnect = false; // after a DC, we first try to reconnect immediately. If that fails, do a 5s backoff
 
@@ -50,11 +51,13 @@ namespace Conduit
          */
         public async void Connect()
         {
-            if (hubConnectionHandler != null) throw new Exception("Already connected.");
+            if (hubConnectionHandler != null) return;
             if (!league.IsConnected) return;
+            if (attemptingConnection) return;
 
             try
             {
+                attemptingConnection = true;
                 DebugLogger.Global.WriteMessage("Connecting to Rift...");
 
                 // Cancel pending reconnect if there is one.
@@ -88,6 +91,8 @@ namespace Conduit
                     DebugLogger.Global.WriteMessage($"Hub token: {response["token"]}.");
                 }
 
+                attemptingConnection = false;
+
                 // Connect to hub. Will error if token is invalid or server is down, which will prompt a reconnection.
                 hubConnectionHandler = new HubConnectionHandler(league);
                 hubConnectionHandler.OnClose += CloseAndReconnect;
@@ -104,6 +109,8 @@ namespace Conduit
             }
             catch (Exception e)
             {
+                attemptingConnection = false;
+
                 DebugLogger.Global.WriteError($"Connection to Rift failed, an exception occurred: {e.ToString()}");
                 // Something happened that we didn't anticipate for.
                 // Just try again in a bit.
