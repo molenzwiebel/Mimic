@@ -81,6 +81,9 @@ export default class Root extends Vue {
         if (iOS) {
             document.body.classList.add("is-ios");
         }
+
+        // Expose a function to connect to a specific code for native applications.
+        window.nativeConnectTo = (code: string) => this.nativeConnectTo(code);
     }
 
     /**
@@ -184,6 +187,24 @@ export default class Root extends Vue {
     }
 
     /**
+     * Function exposed to the native applications that closes the current connection
+     * (if one exists) and opens a new one to the specified code.
+     */
+    private nativeConnectTo(code: string) {
+        if (this.connected && this.peerCode === code) return;
+
+        if ((this.connecting || this.connected) && this.socket) {
+            this.socket.close();
+            this.socket = null;
+        }
+
+        this.connecting = false;
+        this.connected = false;
+
+        this.connect(code);
+    }
+
+    /**
      * Automatically (re)connects to the websocket.
      */
     private connect(code: string) {
@@ -233,5 +254,11 @@ export default class Root extends Vue {
         setTimeout(() => {
             this.notifications.splice(this.notifications.indexOf(content), 1);
         }, 8000);
+    }
+}
+
+declare global {
+    interface Window {
+        nativeConnectTo: Function;
     }
 }

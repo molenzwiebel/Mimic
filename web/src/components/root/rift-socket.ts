@@ -26,6 +26,23 @@ export default class RiftSocket {
     }
 
     /**
+     * Closes the connection to the remote, _without_ calling the onclose
+     * handler.
+     */
+    public close() {
+        if (this.socket.readyState === WebSocket.OPEN) {
+            this.socket.close();
+            this.onclose();
+        }
+
+        // Allow garbage collection.
+        this.socket = <any>null;
+        this.onclose = <any>null;
+        this.onopen = <any>null;
+        this.onmessage = <any>null;
+    }
+
+    /**
      * Encrypts the specified contents and sends them to the other side.
      */
     public async send(contents: string) {

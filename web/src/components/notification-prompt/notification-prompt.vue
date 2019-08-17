@@ -85,7 +85,7 @@
         .body, .disclaimer
             text-align center
             font-family LoL Body
-            font-size 45px
+            font-size 40px
             color #dcd2bf
             margin 10px 60px
 

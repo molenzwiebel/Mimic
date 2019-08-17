@@ -46,6 +46,22 @@ export function signalLoadComplete() {
 }
 
 /**
+ * Shows the introduction slides that appear when a host application
+ * is first launched.
+ */
+export function showIntro() {
+    if (isiOSApp) {
+        window.webkit!.messageHandlers.mimic.postMessage({
+            type: "showIntro"
+        });
+    }
+
+    if (isAndroidApp) {
+        window.MimicAndroid!.showIntro();
+    }
+}
+
+/**
  * Checks whether or not notifications are supported on this device. Returns
  * false on websites, true on iOS/Android app.
  */
@@ -92,7 +108,8 @@ declare global {
         // If running on Android.
         MimicAndroid?: {
             requestNotificationAccess: Function,
-            loadingComplete: Function
+            loadingComplete: Function,
+            showIntro: Function
         };
         androidCallback?: Function;
     }

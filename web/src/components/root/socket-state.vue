@@ -3,8 +3,12 @@
         <!-- If no socket, show connection info. -->
         <template v-if="!socket">
             <h2>Welcome to Mimic!</h2>
-            <p>Enter your computer code to start controlling League from your phone. You can find the code by
-                right-clicking on the Mimic icon in the bottom right of your computer.</p>
+            <p>
+                Enter your Mimic connection code below to connect to your client.
+                <highlightable>
+                    <span style="text-decoration: underline" @click="openDesktopPrompt">Don't have Mimic installed on your desktop yet?</span>
+                </highlightable>
+            </p>
 
             <code-entry class="code" v-model="code"></code-entry>
             <lcu-button class="button" :disabled="code.length !== 6" @click="connect">Connect!</lcu-button>
@@ -63,9 +67,22 @@
 <script lang="ts">
     import RiftSocket, { RiftSocketState } from "./rift-socket";
     import CodeEntry from "./code-entry.vue";
+    import * as native from "@/util/native";
     import { Component, Prop, Vue } from "vue-property-decorator";
 
     let didFirstMount = false;
+
+    // Preload the poro images for a smoother experience.
+    const POROS = [
+        require("../../static/poros/poro-question.png"),
+        require("../../static/poros/poro-angry.png"),
+        require("../../static/poros/poro-coolguy.png")
+    ];
+
+    for (const poro of POROS) {
+        const preload = new Image();
+        preload.src = poro;
+    }
 
     @Component({
         components: { CodeEntry }
@@ -98,6 +115,14 @@
         connect() {
             if (localStorage) localStorage.setItem("conduitID", this.code);
             this.$emit("connect", this.code);
+        }
+
+        openDesktopPrompt() {
+            if (native.isAndroidApp) {
+                native.showIntro();
+            } else {
+                window.open("https://mimic.lol");
+            }
         }
 
         get didFailPubkey() {
