@@ -35,7 +35,7 @@ export async function broadcastReadyCheckNotification(content: string, code: str
         code,
         type: "readyCheck"
     }, process.env.RIFT_JWT_SECRET!, {
-        expiresIn: 10 // expire 10 seconds from now
+        expiresIn: 60 // expire in a minute 
     });
 
     if (iosTokens.length) {
