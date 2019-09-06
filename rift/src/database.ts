@@ -24,8 +24,7 @@ export async function create() {
             CREATE TABLE \`push_notification_tokens\` (
                 \`token\`       TEXT,
                 \`type\`        TEXT,
-                \`code\`        TEXT,
-                PRIMARY KEY(\`token\`)
+                \`code\`        TEXT
             );
         `);
     }
