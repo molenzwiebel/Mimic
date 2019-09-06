@@ -118,7 +118,7 @@
         }
 
         openDesktopPrompt() {
-            if (native.isAndroidApp) {
+            if (native.isAndroidApp || native.isiOSApp) {
                 native.showIntro();
             } else {
                 window.open("https://mimic.lol");
