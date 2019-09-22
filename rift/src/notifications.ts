@@ -19,12 +19,23 @@ admin.initializeApp({
 });
 const messaging = admin.messaging();
 
+const CATEGORIES = {
+    readyCheck: {
+        ios: "READY_CHECK",
+        android: "readyCheck"
+    },
+    gameStart: {
+        ios: "GAME_START",
+        android: "gameStart"
+    }
+};
+
 /**
  * Broadcasts a ready check notification with appropriate content to all devices registered
  * with the computer with the specified code. This function will automatically populate the
  * appropriate fields for the specified notification type. It will also attach a signed token
  * that can be used to give feedback without having to connect to the device itself. These 
- * tokens expire after 
+ * tokens expire after a minute.
  */
 export async function broadcastReadyCheckNotification(content: string, code: string) {
     const tokens = await db.getRegisteredNotificationTokens(code);
@@ -46,8 +57,8 @@ export async function broadcastReadyCheckNotification(content: string, code: str
         iosNotification.alert = content;
         iosNotification.payload = { respondToken, code };
         iosNotification.topic = process.env.RIFT_IOS_PN_BUNDLE_ID!;
-        iosNotification.collapseId = "READY_CHECK";
-        iosNotification.aps.category = "READY_CHECK";
+        iosNotification.collapseId = CATEGORIES.readyCheck.ios;
+        iosNotification.aps.category = CATEGORIES.readyCheck.ios;
         await apnProvider.send(iosNotification, iosTokens);
     }
 
@@ -55,7 +66,7 @@ export async function broadcastReadyCheckNotification(content: string, code: str
         // Send android notification.
         await messaging.sendToDevice(androidTokens, {
             data: {
-                type: "readyCheck",
+                type: CATEGORIES.readyCheck.android,
                 title: content,
                 respondToken,
                 code
@@ -65,11 +76,11 @@ export async function broadcastReadyCheckNotification(content: string, code: str
 }
 
 /**
- * Sends a hidden notification to all devices registered with the specified code to remove
- * all outstanding ready check notifications. This is used to remove the notifications when
- * the ready check expires.
+ * Broadcasts a game start notification with appropriate content to all devices registered
+ * with the computer with the specified code. This function will automatically populate the
+ * appropriate fields for the specified notification type.
  */
-export async function removeReadyCheckNotifications(code: string) {
+export async function broadcastGameStartNotification(content: string, code: string) {
     const tokens = await db.getRegisteredNotificationTokens(code);
     const iosTokens = tokens.filter(x => x.type === "ios").map(x => x.token);
     const androidTokens = tokens.filter(x => x.type === "android").map(x => x.token);
@@ -77,7 +88,40 @@ export async function removeReadyCheckNotifications(code: string) {
     if (iosTokens.length) {
         // Send iOS notification.
         const iosNotification = new apn.Notification();
-        iosNotification.payload = { remove: "READY_CHECK" };
+        iosNotification.alert = content;
+        iosNotification.sound = "default";
+        iosNotification.payload = { code };
+        iosNotification.topic = process.env.RIFT_IOS_PN_BUNDLE_ID!;
+        iosNotification.collapseId = CATEGORIES.gameStart.ios;
+        iosNotification.aps.category = CATEGORIES.gameStart.ios;
+        await apnProvider.send(iosNotification, iosTokens);
+    }
+
+    if (androidTokens.length) {
+        // Send android notification.
+        await messaging.sendToDevice(androidTokens, {
+            data: {
+                type: CATEGORIES.gameStart.android,
+                title: content,
+                code
+            }
+        });
+    }
+}
+
+/**
+ * Sends a hidden notification to all devices registered with the specified code to remove
+ * all outstanding notifications of the specified type.
+ */
+export async function removeNotifications(code: string, type: keyof typeof CATEGORIES) {
+    const tokens = await db.getRegisteredNotificationTokens(code);
+    const iosTokens = tokens.filter(x => x.type === "ios").map(x => x.token);
+    const androidTokens = tokens.filter(x => x.type === "android").map(x => x.token);
+
+    if (iosTokens.length) {
+        // Send iOS notification.
+        const iosNotification = new apn.Notification();
+        iosNotification.payload = { remove: CATEGORIES[type].ios };
         iosNotification.contentAvailable = true; // run in the background
         iosNotification.topic = process.env.RIFT_IOS_PN_BUNDLE_ID!;
         await apnProvider.send(iosNotification, iosTokens);
@@ -88,7 +132,7 @@ export async function removeReadyCheckNotifications(code: string) {
         await messaging.sendToDevice(androidTokens, {
             data: {
                 type: "dismiss",
-                dismissType: "readyCheck"
+                dismissType: CATEGORIES[type].android
             }
         });
     }

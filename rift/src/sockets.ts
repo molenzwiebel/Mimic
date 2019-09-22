@@ -182,14 +182,20 @@ export default class WebSocketManager {
                 console.log("[+] Registering push notification " + token + " (" + type + ") for " + code);
                 await db.registerPushNotificationToken(token, type, code);
             } else if (op === RiftOpcode.PN_SEND) {
-                const [type, data] = args;
-                if (type !== "readyCheck") throw new Error("Unknown push notification type: " + type);
+                const [type, data] = <["readyCheck" | "gameStart" | "string", string]>args;
+                if (type !== "readyCheck" && type !== "gameStart") throw new Error("Unknown push notification type: " + type);
 
-                // If data is not null, broadcast it. Else, remove the notification.
-                if (data) {
+                // Remove if null was specified.
+                if (!data) {
+                    await notifications.removeNotifications(code, type);
+                    return;
+                }
+
+                // Create the message.
+                if (type === "readyCheck") {
                     await notifications.broadcastReadyCheckNotification(data, code);
                 } else {
-                    await notifications.removeReadyCheckNotifications(code);
+                    await notifications.broadcastGameStartNotification(data, code);
                 }
             } else {
                 // Just disconnect them.
