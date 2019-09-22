@@ -108,7 +108,7 @@
     </Compile>
     <Compile Include="HubConnectionHandler.cs" />
     <Compile Include="LeagueConnection.cs" />
-    <Compile Include="LeagueUtils.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="MobileConnectionHandler.cs" />
     <Compile Include="Persistence.cs" />
     <Compile Include="Program.cs" />

@@ -25,6 +25,8 @@ namespace Conduit
         public event Action OnClose;
         private bool hasClosed = false;
 
+        private POINT cursorPosition;
+
         private string readyCheckState = "Invalid";
 
         public HubConnectionHandler(LeagueConnection league)
@@ -36,6 +38,8 @@ namespace Conduit
             this.league = league;
 
             league.Observe("/lol-matchmaking/v1/ready-check", HandleReadyCheckChange);
+            league.OnLeagueGameLaunch += HandleLeagueLaunch;
+            league.OnLeagueGameStart += HandleLeagueStart;
 
             // Pass parameters in the URL.
             socket = new WebSocket(
@@ -106,6 +110,17 @@ namespace Conduit
             socket.Send("[" + (long)RiftOpcode.PNSend + ", \"readyCheck\", " + (content == null ? "null" : "\"" + content + "\"") + "]");
         }
 
+        /**
+         * Sends a game push notification with the specified content. Specify null to
+         * remove all outstanding push notifications instead.
+         */
+        public void SendGameStartPushNotification(string content)
+        {
+            if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
+
+            socket.Send("[" + (long)RiftOpcode.PNSend + ", \"gameStart\", " + (content == null ? "null" : "\"" + content + "\"") + "]");
+        }
+
         private void HandleMessage(object sender, MessageEventArgs ev)
         {
             if (!ev.IsText) return;
@@ -144,16 +159,13 @@ namespace Conduit
                 {
                     league.Request("POST", "/lol-matchmaking/v1/ready-check/" + (string) contents[2], null);
                 }
-
-#if DEBUG
-                MessageBox.Show("Received push notification response: " + (string)contents[2], "Mimic Conduit", MessageBoxButton.OK);
-#endif
             }
         }
 
         private void HandleReadyCheckChange(dynamic data)
         {
             var newState = data == null ? "Invalid" : (string)data.state;
+            DebugLogger.Global.WriteMessage("Ready check state changed: " + newState);
 
             // Ready check just popped.
             if (newState == "InProgress" && readyCheckState != "InProgress")
@@ -168,6 +180,25 @@ namespace Conduit
             }
 
             readyCheckState = newState;
+        }
+
+        private void HandleLeagueLaunch()
+        {
+            Utils.GetCursorPos(out cursorPosition);
+            DebugLogger.Global.WriteMessage("Detected League of Legends launch.");
+        }
+
+        private void HandleLeagueStart()
+        {
+            DebugLogger.Global.WriteMessage("Detected League of Legends loading screen end.");
+            Utils.GetCursorPos(out var newCursorPosition);
+
+            // If the cursor hasn't changed, the user is likely not at their computer yet.
+            if (newCursorPosition.X == cursorPosition.X && newCursorPosition.Y == cursorPosition.Y)
+            {
+                DebugLogger.Global.WriteMessage("Cursor position wasn't changed, emitting notification");
+                this.SendGameStartPushNotification("🎮 The loading screen is complete and minions will spawn soon! Get back to your PC and grab that win!");
+            }
         }
     }
 

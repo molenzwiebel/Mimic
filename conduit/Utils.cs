@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace Conduit
@@ -9,16 +10,17 @@ namespace Conduit
     /**
      * Some static utilities used to interact/query the state of the league client process.
      */
-    static class LeagueUtils
+    static class Utils
     {
         private static Regex AUTH_TOKEN_REGEX = new Regex("\"--remoting-auth-token=(.+?)\"");
         private static Regex PORT_REGEX = new Regex("\"--app-port=(\\d+?)\"");
+        private static Regex INSTALL_LOCATION_REGEX = new Regex("\"--install-directory=(.*?)\"");
 
         /**
          * Returns a tuple with the process, remoting auth token and port of the current league client.
          * Returns null if the current league client is not running.
          */
-        public static Tuple<Process, string, string> GetLeagueStatus()
+        public static Tuple<Process, string, string, string> GetLeagueStatus()
         {
             // Find the LeagueClientUx process.
             foreach (var p in Process.GetProcessesByName("LeagueClientUx"))
@@ -45,12 +47,14 @@ namespace Conduit
                     {
                         var authToken = AUTH_TOKEN_REGEX.Match(commandLine).Groups[1].Value;
                         var port = PORT_REGEX.Match(commandLine).Groups[1].Value;
+                        var installDir = INSTALL_LOCATION_REGEX.Match(commandLine).Groups[1].Value;
                         // Use regex to extract data, return it.
-                        return new Tuple<Process, string, string>
+                        return new Tuple<Process, string, string, string>
                         (
                             p,
                             authToken,
-                            port
+                            port,
+                            installDir
                         );
                     }
                     catch (Exception e)
@@ -62,6 +66,36 @@ namespace Conduit
 
             // LeagueClientUx process was not found. Return null.
             return null;
+        }
+
+        /**
+         * Queries and returns the global cursor position.
+         */
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetCursorPos(out POINT lpPoint);
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct POINT
+    {
+        public int X;
+        public int Y;
+
+        public POINT(int x, int y)
+        {
+            this.X = x;
+            this.Y = y;
+        }
+
+        public static implicit operator System.Drawing.Point(POINT p)
+        {
+            return new System.Drawing.Point(p.X, p.Y);
+        }
+
+        public static implicit operator POINT(System.Drawing.Point p)
+        {
+            return new POINT(p.X, p.Y);
         }
     }
 }
