@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "node"
 script:
-  - cd web/
+  - cd frontend/
   - npm install -g yarn
   - yarn install
-  - yarn build
+  - yarn build:web
