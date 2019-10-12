@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "jsx": "react-native",
+        "lib": ["dom", "esnext"],
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "moduleResolution": "node",
+        "noEmit": true,
+        "skipLibCheck": true,
+        "target": "es5",
+        "resolveJsonModule": true
+    }
+}
