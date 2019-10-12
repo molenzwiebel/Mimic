@@ -16,24 +16,26 @@ import { bottomMargin } from "../utils/notch";
 
 export default function Lobby() {
     return useObserver(() => {
-        if (!lobby.state) return <NoLobby/>;
+        if (!lobby.state) return <NoLobby />;
 
-        return <Container source={lobby.backgroundImage}>
-            <View style={{ flex: 1 }}>
-                <LobbyHeader onClose={() => lobby.leaveLobby()}/>
-                <LobbyMembers/>
-            </View>
+        return (
+            <Container source={lobby.backgroundImage}>
+                <View style={{ flex: 1 }}>
+                    <LobbyHeader onClose={() => lobby.leaveLobby()} />
+                    <LobbyMembers />
+                </View>
 
-            <QueueButton disabled={!lobby.state.canStartActivity} onClick={() => queue.joinQueue()}>
-                Find Match
-            </QueueButton>
+                <QueueButton disabled={!lobby.state.canStartActivity} onClick={() => queue.joinQueue()}>
+                    Find Match
+                </QueueButton>
 
-            {/* Absolute Positioned Elements */}
-            <InviteOverlay/>
-            <RoleOverlay/>
-            <QueueDarkenedOverlay/>
-            <QueueStatus/>
-        </Container>;
+                {/* Absolute Positioned Elements */}
+                <InviteOverlay />
+                <RoleOverlay />
+                <QueueDarkenedOverlay />
+                <QueueStatus />
+            </Container>
+        );
     });
 }
 

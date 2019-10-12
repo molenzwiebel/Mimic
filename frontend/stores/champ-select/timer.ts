@@ -5,8 +5,7 @@ import { ChampSelectAction, ChampSelectStore } from "../champ-select-store";
  * Sub-store for champ select, responsible for handling the timer component.
  */
 export default class TimerStore {
-    constructor(private store: ChampSelectStore) {
-    }
+    constructor(private store: ChampSelectStore) {}
 
     /**
      * @returns the current state as shown on the top of the timer
@@ -42,7 +41,9 @@ export default class TimerStore {
      */
     @computed
     get allBans(): ChampSelectAction[] {
-        return ([] as ChampSelectAction[]).concat(...this.store.state!.actions.map(x => x.filter(y => y.type === "ban")));
+        return ([] as ChampSelectAction[]).concat(
+            ...this.store.state!.actions.map(x => x.filter(y => y.type === "ban"))
+        );
     }
 
     /**
@@ -52,7 +53,7 @@ export default class TimerStore {
     get ourBans(): number[] {
         return this.allBans
             .filter(x => this.store.getMember(x.actorCellId).isFriendly)
-            .map(x => x.completed ? x.championId : 0);
+            .map(x => (x.completed ? x.championId : 0));
     }
 
     /**
@@ -62,6 +63,6 @@ export default class TimerStore {
     get enemyBans(): number[] {
         return this.allBans
             .filter(x => !this.store.getMember(x.actorCellId).isFriendly)
-            .map(x => x.completed ? x.championId : 0);
+            .map(x => (x.completed ? x.championId : 0));
     }
 }

@@ -25,8 +25,7 @@ export default class InterfaceStore {
     @observable
     showingBench = false;
 
-    constructor(private store: ChampSelectStore) {
-    }
+    constructor(private store: ChampSelectStore) {}
 
     /**
      * @returns the map background for the current queue

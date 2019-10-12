@@ -9,26 +9,30 @@ import { getSummonerSpell, getSummonerSpellImage } from "../../utils/constants";
 const SpellOption = ({ spellId }: { spellId: number }) => {
     const spell = getSummonerSpell(spellId);
 
-    return <TouchableOpacity onPress={() => champSelect.spells.selectSummonerSpell(spellId)}>
-        <SpellContainer>
-            <SpellImage source={{ uri: getSummonerSpellImage(spellId) }}/>
-            <SpellName>{spell.name}</SpellName>
-        </SpellContainer>
-    </TouchableOpacity>;
+    return (
+        <TouchableOpacity onPress={() => champSelect.spells.selectSummonerSpell(spellId)}>
+            <SpellContainer>
+                <SpellImage source={{ uri: getSummonerSpellImage(spellId) }} />
+                <SpellName>{spell.name}</SpellName>
+            </SpellContainer>
+        </TouchableOpacity>
+    );
 };
 
 function SpellPickerOverlay() {
-    return <MagicBackgroundOverlay
-        title="Select Summoner Spell"
-        visible={champSelect.interface.pickingSummonerSpell}
-        marginTop={70}
-        onClose={() => champSelect.interface.toggleSpellPicker(true)}>
-
-        <ScrollView alwaysBounceVertical={false}>
-            {champSelect.spells.availableSummoners.map(x => <SpellOption spellId={x.id} key={x.id}/>)}
-        </ScrollView>
-
-    </MagicBackgroundOverlay>;
+    return (
+        <MagicBackgroundOverlay
+            title="Select Summoner Spell"
+            visible={champSelect.interface.pickingSummonerSpell}
+            marginTop={70}
+            onClose={() => champSelect.interface.toggleSpellPicker(true)}>
+            <ScrollView alwaysBounceVertical={false}>
+                {champSelect.spells.availableSummoners.map(x => (
+                    <SpellOption spellId={x.id} key={x.id} />
+                ))}
+            </ScrollView>
+        </MagicBackgroundOverlay>
+    );
 }
 
 export default observer(SpellPickerOverlay as any);

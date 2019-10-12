@@ -45,26 +45,43 @@ class Time extends React.Component {
 }
 
 const Bans = ({ banIds }: { banIds: number[] }) => {
-    return <BanContainer>
-        {banIds.map((x, i) => {
-            if (x === 0) return <NoBan style={{ marginRight: i === banIds.length - 1 ? 0 : 5 }} key={i}/>;
+    return (
+        <BanContainer>
+            {banIds.map((x, i) => {
+                if (x === 0)
+                    return (
+                        <NoBan
+                            style={{
+                                marginRight: i === banIds.length - 1 ? 0 : 5
+                            }}
+                            key={i}
+                        />
+                    );
 
-            return <Ban style={{ marginRight: i === banIds.length - 1 ? 0 : 5 }} source={{ uri: getChampionIcon(x) }}
-                        key={i}/>
-        })}
-    </BanContainer>
+                return (
+                    <Ban
+                        style={{ marginRight: i === banIds.length - 1 ? 0 : 5 }}
+                        source={{ uri: getChampionIcon(x) }}
+                        key={i}
+                    />
+                );
+            })}
+        </BanContainer>
+    );
 };
 
 export default function Timer() {
-    return <Container>
-        <State>{champSelect.timer.stateSubtitle}</State>
+    return (
+        <Container>
+            <State>{champSelect.timer.stateSubtitle}</State>
 
-        <BansAndTimer>
-            <Bans banIds={champSelect.timer.ourBans}/>
-            <Time/>
-            <Bans banIds={champSelect.timer.enemyBans}/>
-        </BansAndTimer>
-    </Container>;
+            <BansAndTimer>
+                <Bans banIds={champSelect.timer.ourBans} />
+                <Time />
+                <Bans banIds={champSelect.timer.enemyBans} />
+            </BansAndTimer>
+        </Container>
+    );
 }
 
 const Container = styled(View)`

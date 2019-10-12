@@ -8,7 +8,7 @@ export default function NoLobby() {
             <Header>NO LOBBY</Header>
             <Detail>Wait for an invite, or join a{"\n"}lobby on your desktop.</Detail>
         </Background>
-    )
+    );
 }
 
 const Background = styled(ImageBackground)`

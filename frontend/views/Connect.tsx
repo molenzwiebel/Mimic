@@ -18,18 +18,24 @@ export default class Connect extends Component {
     }
 
     render() {
-        return (<ImageBackground style={styles.container} source={require("../assets/magic-background.jpg")}>
-            <Text style={styles.header}>Welcome to Mimic!</Text>
-            <Text style={styles.subheader}>How would you like to connect?</Text>
+        return (
+            <ImageBackground style={styles.container} source={require("../assets/magic-background.jpg")}>
+                <Text style={styles.header}>Welcome to Mimic!</Text>
+                <Text style={styles.subheader}>How would you like to connect?</Text>
 
-            <TextInput style={[styles.almostFullWidth, styles.input]} value={this.hostname}
-                       onChangeText={text => this.hostname = text}/>
+                <TextInput
+                    style={[styles.almostFullWidth, styles.input]}
+                    value={this.hostname}
+                    onChangeText={text => (this.hostname = text)}
+                />
 
-            <LCUButton style={[styles.almostFullWidth, { marginTop: 10 }]}
-                       onClick={() => socket.connect(this.hostname)}>
-                Connect
-            </LCUButton>
-        </ImageBackground>);
+                <LCUButton
+                    style={[styles.almostFullWidth, { marginTop: 10 }]}
+                    onClick={() => socket.connect(this.hostname)}>
+                    Connect
+                </LCUButton>
+            </ImageBackground>
+        );
     }
 }
 
@@ -57,7 +63,7 @@ const styles = StyleSheet.create({
     almostFullWidth: {
         width: Dimensions.get("window").width - 20,
         marginLeft: 10,
-        marginRight: 10,
+        marginRight: 10
     },
 
     input: {

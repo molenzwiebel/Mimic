@@ -14,59 +14,75 @@ const BUTTON_CONTAINER_HEIGHT = 25;
 const RerollFloatingButtons = () => {
     const canReroll = champSelect.rerollState.numberOfRolls >= 1;
 
-    return <>
-        <TouchableOpacity onPress={() => champSelect.picking.reroll()} disabled={!canReroll}>
-            <RerollFloatingButtonContainer>
-                <Ionicons name="ios-refresh" size={15} color="#b6dbdb"/>
-                <RerollBenchText unavailable={canReroll ? undefined : "true"}>
-                    REROLL ({champSelect.rerollState.numberOfRolls}/{champSelect.rerollState.maxRolls})
-                </RerollBenchText>
-            </RerollFloatingButtonContainer>
-        </TouchableOpacity>
+    return (
+        <>
+            <TouchableOpacity onPress={() => champSelect.picking.reroll()} disabled={!canReroll}>
+                <RerollFloatingButtonContainer>
+                    <Ionicons name="ios-refresh" size={15} color="#b6dbdb" />
+                    <RerollBenchText unavailable={canReroll ? undefined : "true"}>
+                        REROLL ({champSelect.rerollState.numberOfRolls}/{champSelect.rerollState.maxRolls})
+                    </RerollBenchText>
+                </RerollFloatingButtonContainer>
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => champSelect.interface.toggleBench()}>
-            <RerollFloatingButtonContainer style={{ width: 100 }}>
-                <Ionicons name="ios-arrow-up" size={15} color="white"/>
-                <RerollBenchText>BENCH</RerollBenchText>
-            </RerollFloatingButtonContainer>
-        </TouchableOpacity>
-    </>;
+            <TouchableOpacity onPress={() => champSelect.interface.toggleBench()}>
+                <RerollFloatingButtonContainer style={{ width: 100 }}>
+                    <Ionicons name="ios-arrow-up" size={15} color="white" />
+                    <RerollBenchText>BENCH</RerollBenchText>
+                </RerollFloatingButtonContainer>
+            </TouchableOpacity>
+        </>
+    );
 };
 
 const FloatingButtons = () => {
     const hasReroll = champSelect.state && champSelect.state.benchEnabled;
 
-    return <ButtonsContainer>
-        {/* Expand button if we can't reroll. */}
-        {!hasReroll && <TouchableOpacity onPress={() => champSelect.interface.toggleChampionPicker()}>
-            <FloatingButtonContainer>
-                <Ionicons name="ios-arrow-up" size={20} color="white"/>
-            </FloatingButtonContainer>
-        </TouchableOpacity>}
+    return (
+        <ButtonsContainer>
+            {/* Expand button if we can't reroll. */}
+            {!hasReroll && (
+                <TouchableOpacity onPress={() => champSelect.interface.toggleChampionPicker()}>
+                    <FloatingButtonContainer>
+                        <Ionicons name="ios-arrow-up" size={20} color="white" />
+                    </FloatingButtonContainer>
+                </TouchableOpacity>
+            )}
 
-        {/* Else the reroll/bench buttons. */}
-        {hasReroll && <RerollFloatingButtons/>}
-    </ButtonsContainer>;
-}
+            {/* Else the reroll/bench buttons. */}
+            {hasReroll && <RerollFloatingButtons />}
+        </ButtonsContainer>
+    );
+};
 
 function PlayerSettings() {
-    return <Container>
-        <RunePageDropdown/>
+    return (
+        <Container>
+            <RunePageDropdown />
 
-        <CircularLCUButton size={35} onClick={() => champSelect.interface.toggleRuneEditor()}>
-            <Ionicons name="md-create" size={15} color="white"/>
-        </CircularLCUButton>
+            <CircularLCUButton size={35} onClick={() => champSelect.interface.toggleRuneEditor()}>
+                <Ionicons name="md-create" size={15} color="white" />
+            </CircularLCUButton>
 
-        <TouchableOpacity onPress={() => champSelect.interface.toggleSpellPicker(true)}>
-            <SpellImage source={{ uri: getSummonerSpellImage(champSelect.state!.localPlayer.spell1Id) }}/>
-        </TouchableOpacity>
+            <TouchableOpacity onPress={() => champSelect.interface.toggleSpellPicker(true)}>
+                <SpellImage
+                    source={{
+                        uri: getSummonerSpellImage(champSelect.state!.localPlayer.spell1Id)
+                    }}
+                />
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => champSelect.interface.toggleSpellPicker(false)}>
-            <SpellImage source={{ uri: getSummonerSpellImage(champSelect.state!.localPlayer.spell2Id) }}/>
-        </TouchableOpacity>
+            <TouchableOpacity onPress={() => champSelect.interface.toggleSpellPicker(false)}>
+                <SpellImage
+                    source={{
+                        uri: getSummonerSpellImage(champSelect.state!.localPlayer.spell2Id)
+                    }}
+                />
+            </TouchableOpacity>
 
-        <FloatingButtons/>
-    </Container>;
+            <FloatingButtons />
+        </Container>
+    );
 }
 
 export default observer(PlayerSettings as any);
@@ -118,7 +134,7 @@ const RerollFloatingButtonContainer = styled(FloatingButtonContainer)`
 
 const RerollBenchText: any = styled(Text)`
     margin-left: 5px;
-    color: ${(props: any) => props.unavailable ? "#657a7a" : "#b6dbdb"};
+    color: ${(props: any) => (props.unavailable ? "#657a7a" : "#b6dbdb")};
     font-size: 16px;
     font-family: "LoL Display";
 `;

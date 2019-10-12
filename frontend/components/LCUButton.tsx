@@ -26,9 +26,13 @@ export default function LCUButton({ style, disabled = false, type = "normal", ch
 
     return (
         <TouchableOpacity style={[style, { height: 55 }]} disabled={disabled} onPress={onClick}>
-            <Border colors={disabled ? ["#5c5b57ff", "#5c5b57ff"] : colors[type]} locations={disabled ? [0, 1] : locations[type]}>
+            <Border
+                colors={disabled ? ["#5c5b57ff", "#5c5b57ff"] : colors[type]}
+                locations={disabled ? [0, 1] : locations[type]}>
                 <Content>
-                    <ButtonText disabled={disabled} type={type}>{children.toUpperCase()}</ButtonText>
+                    <ButtonText disabled={disabled} type={type}>
+                        {children.toUpperCase()}
+                    </ButtonText>
                 </Content>
             </Border>
         </TouchableOpacity>
@@ -46,7 +50,7 @@ const Content = styled(View)`
     align-self: stretch;
     flex: 1;
     margin: 3px;
-    background-color: #1E2328;
+    background-color: #1e2328;
     align-items: center;
     justify-content: center;
 `;
@@ -54,5 +58,12 @@ const Content = styled(View)`
 const ButtonText = styled<any>(Text)`
     font-size: 23px;
     font-family: "LoL Display Bold";
-    color: ${props => props.disabled ? "#5c5b57" : ({ normal: "#cdbe91", confirm: "#a3c7c7", deny: "#bd253c" } as any)[props.type]};
+    color: ${props =>
+        props.disabled
+            ? "#5c5b57"
+            : ({
+                  normal: "#cdbe91",
+                  confirm: "#a3c7c7",
+                  deny: "#bd253c"
+              } as any)[props.type]};
 `;

@@ -13,16 +13,20 @@ interface LobbyHeaderProps {
 
 export default function LobbyHeader({ onClose }: LobbyHeaderProps) {
     return useObserver(() => {
-        return <Container>
-            <Info>
-                <Header>Lobby</Header>
-                <Details>{lobby.queueName} - {lobby.mapName}</Details>
-            </Info>
+        return (
+            <Container>
+                <Info>
+                    <Header>Lobby</Header>
+                    <Details>
+                        {lobby.queueName} - {lobby.mapName}
+                    </Details>
+                </Info>
 
-            <TouchableOpacity onPress={onClose}>
-                <Ionicons name="md-close" color="white" size={35} style={{ marginRight: 8 }}/>
-            </TouchableOpacity>
-        </Container>
+                <TouchableOpacity onPress={onClose}>
+                    <Ionicons name="md-close" color="white" size={35} style={{ marginRight: 8 }} />
+                </TouchableOpacity>
+            </Container>
+        );
     });
 }
 

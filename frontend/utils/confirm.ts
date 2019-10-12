@@ -11,11 +11,11 @@ export default async function _confirm(title: string, body: string): Promise<boo
                 {
                     text: "Cancel",
                     onPress: () => resolve(false),
-                    style: "cancel",
+                    style: "cancel"
                 },
-                { text: "OK", onPress: () => resolve(true) },
+                { text: "OK", onPress: () => resolve(true) }
             ],
-            { cancelable: false },
+            { cancelable: false }
         );
     });
 }

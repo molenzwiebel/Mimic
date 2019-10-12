@@ -12,22 +12,28 @@ import { Ionicons } from "@expo/vector-icons";
 const HEIGHT = 105 + notchHeight;
 
 const InviteEntry = ({ invite }: { invite: Invite }) => {
-    return <InviteEntryContainer>
-        <Avatar source={{ uri: getPlayerAvatarURL(invite.fromSummoner.profileIconId) }} />
+    return (
+        <InviteEntryContainer>
+            <Avatar
+                source={{
+                    uri: getPlayerAvatarURL(invite.fromSummoner.profileIconId)
+                }}
+            />
 
-        <Details>
-            <Name>{ invite.fromSummoner.displayName }</Name>
-            <Queue>{ (invite.queueName || "Unknown Queue") + " - " + (invite.mapName || "Unknown Map") }</Queue>
-        </Details>
+            <Details>
+                <Name>{invite.fromSummoner.displayName}</Name>
+                <Queue>{(invite.queueName || "Unknown Queue") + " - " + (invite.mapName || "Unknown Map")}</Queue>
+            </Details>
 
-        <TouchableOpacity onPress={() => invites.acceptInvite(invite)}>
-            <ActionButton name="md-checkmark" size={40} color="rgb(240, 230, 210)" />
-        </TouchableOpacity>
+            <TouchableOpacity onPress={() => invites.acceptInvite(invite)}>
+                <ActionButton name="md-checkmark" size={40} color="rgb(240, 230, 210)" />
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => invites.declineInvite(invite)}>
-            <ActionButton name="md-close" size={40} color="rgb(240, 230, 210)" />
-        </TouchableOpacity>
-    </InviteEntryContainer>;
+            <TouchableOpacity onPress={() => invites.declineInvite(invite)}>
+                <ActionButton name="md-close" size={40} color="rgb(240, 230, 210)" />
+            </TouchableOpacity>
+        </InviteEntryContainer>
+    );
 };
 
 const InviteEntryContainer = styled(View)`
@@ -66,15 +72,21 @@ const ActionButton = styled(Ionicons)`
 `;
 
 const InvitesContent = observer(() => {
-    return <InviteContainer>
-        <AnimatedFlameBackground height={HEIGHT} />
+    return (
+        <InviteContainer>
+            <AnimatedFlameBackground height={HEIGHT} />
 
-        <Header>GAME INVITES {invites.pendingInvites.length > 1 ? `(${invites.pendingInvites.length})` : ""}</Header>
+            <Header>
+                GAME INVITES {invites.pendingInvites.length > 1 ? `(${invites.pendingInvites.length})` : ""}
+            </Header>
 
-        <ScrollView alwaysBounceVertical={false}>
-            {invites.pendingInvites.map(x => <InviteEntry invite={x} key={x.invitationId} />)}
-        </ScrollView>
-    </InviteContainer>;
+            <ScrollView alwaysBounceVertical={false}>
+                {invites.pendingInvites.map(x => (
+                    <InviteEntry invite={x} key={x.invitationId} />
+                ))}
+            </ScrollView>
+        </InviteContainer>
+    );
 });
 
 function Invites() {
@@ -89,9 +101,7 @@ function Invites() {
         }).start();
     }, [hasInvites]);
 
-    return <InviteContainerWrapper style={{ height }}>
-        {hasInvites && <InvitesContent/>}
-    </InviteContainerWrapper>;
+    return <InviteContainerWrapper style={{ height }}>{hasInvites && <InvitesContent />}</InviteContainerWrapper>;
 }
 export default observer(Invites as any);
 

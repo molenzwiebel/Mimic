@@ -15,17 +15,19 @@ export default function ChampionSelect() {
     return useObserver(() => {
         if (!champSelect.state) return null;
 
-        return <Container source={champSelect.interface.background}>
-            <Timer/>
-            <Members/>
-            <PlayerSettings/>
+        return (
+            <Container source={champSelect.interface.background}>
+                <Timer />
+                <Members />
+                <PlayerSettings />
 
-            {/* Absolute Positioned Elements */}
-            <SpellPickerOverlay/>
-            <RuneEditorOverlay/>
-            <ChampionPickerOverlay/>
-            <BenchOverlay/>
-        </Container>;
+                {/* Absolute Positioned Elements */}
+                <SpellPickerOverlay />
+                <RuneEditorOverlay />
+                <ChampionPickerOverlay />
+                <BenchOverlay />
+            </Container>
+        );
     });
 }
 

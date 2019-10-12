@@ -50,29 +50,43 @@ const ReadyCheckProgressBar = observer(() => {
     });
 
     // Note: cannot use native driver
-    return <ProgressBarContainer>
-        <AnimatedFlameBackground size={PROGRESS_BAR_HEIGHT} style={{ width }} colors={colors} useNativeDriver={false} />
-    </ProgressBarContainer>;
+    return (
+        <ProgressBarContainer>
+            <AnimatedFlameBackground
+                size={PROGRESS_BAR_HEIGHT}
+                style={{ width }}
+                colors={colors}
+                useNativeDriver={false}
+            />
+        </ProgressBarContainer>
+    );
 });
 
 const ReadyCheckButtons = observer(() => {
-    return <>
-        <AcceptButton disabled={readyCheck.hasResponded} onClick={() => readyCheck.accept()}
-                      type="confirm">Accept!</AcceptButton>
-        <DeclineButton disabled={readyCheck.hasResponded} onClick={() => readyCheck.decline()}>Decline</DeclineButton>
-    </>;
+    return (
+        <>
+            <AcceptButton disabled={readyCheck.hasResponded} onClick={() => readyCheck.accept()} type="confirm">
+                Accept!
+            </AcceptButton>
+            <DeclineButton disabled={readyCheck.hasResponded} onClick={() => readyCheck.decline()}>
+                Decline
+            </DeclineButton>
+        </>
+    );
 });
 
 export default function ReadyCheck() {
-    return <ContainerBorder colors={["#463714ff", "#463714ff", "#614a1fff"]} locations={[0, 0.05, 1]}>
-        <Container>
-            <ReadyCheckProgressBar/>
+    return (
+        <ContainerBorder colors={["#463714ff", "#463714ff", "#614a1fff"]} locations={[0, 0.05, 1]}>
+            <Container>
+                <ReadyCheckProgressBar />
 
-            <Title>MATCH FOUND</Title>
+                <Title>MATCH FOUND</Title>
 
-            <ReadyCheckButtons/>
-        </Container>
-    </ContainerBorder>;
+                <ReadyCheckButtons />
+            </Container>
+        </ContainerBorder>
+    );
 }
 
 const ContainerBorder = styled(LinearGradient)`

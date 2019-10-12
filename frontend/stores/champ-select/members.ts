@@ -7,14 +7,13 @@ import { getChampion, POSITION_NAMES } from "../../utils/constants";
  * displayed in the list.
  */
 export default class MembersStore {
-    constructor(private store: ChampSelectStore) {
-    }
+    constructor(private store: ChampSelectStore) {}
 
     /**
      * Computes the proper background image for the specified member. Returns
      * an object that can be mixed into an ImageBackground.
      */
-    getMemberBackground(member: ChampSelectMember): null | { championId: number, skinId: number, style: any } {
+    getMemberBackground(member: ChampSelectMember): null | { championId: number; skinId: number; style: any } {
         const act = this.store.getActions(member);
         const champId = (act ? act.championId : 0) || member.championId || member.championPickIntent;
         if (!champId) return null;
@@ -59,7 +58,10 @@ export default class MembersStore {
      */
     getMemberSubtext(member: ChampSelectMember): string {
         if (!this.store.state) return "";
-        let extra = this.store.state.timer.phase === "PLANNING" && member === this.store.state.localPlayer ? "Declaring Intent" : "";
+        let extra =
+            this.store.state.timer.phase === "PLANNING" && member === this.store.state.localPlayer
+                ? "Declaring Intent"
+                : "";
 
         const cur = this.store.getActions(member);
         if (cur && !cur.completed && !extra) {
@@ -80,11 +82,18 @@ export default class MembersStore {
      */
     @computed
     get hasEveryonePicked(): boolean {
-        return !!this.store.state // A state exists.
-            && this.store.state.actions.filter(x => // and we cannot find a pick turn in which
-                x.filter(y => // there exists an action...
-                    y.type === "pick" // that has to pick a champion
-                    && !y.completed // and hasn't been completed yet
-                ).length > 0).length === 0;
+        return (
+            !!this.store.state && // A state exists.
+            this.store.state.actions.filter(
+                (
+                    x // and we cannot find a pick turn in which
+                ) =>
+                    x.filter(
+                        (
+                            y // there exists an action...
+                        ) => y.type === "pick" && !y.completed // that has to pick a champion // and hasn't been completed yet
+                    ).length > 0
+            ).length === 0
+        );
     }
 }

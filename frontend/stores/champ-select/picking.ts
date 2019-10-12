@@ -36,9 +36,12 @@ export default class PickingStore {
 
         // Whenever the state changes, invalidate our local state since it may have changed.
         // Usually, this is fine since the store change is due to our pick changing.
-        reaction(() => this.store.state, () => {
-            this.locallySelectedChampion = null;
-        });
+        reaction(
+            () => this.store.state,
+            () => {
+                this.locallySelectedChampion = null;
+            }
+        );
     }
 
     /**
@@ -48,7 +51,9 @@ export default class PickingStore {
     @computed
     get firstUncompletedPickAction(): ChampSelectAction | undefined {
         const allActions: ChampSelectAction[] = Array.prototype.concat(...this.store.state!.actions);
-        return allActions.find(x => x.type === "pick" && x.actorCellId === this.store.state!.localPlayerCellId && !x.completed);
+        return allActions.find(
+            x => x.type === "pick" && x.actorCellId === this.store.state!.localPlayerCellId && !x.completed
+        );
     }
 
     /**
@@ -56,15 +61,23 @@ export default class PickingStore {
      */
     getSelectableChampions(term: string): number[] {
         if (!this.store.state) return [];
-        const isCurrentlyBanning = this.store.currentTurn
-            && this.store.currentTurn.filter(x => x.type === "ban" && x.actorCellId === this.store.state!.localPlayerCellId && !x.completed).length > 0;
+        const isCurrentlyBanning =
+            this.store.currentTurn &&
+            this.store.currentTurn.filter(
+                x => x.type === "ban" && x.actorCellId === this.store.state!.localPlayerCellId && !x.completed
+            ).length > 0;
 
         const allActions = (<ChampSelectAction[]>[]).concat(...this.store.state.actions);
         const bannedChamps = allActions.filter(x => x.type === "ban" && x.completed).map(x => x.championId);
-        const selectable = (isCurrentlyBanning ? this.bannableChampions : this.pickableChampions).filter(x => bannedChamps.indexOf(x) === -1);
+        const selectable = (isCurrentlyBanning ? this.bannableChampions : this.pickableChampions).filter(
+            x => bannedChamps.indexOf(x) === -1
+        );
 
-        return selectable
-            .filter(x => getChampion(x).name.toLowerCase().includes(term.toLowerCase()));
+        return selectable.filter(x =>
+            getChampion(x)
+                .name.toLowerCase()
+                .includes(term.toLowerCase())
+        );
     }
 
     /**

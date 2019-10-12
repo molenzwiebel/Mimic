@@ -9,32 +9,33 @@ import notchHeight from "../../utils/notch";
 import AnimatedFlameBackground from "../AnimatedFlameBackground";
 
 const HEIGHT = 80 + notchHeight;
-const formatSeconds = (secs: number) => (Math.floor(secs / 60)) + ":" + ("00" + (Math.round(secs) % 60).toFixed(0)).slice(-2);
+const formatSeconds = (secs: number) =>
+    Math.floor(secs / 60) + ":" + ("00" + (Math.round(secs) % 60).toFixed(0)).slice(-2);
 
 // Separate component to avoid rerendering QueueStatusContent every second.
 const QueueTime = observer(() => {
-    return <ElapsedTime>{
-        formatSeconds(queue.state!.timeInQueue)
-    }</ElapsedTime>;
+    return <ElapsedTime>{formatSeconds(queue.state!.timeInQueue)}</ElapsedTime>;
 });
 
 const QueueStatusContent = observer(() => {
-    return <QueueStatusContainer>
-        <AnimatedFlameBackground size={HEIGHT}/>
+    return (
+        <QueueStatusContainer>
+            <AnimatedFlameBackground size={HEIGHT} />
 
-        <LeftItems>
-            <Ionicons name="md-search" size={50} color="white"/>
+            <LeftItems>
+                <Ionicons name="md-search" size={50} color="white" />
 
-            <Time>
-                <QueueTime/>
-                <EstimatedTime>Estimated: {formatSeconds(queue.state!.estimatedQueueTime)}</EstimatedTime>
-            </Time>
-        </LeftItems>
+                <Time>
+                    <QueueTime />
+                    <EstimatedTime>Estimated: {formatSeconds(queue.state!.estimatedQueueTime)}</EstimatedTime>
+                </Time>
+            </LeftItems>
 
-        <TouchableOpacity onPress={() => queue.leaveQueue()}>
-            <Ionicons style={{ zIndex: 1 }} name="md-log-out" size={35} color="white"/>
-        </TouchableOpacity>
-    </QueueStatusContainer>;
+            <TouchableOpacity onPress={() => queue.leaveQueue()}>
+                <Ionicons style={{ zIndex: 1 }} name="md-log-out" size={35} color="white" />
+            </TouchableOpacity>
+        </QueueStatusContainer>
+    );
 });
 
 function QueueStatus() {
@@ -49,9 +50,7 @@ function QueueStatus() {
         }).start();
     }, [isInQueue]);
 
-    return <QueuePositioner style={{ height }}>
-        {isInQueue && <QueueStatusContent/>}
-    </QueuePositioner>;
+    return <QueuePositioner style={{ height }}>{isInQueue && <QueueStatusContent />}</QueuePositioner>;
 }
 
 export default observer(QueueStatus as any);

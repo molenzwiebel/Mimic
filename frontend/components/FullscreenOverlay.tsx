@@ -30,11 +30,18 @@ export default function FullscreenOverlay({ marginTop, visible, render }: Fullsc
         });
     }, [visible]);
 
-    return <Container style={{ transform: [{ translateY: translation }] }}>
-        <View style={{ flex: 1, alignSelf: "stretch", marginTop: Constants.statusBarHeight + marginTop }}>
-            {onScreen && render()}
-        </View>
-    </Container>;
+    return (
+        <Container style={{ transform: [{ translateY: translation }] }}>
+            <View
+                style={{
+                    flex: 1,
+                    alignSelf: "stretch",
+                    marginTop: Constants.statusBarHeight + marginTop
+                }}>
+                {onScreen && render()}
+            </View>
+        </Container>
+    );
 }
 
 const Container = styled(Animated.View)`

@@ -27,7 +27,7 @@ class Socket {
     socket: RiftSocket;
 
     idCounter = 0;
-    observers: { matcher: string, handler: (res: Result) => void }[] = [];
+    observers: { matcher: string; handler: (res: Result) => void }[] = [];
     requests: { [key: number]: Function } = {};
 
     /**
@@ -99,7 +99,10 @@ class Socket {
         }
 
         if (data[0] === MobileOpcode.RESPONSE && this.requests[data[1] as number]) {
-            this.requests[data[1] as number]({ status: data[2], content: data[3] });
+            this.requests[data[1] as number]({
+                status: data[2],
+                content: data[3]
+            });
             delete this.requests[data[1] as number];
         }
 

@@ -14,48 +14,61 @@ const ChampionOption = observer(({ id }: { id: number }) => {
 
     const isActive = champSelect.picking.selectedChampion === id;
 
-    return <TouchableOpacity onPress={() => champSelect.picking.selectChampion(id)}>
-        <OptionContainer>
-            <OptionImage active={isActive} source={{ uri: image }} />
-            <OptionText>{ champ.name }</OptionText>
-        </OptionContainer>
-    </TouchableOpacity>;
+    return (
+        <TouchableOpacity onPress={() => champSelect.picking.selectChampion(id)}>
+            <OptionContainer>
+                <OptionImage active={isActive} source={{ uri: image }} />
+                <OptionText>{champ.name}</OptionText>
+            </OptionContainer>
+        </TouchableOpacity>
+    );
 });
 
 const ChampionOptions = observer(({ searchTerm }: { searchTerm: string }) => {
     const champs = champSelect.picking.getSelectableChampions(searchTerm);
 
-    return <ScrollView style={{ flex: 1 }}>
-        <OptionsContainer>
-            {champs.map(id => <ChampionOption id={id} key={id} />)}
-        </OptionsContainer>
-    </ScrollView>;
+    return (
+        <ScrollView style={{ flex: 1 }}>
+            <OptionsContainer>
+                {champs.map(id => (
+                    <ChampionOption id={id} key={id} />
+                ))}
+            </OptionsContainer>
+        </ScrollView>
+    );
 });
 
 const ChampionPicker = observer(() => {
     const [searchTerm, setSearchTerm] = useState("");
 
-    return <Container>
-        <Search value={searchTerm} onChangeText={setSearchTerm} placeholder="Search..." />
-        <ChampionOptions searchTerm={searchTerm} />
+    return (
+        <Container>
+            <Search value={searchTerm} onChangeText={setSearchTerm} placeholder="Search..." />
+            <ChampionOptions searchTerm={searchTerm} />
 
-        <ConfirmButton type={champSelect.picking.buttonType} disabled={!champSelect.picking.canCompleteAction} onClick={() => champSelect.picking.completeAction()}>
-            { champSelect.picking.buttonText }
-        </ConfirmButton>
-    </Container>
+            <ConfirmButton
+                type={champSelect.picking.buttonType}
+                disabled={!champSelect.picking.canCompleteAction}
+                onClick={() => champSelect.picking.completeAction()}>
+                {champSelect.picking.buttonText}
+            </ConfirmButton>
+        </Container>
+    );
 });
 
 function ChampionPickerOverlay() {
     const inChampSelect = champSelect.state && champSelect.state.localPlayer;
     const title = !inChampSelect ? "" : champSelect.picking.header;
 
-    return <MagicBackgroundOverlay
-        title={title}
-        visible={champSelect.interface.pickingChampion}
-        marginTop={70}
-        onClose={() => champSelect.interface.toggleChampionPicker()}>
-        {inChampSelect && <ChampionPicker />}
-    </MagicBackgroundOverlay>;
+    return (
+        <MagicBackgroundOverlay
+            title={title}
+            visible={champSelect.interface.pickingChampion}
+            marginTop={70}
+            onClose={() => champSelect.interface.toggleChampionPicker()}>
+            {inChampSelect && <ChampionPicker />}
+        </MagicBackgroundOverlay>
+    );
 }
 export default observer(ChampionPickerOverlay as any);
 
@@ -96,11 +109,14 @@ const OptionContainer = styled(View)`
 const OptionImage: any = styled(Image)`
     width: 66px;
     height: 66px;
-    opacity: ${(props: any) => props.active ? 1 : 0.7};
-    border: 1px solid ${(props: any) => props.active ? "#c89c3c" : "#3c3c41" };
+    opacity: ${(props: any) => (props.active ? 1 : 0.7)};
+    border: 1px solid ${(props: any) => (props.active ? "#c89c3c" : "#3c3c41")};
 `;
 
-const OptionText = styled(Text).attrs(() => ({ numberOfLines: 1, adjustsFontSizeToFit: true }))`
+const OptionText = styled(Text).attrs(() => ({
+    numberOfLines: 1,
+    adjustsFontSizeToFit: true
+}))`
     margin-top: 6px;
     color: #f0e6d3;
     width: 70px;

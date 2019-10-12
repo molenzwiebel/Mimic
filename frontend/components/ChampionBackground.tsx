@@ -17,17 +17,18 @@ export default function ChampionBackground(props: ChampionBackgroundProps) {
 
     let uri;
     if (props.skinId) {
-        uri = `https://cdn.communitydragon.org/latest/champion/${props.championId}/splash-art/centered/skin/${props.skinId % 1000}`;
+        uri = `https://cdn.communitydragon.org/latest/champion/${
+            props.championId
+        }/splash-art/centered/skin/${props.skinId % 1000}`;
     } else {
         uri = `https://cdn.communitydragon.org/latest/champion/${props.championId}/splash-art/centered`;
     }
 
-    return <Container style={props.style} onLayout={ev => setWidth(ev.nativeEvent.layout.width)}>
-        <BackgroundImage
-            source={{ uri }}
-            style={{ width, height, top: -30 }}
-        />
-    </Container>
+    return (
+        <Container style={props.style} onLayout={ev => setWidth(ev.nativeEvent.layout.width)}>
+            <BackgroundImage source={{ uri }} style={{ width, height, top: -30 }} />
+        </Container>
+    );
 }
 
 const BackgroundImage = styled(Image)`

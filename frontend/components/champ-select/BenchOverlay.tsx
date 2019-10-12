@@ -10,26 +10,29 @@ import ChampionBackground from "../ChampionBackground";
 const BenchChampionOption = observer(({ id }: { id: number }) => {
     const champ = getChampion(id);
 
-    return <TouchableOpacity onPress={() => champSelect.picking.swapWithChampion(id)}>
-        <Champion>
-            <ChampionBackground championId={id} skinId={0} />
-            <ChampionName>{ champ.name }</ChampionName>
-        </Champion>
-    </TouchableOpacity>
+    return (
+        <TouchableOpacity onPress={() => champSelect.picking.swapWithChampion(id)}>
+            <Champion>
+                <ChampionBackground championId={id} skinId={0} />
+                <ChampionName>{champ.name}</ChampionName>
+            </Champion>
+        </TouchableOpacity>
+    );
 });
 
 function BenchOverlay() {
-    return <MagicBackgroundOverlay
-        title="Champion Bench"
-        visible={champSelect.interface.showingBench}
-        marginTop={70}
-        onClose={() => champSelect.interface.toggleBench()}>
-
-        <ScrollView alwaysBounceVertical={false}>
-            {champSelect.state && champSelect.state.benchChampionIds.map(x => <BenchChampionOption id={x} key={x}/>)}
-        </ScrollView>
-
-    </MagicBackgroundOverlay>;
+    return (
+        <MagicBackgroundOverlay
+            title="Champion Bench"
+            visible={champSelect.interface.showingBench}
+            marginTop={70}
+            onClose={() => champSelect.interface.toggleBench()}>
+            <ScrollView alwaysBounceVertical={false}>
+                {champSelect.state &&
+                    champSelect.state.benchChampionIds.map(x => <BenchChampionOption id={x} key={x} />)}
+            </ScrollView>
+        </MagicBackgroundOverlay>
+    );
 }
 export default observer(BenchOverlay as any);
 

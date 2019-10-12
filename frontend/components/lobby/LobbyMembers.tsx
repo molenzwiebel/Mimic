@@ -5,37 +5,44 @@ import lobby, { LobbyMember } from "../../stores/lobby-store";
 import { getPlayerAvatarURL, getRoleImage, POSITION_NAMES } from "../../utils/constants";
 import { Ionicons } from "@expo/vector-icons";
 
-function MemberActions({ member, showPositions }: { member: LobbyMember, showPositions: boolean }) {
+function MemberActions({ member, showPositions }: { member: LobbyMember; showPositions: boolean }) {
     if (member.isLocalMember) {
         if (!showPositions) return <></>; // we can't moderate ourselves
 
-        return <MemberActionContainer>
-            <TouchableOpacity onPress={() => lobby.toggleRoleOverlay(true)}><PositionImage
-                source={getRoleImage(member.firstPositionPreference)}/></TouchableOpacity>
-            {member.firstPositionPreference !== "FILL" &&
-            <TouchableOpacity onPress={() => lobby.toggleRoleOverlay(false)}><PositionImage
-                source={getRoleImage(member.secondPositionPreference)}/></TouchableOpacity>}
-        </MemberActionContainer>;
+        return (
+            <MemberActionContainer>
+                <TouchableOpacity onPress={() => lobby.toggleRoleOverlay(true)}>
+                    <PositionImage source={getRoleImage(member.firstPositionPreference)} />
+                </TouchableOpacity>
+                {member.firstPositionPreference !== "FILL" && (
+                    <TouchableOpacity onPress={() => lobby.toggleRoleOverlay(false)}>
+                        <PositionImage source={getRoleImage(member.secondPositionPreference)} />
+                    </TouchableOpacity>
+                )}
+            </MemberActionContainer>
+        );
     }
 
     if (!lobby.state!.localMember.isLeader) return <></>; // can't do anything
 
-    return <MemberActionContainer>
-        <TouchableOpacity onPress={() => lobby.promoteMember(member)}>
-            <ActionIcon name="md-ribbon" size={30} color="white"/>
-        </TouchableOpacity>
+    return (
+        <MemberActionContainer>
+            <TouchableOpacity onPress={() => lobby.promoteMember(member)}>
+                <ActionIcon name="md-ribbon" size={30} color="white" />
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => lobby.toggleInvite(member)}>
-            <ActionIcon name={member.allowedInviteOthers ? "md-person-add" : "md-person"} size={30} color="white"/>
-        </TouchableOpacity>
+            <TouchableOpacity onPress={() => lobby.toggleInvite(member)}>
+                <ActionIcon name={member.allowedInviteOthers ? "md-person-add" : "md-person"} size={30} color="white" />
+            </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => lobby.kickMember(member)}>
-            <ActionIcon name="ios-remove-circle" size={30} color="white"/>
-        </TouchableOpacity>
-    </MemberActionContainer>;
+            <TouchableOpacity onPress={() => lobby.kickMember(member)}>
+                <ActionIcon name="ios-remove-circle" size={30} color="white" />
+            </TouchableOpacity>
+        </MemberActionContainer>
+    );
 }
 
-function LobbyMemberEx({ member, showPositions }: { member: LobbyMember, showPositions: boolean }) {
+function LobbyMemberEx({ member, showPositions }: { member: LobbyMember; showPositions: boolean }) {
     const avatar = getPlayerAvatarURL(member.summoner.profileIconId);
 
     const [first, second] = [member.firstPositionPreference, member.secondPositionPreference];
@@ -43,7 +50,9 @@ function LobbyMemberEx({ member, showPositions }: { member: LobbyMember, showPos
     if (first === "UNSELECTED" && first === second) {
         roleText = "No Roles Selected";
     } else if (first !== "FILL") {
-        roleText = POSITION_NAMES[first] + (second === "UNSELECTED" || lobby.state!.members.length === 5 ? "" : " - " + POSITION_NAMES[second]);
+        roleText =
+            POSITION_NAMES[first] +
+            (second === "UNSELECTED" || lobby.state!.members.length === 5 ? "" : " - " + POSITION_NAMES[second]);
     } else {
         roleText = "Fill";
     }
@@ -51,33 +60,37 @@ function LobbyMemberEx({ member, showPositions }: { member: LobbyMember, showPos
     return (
         <MemberContainer>
             <Left>
-                <Avatar source={{ uri: avatar }}/>
-                {member.isLeader && <Ionicons name="md-ribbon" size={20} color="white" style={{ marginLeft: 10 }}/>}
+                <Avatar source={{ uri: avatar }} />
+                {member.isLeader && <Ionicons name="md-ribbon" size={20} color="white" style={{ marginLeft: 10 }} />}
                 <MemberNameDetails>
                     <Name>{member.summoner.displayName}</Name>
-                    {showPositions && !member.isLocalMember &&
-                    <Positions>{roleText}</Positions>}
+                    {showPositions && !member.isLocalMember && <Positions>{roleText}</Positions>}
                 </MemberNameDetails>
             </Left>
 
-            <MemberActions member={member} showPositions={showPositions}/>
+            <MemberActions member={member} showPositions={showPositions} />
         </MemberContainer>
     );
 }
 
 export default function LobbyMembers() {
-    const lobbyMembers = [lobby.state!.localMember, ...(lobby.state!.members.filter(x => !x.isLocalMember))];
+    const lobbyMembers = [lobby.state!.localMember, ...lobby.state!.members.filter(x => !x.isLocalMember)];
 
     return (
         <Container>
             <ScrollView alwaysBounceVertical={false}>
-                {lobbyMembers.map(member => <LobbyMemberEx member={member}
-                                                           showPositions={lobby.state!.gameConfig.showPositionSelector}
-                                                           key={member.summonerId}/>)}
-                {lobby.state!.localMember.allowedInviteOthers &&
-                <TouchableOpacity onPress={() => lobby.toggleInviteOverlay()}>
-                    <Invite>+ INVITE OTHERS</Invite>
-                </TouchableOpacity>}
+                {lobbyMembers.map(member => (
+                    <LobbyMemberEx
+                        member={member}
+                        showPositions={lobby.state!.gameConfig.showPositionSelector}
+                        key={member.summonerId}
+                    />
+                ))}
+                {lobby.state!.localMember.allowedInviteOthers && (
+                    <TouchableOpacity onPress={() => lobby.toggleInviteOverlay()}>
+                        <Invite>+ INVITE OTHERS</Invite>
+                    </TouchableOpacity>
+                )}
             </ScrollView>
         </Container>
     );

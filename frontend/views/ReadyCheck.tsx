@@ -10,9 +10,11 @@ export default function ReadyCheck() {
     return useObserver(() => {
         if (!readyCheck.shouldShow) return <></>;
 
-        return <Container>
-            <ReadyCheckComponent />
-        </Container>;
+        return (
+            <Container>
+                <ReadyCheckComponent />
+            </Container>
+        );
     });
 }
 

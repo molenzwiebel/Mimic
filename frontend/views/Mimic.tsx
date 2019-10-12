@@ -21,7 +21,7 @@ import ReadyCheck from "./ReadyCheck";
 export default function Mimic() {
     return useObserver(() => {
         // If we have no socket connection, return the socket.
-        if (!socket.connected) return <Connect/>;
+        if (!socket.connected) return <Connect />;
 
         const inChampionSelect = champSelect.state !== null;
 
@@ -29,19 +29,21 @@ export default function Mimic() {
         const canAcceptInvites = (!queue.state || !queue.state.isCurrentlyInQueue) && !inChampionSelect;
 
         // Else, return a view that contains...
-        return <Container>
-            {/* The current lobby, if we're not currently in champion select. */}
-            {!inChampionSelect && <Lobby/>}
+        return (
+            <Container>
+                {/* The current lobby, if we're not currently in champion select. */}
+                {!inChampionSelect && <Lobby />}
 
-            {/* The champion select, if we're currently in one.*/}
-            {inChampionSelect && <ChampionSelect/>}
+                {/* The champion select, if we're currently in one.*/}
+                {inChampionSelect && <ChampionSelect />}
 
-            {/* The list of pending invites, if we are currently in a position to accept them. */}
-            {canAcceptInvites && <Invites/>}
+                {/* The list of pending invites, if we are currently in a position to accept them. */}
+                {canAcceptInvites && <Invites />}
 
-            {/* The absolutely positioned ready check. It will hide/show based on if there is currently one ongoing.*/}
-            {<ReadyCheck/>}
-        </Container>;
+                {/* The absolutely positioned ready check. It will hide/show based on if there is currently one ongoing.*/}
+                {<ReadyCheck />}
+            </Container>
+        );
     });
 }
 

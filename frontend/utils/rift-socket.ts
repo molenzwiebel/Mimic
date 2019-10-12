@@ -39,9 +39,9 @@ export default class RiftSocket {
         const aes = new aesjs.ModeOfOperation.cbc(this.key!, iv);
         const encryptedBuffer = aes.encrypt(aesjs.padding.pkcs7.pad(stringToBuffer(contents)));
 
-        this.socket.send(JSON.stringify([
-            RiftOpcode.SEND, bufferToBase64(iv.buffer) + ":" + bufferToBase64(encryptedBuffer)
-        ]));
+        this.socket.send(
+            JSON.stringify([RiftOpcode.SEND, bufferToBase64(iv.buffer) + ":" + bufferToBase64(encryptedBuffer)])
+        );
     }
 
     /**
@@ -107,14 +107,14 @@ export default class RiftSocket {
         const identify = JSON.stringify({
             secret: bufferToBase64(this.key.buffer),
             identity: "B",
-            device, browser
+            device,
+            browser
         });
 
         // Send the handshake to Conduit.
-        this.socket.send(JSON.stringify([
-            RiftOpcode.SEND,
-            [MobileOpcode.SECRET, rsa.encrypt(identify, "base64", "utf8")]
-        ]));
+        this.socket.send(
+            JSON.stringify([RiftOpcode.SEND, [MobileOpcode.SECRET, rsa.encrypt(identify, "base64", "utf8")]])
+        );
     }
 
     /**

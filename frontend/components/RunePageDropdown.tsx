@@ -8,23 +8,45 @@ import styled from "styled-components/native";
 
 const RunePageDropdown = observer(() => {
     const value: number = (runes.runePages.find(x => x.isActive) || { id: 0 }).id;
-    const options = runes.runePages.map(x => ({ label: x.name, value: "" + x.id, key: "" + x.id }));
+    const options = runes.runePages.map(x => ({
+        label: x.name,
+        value: "" + x.id,
+        key: "" + x.id
+    }));
 
-    if (Platform.OS === "web") return <RunePagePicker value={value} onValueChange={(id: number) => runes.selectPage(id)}>
-        {options.map(x => <Picker.Item {...x} />)}
-    </RunePagePicker>;
+    if (Platform.OS === "web")
+        return (
+            <RunePagePicker value={value} onValueChange={(id: number) => runes.selectPage(id)}>
+                {options.map(x => (
+                    <Picker.Item {...x} />
+                ))}
+            </RunePagePicker>
+        );
 
-    return <RunePagePicker>
-        <RNPickerSelect style={{ inputIOS: runePageStyling, inputAndroid: runePageStyling }}
-                        value={value}
-                        placeholder={{ label: "Select a rune page...", value: null }}
-                        onValueChange={id => runes.selectPage(id)}
-                        items={options}
-                        Icon={() => {
-                            return <Ionicons style={{ marginTop: 5, marginRight: 5 }} name="md-arrow-dropdown" size={18}
-                                             color="#695625"/>;
-                        }}/>
-    </RunePagePicker>;
+    return (
+        <RunePagePicker>
+            <RNPickerSelect
+                style={{
+                    inputIOS: runePageStyling,
+                    inputAndroid: runePageStyling
+                }}
+                value={value}
+                placeholder={{ label: "Select a rune page...", value: null }}
+                onValueChange={id => runes.selectPage(id)}
+                items={options}
+                Icon={() => {
+                    return (
+                        <Ionicons
+                            style={{ marginTop: 5, marginRight: 5 }}
+                            name="md-arrow-dropdown"
+                            size={18}
+                            color="#695625"
+                        />
+                    );
+                }}
+            />
+        </RunePagePicker>
+    );
 });
 
 export default RunePageDropdown;

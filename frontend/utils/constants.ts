@@ -13,34 +13,43 @@ export interface RuneTree {
 
 let ddragonVersion: string;
 let runeTrees: RuneTree[];
-let championDetails: { [id: number]: { id: string, key: string, name: string } };
-let summonerSpellDetails: { [id: number]: { id: string, key: string, name: string } };
+let championDetails: {
+    [id: number]: { id: string; key: string; name: string };
+};
+let summonerSpellDetails: {
+    [id: number]: { id: string; key: string; name: string };
+};
 
 export async function loadDdragon() {
     try {
         const versions = await fetch("https://ddragon.leagueoflegends.com/api/versions.json").then(x => x.json());
         ddragonVersion = versions[0];
 
-        championDetails = await fetch(`https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/champion.json`)
-            .then(x => x.json())
-            .then(map => {
-            // map to { id: data }
-            const details: any = {};
-            Object.keys(map.data).forEach(x => details[+map.data[x].key] = map.data[x]);
-            return details;
-        });
-
-        summonerSpellDetails = await fetch(`https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/summoner.json`)
+        championDetails = await fetch(
+            `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/champion.json`
+        )
             .then(x => x.json())
             .then(map => {
                 // map to { id: data }
                 const details: any = {};
-                Object.keys(map.data).forEach(x => details[+map.data[x].key] = map.data[x]);
+                Object.keys(map.data).forEach(x => (details[+map.data[x].key] = map.data[x]));
                 return details;
             });
 
-        runeTrees = await fetch(`https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/runesReforged.json`)
-            .then(x => x.json());
+        summonerSpellDetails = await fetch(
+            `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/summoner.json`
+        )
+            .then(x => x.json())
+            .then(map => {
+                // map to { id: data }
+                const details: any = {};
+                Object.keys(map.data).forEach(x => (details[+map.data[x].key] = map.data[x]));
+                return details;
+            });
+
+        runeTrees = await fetch(
+            `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/runesReforged.json`
+        ).then(x => x.json());
     } catch {
         ddragonVersion = "9.14.1";
     }
@@ -105,35 +114,44 @@ export function getRoleImage(role: string) {
 }
 
 export function getMapBackground(mapId: number) {
-    return ({
-        [10]: require("../assets/bg-tt.jpg"),
-        [11]: require("../assets/bg-sr.jpg"),
-        [12]: require("../assets/bg-ha.jpg"),
-    } as any)[mapId] || require("../assets/magic-background.jpg");
+    return (
+        ({
+            [10]: require("../assets/bg-tt.jpg"),
+            [11]: require("../assets/bg-sr.jpg"),
+            [12]: require("../assets/bg-ha.jpg")
+        } as any)[mapId] || require("../assets/magic-background.jpg")
+    );
 }
 
-export const ROLES: Role[] = [{
-    name: "Top",
-    key: "TOP",
-    image: require("../assets/role-top.png")
-}, {
-    name: "Jungle",
-    key: "JUNGLE",
-    image: require("../assets/role-jungle.png")
-}, {
-    name: "Mid",
-    key: "MIDDLE",
-    image: require("../assets/role-mid.png")
-}, {
-    name: "Bot",
-    key: "BOTTOM",
-    image: require("../assets/role-bot.png")
-}, {
-    name: "Support",
-    key: "UTILITY",
-    image: require("../assets/role-support.png")
-}, {
-    name: "Fill",
-    key: "FILL",
-    image: require("../assets/role-fill.png")
-}];
+export const ROLES: Role[] = [
+    {
+        name: "Top",
+        key: "TOP",
+        image: require("../assets/role-top.png")
+    },
+    {
+        name: "Jungle",
+        key: "JUNGLE",
+        image: require("../assets/role-jungle.png")
+    },
+    {
+        name: "Mid",
+        key: "MIDDLE",
+        image: require("../assets/role-mid.png")
+    },
+    {
+        name: "Bot",
+        key: "BOTTOM",
+        image: require("../assets/role-bot.png")
+    },
+    {
+        name: "Support",
+        key: "UTILITY",
+        image: require("../assets/role-support.png")
+    },
+    {
+        name: "Fill",
+        key: "FILL",
+        image: require("../assets/role-fill.png")
+    }
+];

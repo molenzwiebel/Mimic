@@ -6,21 +6,27 @@ import styled from "styled-components/native";
 import { Role, ROLES } from "../../utils/constants";
 import MagicBackgroundOverlay from "../MagicBackgroundOverlay";
 
-const RoleOption = ({ role }: { role: Role }) => <RoleContainer onPress={() => lobby.selectRole(role.key)}>
-    <RoleImage source={role.image}/>
-    <RoleName>{role.name}</RoleName>
-</RoleContainer>;
+const RoleOption = ({ role }: { role: Role }) => (
+    <RoleContainer onPress={() => lobby.selectRole(role.key)}>
+        <RoleImage source={role.image} />
+        <RoleName>{role.name}</RoleName>
+    </RoleContainer>
+);
 
 function RoleOverlay() {
-    return <MagicBackgroundOverlay
-        marginTop={60}
-        visible={lobby.roleOverlayOpen}
-        title={`Select ${lobby.isPickingFirstRole ? "First" : "Second"} Role`}
-        onClose={() => lobby.toggleRoleOverlay(true)}>
-        <ScrollView>
-            {ROLES.map(x => <RoleOption role={x} key={x.key}/>)}
-        </ScrollView>
-    </MagicBackgroundOverlay>;
+    return (
+        <MagicBackgroundOverlay
+            marginTop={60}
+            visible={lobby.roleOverlayOpen}
+            title={`Select ${lobby.isPickingFirstRole ? "First" : "Second"} Role`}
+            onClose={() => lobby.toggleRoleOverlay(true)}>
+            <ScrollView>
+                {ROLES.map(x => (
+                    <RoleOption role={x} key={x.key} />
+                ))}
+            </ScrollView>
+        </MagicBackgroundOverlay>
+    );
 }
 
 export default observer(RoleOverlay as any);

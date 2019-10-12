@@ -12,7 +12,13 @@ interface MagicBackgroundOverlayProps {
     onClose: () => any;
 }
 
-export default function MagicBackgroundOverlay({ title, children, visible, marginTop, onClose }: MagicBackgroundOverlayProps) {
+export default function MagicBackgroundOverlay({
+    title,
+    children,
+    visible,
+    marginTop,
+    onClose
+}: MagicBackgroundOverlayProps) {
     const [registration, setRegistration] = useState<NativeEventSubscription | null>(null);
 
     // Close the modal if the back button is pressed.
@@ -20,9 +26,11 @@ export default function MagicBackgroundOverlay({ title, children, visible, margi
         if (registration && !visible) registration.remove();
 
         if (visible) {
-            setRegistration(BackHandler.addEventListener("hardwareBackPress", () => {
-                onClose();
-            }));
+            setRegistration(
+                BackHandler.addEventListener("hardwareBackPress", () => {
+                    onClose();
+                })
+            );
         }
 
         return () => {
@@ -30,18 +38,24 @@ export default function MagicBackgroundOverlay({ title, children, visible, margi
         };
     }, [visible]);
 
-    return <FullscreenOverlay marginTop={marginTop} visible={visible}
-                              render={() => <Background source={require("../assets/magic-background.jpg")}>
-                                  <Header>
-                                      <Close onPress={onClose}>
-                                          <Ionicons name="md-close" size={30}
-                                                    color="#f0e6d3"/>
-                                      </Close>
-                                      <Title>{title}</Title>
-                                  </Header>
+    return (
+        <FullscreenOverlay
+            marginTop={marginTop}
+            visible={visible}
+            render={() => (
+                <Background source={require("../assets/magic-background.jpg")}>
+                    <Header>
+                        <Close onPress={onClose}>
+                            <Ionicons name="md-close" size={30} color="#f0e6d3" />
+                        </Close>
+                        <Title>{title}</Title>
+                    </Header>
 
-                                  {children}
-                              </Background>}/>;
+                    {children}
+                </Background>
+            )}
+        />
+    );
 }
 
 const Background = styled(ImageBackground)`

@@ -7,7 +7,7 @@ import socket from "../../utils/socket";
  */
 export default class SpellsStore {
     @observable
-    summonerSpellMetadata: { id: number, gameModes: string[] }[] = [];
+    summonerSpellMetadata: { id: number; gameModes: string[] }[] = [];
 
     constructor(private store: ChampSelectStore) {
         socket.observe("/lol-game-data/assets/v1/summoner-spells.json", x => {
@@ -43,10 +43,14 @@ export default class SpellsStore {
             else second = id;
         }
 
-        socket.request("/lol-champ-select/v1/session/my-selection", "PATCH", JSON.stringify({
-            spell1Id: first,
-            spell2Id: second
-        }));
+        socket.request(
+            "/lol-champ-select/v1/session/my-selection",
+            "PATCH",
+            JSON.stringify({
+                spell1Id: first,
+                spell2Id: second
+            })
+        );
         this.store.interface.toggleSpellPicker(true);
     }
 }
