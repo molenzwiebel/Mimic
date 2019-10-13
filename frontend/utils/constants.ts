@@ -103,23 +103,24 @@ export const POSITION_NAMES: { [key: string]: string } = {
 };
 
 export function getRoleImage(role: string) {
-    if (role === "UNSELECTED") return require("../assets/role-unselected.png");
-    if (role === "TOP") return require("../assets/role-top.png");
-    if (role === "JUNGLE") return require("../assets/role-jungle.png");
-    if (role === "MIDDLE") return require("../assets/role-mid.png");
-    if (role === "BOTTOM") return require("../assets/role-bot.png");
-    if (role === "UTILITY") return require("../assets/role-support.png");
-    if (role === "FILL") return require("../assets/role-fill.png");
+    if (role === "UNSELECTED") return require("../assets/roles/role-unselected.png");
+    if (role === "TOP") return require("../assets/roles/role-top.png");
+    if (role === "JUNGLE") return require("../assets/roles/role-jungle.png");
+    if (role === "MIDDLE") return require("../assets/roles/role-mid.png");
+    if (role === "BOTTOM") return require("../assets/roles/role-bot.png");
+    if (role === "UTILITY") return require("../assets/roles/role-support.png");
+    if (role === "FILL") return require("../assets/roles/role-fill.png");
     return "";
 }
 
 export function getMapBackground(mapId: number) {
     return (
         ({
-            [10]: require("../assets/bg-tt.jpg"),
-            [11]: require("../assets/bg-sr.jpg"),
-            [12]: require("../assets/bg-ha.jpg")
-        } as any)[mapId] || require("../assets/magic-background.jpg")
+            [10]: require("../assets/backgrounds/bg-tt.jpg"),
+            [11]: require("../assets/backgrounds/bg-sr.jpg"),
+            [12]: require("../assets/backgrounds/bg-ha.jpg"),
+            [22]: require("../assets/backgrounds/bg-tft.jpg")
+        } as any)[mapId] || require("../assets/backgrounds/magic-background.jpg")
     );
 }
 
@@ -127,31 +128,31 @@ export const ROLES: Role[] = [
     {
         name: "Top",
         key: "TOP",
-        image: require("../assets/role-top.png")
+        image: require("../assets/roles/role-top.png")
     },
     {
         name: "Jungle",
         key: "JUNGLE",
-        image: require("../assets/role-jungle.png")
+        image: require("../assets/roles/role-jungle.png")
     },
     {
         name: "Mid",
         key: "MIDDLE",
-        image: require("../assets/role-mid.png")
+        image: require("../assets/roles/role-mid.png")
     },
     {
         name: "Bot",
         key: "BOTTOM",
-        image: require("../assets/role-bot.png")
+        image: require("../assets/roles/role-bot.png")
     },
     {
         name: "Support",
         key: "UTILITY",
-        image: require("../assets/role-support.png")
+        image: require("../assets/roles/role-support.png")
     },
     {
         name: "Fill",
         key: "FILL",
-        image: require("../assets/role-fill.png")
+        image: require("../assets/roles/role-fill.png")
     }
 ];

@@ -157,7 +157,7 @@ export class LobbyStore {
 
     @computed
     get backgroundImage() {
-        if (!this.state) return require("../assets/magic-background.jpg");
+        if (!this.state) return require("../assets/backgrounds/magic-background.jpg");
         return getMapBackground(this.state!.gameConfig.mapId);
     }
 

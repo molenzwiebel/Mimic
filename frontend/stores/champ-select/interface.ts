@@ -32,7 +32,7 @@ export default class InterfaceStore {
      */
     @computed
     get background() {
-        if (!this.store.gameflowState) return require("../../assets/magic-background.jpg");
+        if (!this.store.gameflowState) return require("../../assets/backgrounds/magic-background.jpg");
         return getMapBackground(this.store.gameflowState.map.id);
     }
 

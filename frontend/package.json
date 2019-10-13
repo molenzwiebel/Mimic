@@ -12,6 +12,7 @@
         "base-64": "^0.1.0",
         "expo": "^35.0.0",
         "expo-av": "~7.0.0",
+        "expo-barcode-scanner": "~7.0.0",
         "expo-linear-gradient": "~7.0.0",
         "expo-random": "~7.0.0",
         "mobx": "^5.13.0",
@@ -20,6 +21,7 @@
         "react": "16.8.3",
         "react-dom": "^16.8.6",
         "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
+        "react-native-app-intro-slider": "^3.0.0",
         "react-native-picker-select": "^6.3.3",
         "react-native-web": "^0.11.4",
         "styled-components": "^4.3.2"
@@ -30,6 +32,7 @@
         "@types/node-rsa": "^1.0.0",
         "@types/react": "^16.8.23",
         "@types/react-native": "^0.57.65",
+        "@types/react-native-app-intro-slider": "^3.0.0",
         "@types/styled-components": "^4.1.19",
         "babel-preset-expo": "^6.0.0",
         "prettier": "^1.18.2",

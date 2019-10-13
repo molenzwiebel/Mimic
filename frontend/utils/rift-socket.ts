@@ -1,6 +1,9 @@
 import * as aesjs from "aes-js";
 import * as Random from "expo-random";
-import { encode as btoa, decode as atob } from "base-64";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
+import { observable } from "mobx";
+import { decode as atob, encode as btoa } from "base-64";
 
 import "../generated/node-rsa-browserified.min";
 
@@ -17,6 +20,7 @@ export default class RiftSocket {
     public readyState = WebSocket.CONNECTING;
 
     // State for UI
+    @observable
     public state = RiftSocketState.CONNECTING;
 
     private key: Uint8Array | null = null;
@@ -42,6 +46,18 @@ export default class RiftSocket {
         this.socket.send(
             JSON.stringify([RiftOpcode.SEND, bufferToBase64(iv.buffer) + ":" + bufferToBase64(encryptedBuffer)])
         );
+    }
+
+    /**
+     * Closes this socket, regardless of connection state.
+     */
+    public close() {
+        this.readyState = WebSocket.CLOSED;
+        this.state = RiftSocketState.DISCONNECTED;
+        this.socket.onopen = null;
+        this.socket.onmessage = null;
+        this.socket.onerror = null;
+        if (this.socket.readyState === WebSocket.OPEN) this.socket.close();
     }
 
     /**
@@ -103,12 +119,17 @@ export default class RiftSocket {
         rsa.importKey(pubkey, "pkcs8-public-pem");
 
         // Create our identification payload with the chosen secret and info on the device.
-        const { device, browser } = { device: "Expo", browser: "Native App" };
         const identify = JSON.stringify({
             secret: bufferToBase64(this.key.buffer),
-            identity: "B",
-            device,
-            browser
+            identity: Constants.installationId,
+            device: {
+                ios: "iOS Device",
+                android: "Android Device",
+                web: "Web Browser",
+                windows: "Windows Device",
+                macos: "macOS Device"
+            }[Platform.OS],
+            browser: "the Mimic App"
         });
 
         // Send the handshake to Conduit.

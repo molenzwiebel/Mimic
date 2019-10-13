@@ -43,7 +43,7 @@ export default function MagicBackgroundOverlay({
             marginTop={marginTop}
             visible={visible}
             render={() => (
-                <Background source={require("../assets/magic-background.jpg")}>
+                <Background source={require("../assets/backgrounds/magic-background.jpg")}>
                     <Header>
                         <Close onPress={onClose}>
                             <Ionicons name="md-close" size={30} color="#f0e6d3" />

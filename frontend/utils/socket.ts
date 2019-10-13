@@ -1,5 +1,5 @@
-import { observable } from "mobx";
-import RiftSocket, { MobileOpcode } from "./rift-socket";
+import { computed, observable } from "mobx";
+import RiftSocket, { MobileOpcode, RiftSocketState } from "./rift-socket";
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -24,7 +24,9 @@ class Socket {
     @observable
     connecting = false;
 
+    @observable
     socket: RiftSocket;
+    code = "";
 
     idCounter = 0;
     observers: { matcher: string; handler: (res: Result) => void }[] = [];
@@ -118,13 +120,36 @@ class Socket {
     };
 
     /**
+     * Tries to do another connection attempt with the last used code.
+     */
+    public tryReconnect() {
+        this.connect(this.code);
+    }
+
+    /**
+     * Closes the current socket, regardless of current connection state.
+     */
+    public close() {
+        if (this.socket) {
+            this.socket.onopen = <any>null;
+            this.socket.onmessage = <any>null;
+            this.socket.onclose = <any>null;
+            this.socket.close();
+            this.socket = <any>null;
+            this.connecting = false;
+            this.connected = false;
+        }
+    }
+
+    /**
      * Automatically (re)connects to the websocket.
      */
-    public connect(hostname: string) {
+    public connect(code: string) {
         this.connecting = true;
+        this.code = code;
 
         try {
-            this.socket = new RiftSocket("498477");
+            this.socket = new RiftSocket(code);
 
             this.socket.onopen = () => {
                 this.connected = true;
@@ -146,6 +171,14 @@ class Socket {
         } catch (e) {
             console.log(e.message);
         }
+    }
+
+    @computed
+    get state(): null | RiftSocketState {
+        if (!this.socket) return null;
+        if (this.socket.state === RiftSocketState.DISCONNECTED) return null;
+
+        return this.socket.state;
     }
 }
 

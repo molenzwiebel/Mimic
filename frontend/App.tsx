@@ -40,9 +40,7 @@ export default class App extends React.Component {
             "LoL Body": require("./assets/fonts/Spiegel-Regular.ttf"),
             ...Ionicons.font
         });
-
-        await Asset.fromModule(require("./assets/magic-background.jpg")).downloadAsync();
-
+        await Asset.fromModule(require("./assets/backgrounds/magic-background.jpg")).downloadAsync();
         await loadDdragon();
     };
 }

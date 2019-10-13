@@ -4,7 +4,7 @@ import React from "react";
 
 export default function NoLobby() {
     return (
-        <Background source={require("../../assets/magic-background.jpg")}>
+        <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
             <Header>NO LOBBY</Header>
             <Detail>Wait for an invite, or join a{"\n"}lobby on your desktop.</Detail>
         </Background>
