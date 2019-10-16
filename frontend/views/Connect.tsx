@@ -1,36 +1,45 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { View, AsyncStorage, Text } from "react-native";
 import { observable } from "mobx";
 import socket from "../utils/socket";
 import Intro from "../components/connect/Intro";
-import styled from "styled-components/native";
 import CodeEntry from "../components/connect/CodeEntry";
 import ConnectionState from "../components/connect/ConnectionState";
+import { getRegisteredComputers, markIntroShown, shouldShowIntro } from "../utils/persistence";
+import PreviousDevices from "../components/connect/PreviousDevices";
 
 @observer
 export default class Connect extends Component {
     @observable
     showingIntro = false;
 
+    @observable
+    addingNewComputer = false;
+
     constructor(props: {}) {
         super(props);
 
-        socket.connect("498477");
-
         // Show intro if we haven't launched before.
-        AsyncStorage.getItem("hasLaunched").then(result => {
-            if (!result) this.showingIntro = true;
+        shouldShowIntro().then(result => {
+            if (!result) return;
+
+            this.showingIntro = true;
+        });
+
+        // Skip the list of devices if we don't have any
+        getRegisteredComputers().then(result => {
+            if (Object.keys(result).length) return;
+
+            this.addingNewComputer = true;
         });
     }
 
     private async showIntro() {
-        await AsyncStorage.removeItem("hasLaunched");
         this.showingIntro = true;
     }
 
     private async dismissIntro() {
-        await AsyncStorage.setItem("hasLaunched", "true");
+        await markIntroShown();
         this.showingIntro = false;
     }
 
@@ -43,11 +52,10 @@ export default class Connect extends Component {
             return <ConnectionState />;
         }
 
-        return <CodeEntry showIntro={() => this.showIntro()} />;
+        if (this.addingNewComputer) {
+            return <CodeEntry showIntro={() => this.showIntro()} />;
+        }
+
+        return <PreviousDevices onRegisterNew={() => (this.addingNewComputer = true)} />;
     }
 }
-
-const Container = styled(View)`
-    flex: 1;
-    height: 100%;
-`;

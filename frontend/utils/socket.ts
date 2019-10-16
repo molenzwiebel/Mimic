@@ -1,5 +1,6 @@
 import { computed, observable } from "mobx";
 import RiftSocket, { MobileOpcode, RiftSocketState } from "./rift-socket";
+import { registerConnectedComputer } from "./persistence";
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -110,6 +111,7 @@ class Socket {
 
         if (data[0] === MobileOpcode.VERSION_RESPONSE) {
             console.log("Connected to " + data[2]);
+            registerConnectedComputer(this.code, data[2] as string);
 
             // Populate registered listeners.
             this.observers.forEach(x => {
