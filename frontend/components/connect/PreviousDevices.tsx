@@ -2,7 +2,7 @@ import { deleteRegisteredComputer, getRegisteredComputers } from "../../utils/pe
 import React, { useEffect, useState } from "react";
 import socket from "../../utils/socket";
 import styled from "styled-components/native";
-import { ImageBackground, ScrollView, View, Text, TouchableOpacity, Platform, ActionSheetIOS } from "react-native";
+import { ActionSheetIOS, ImageBackground, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import notchHeight, { bottomMargin } from "../../utils/notch";
 import LCUButton from "../LCUButton";
 import { Ionicons } from "@expo/vector-icons";
@@ -44,8 +44,8 @@ function DeviceEntry({ name, code, onDelete }: { name: string; code: string; onD
 }
 
 export default function PreviousDevices({ onRegisterNew }: { onRegisterNew: () => any }) {
-    const [devices, setDevices] = useState<{ [key: string]: string }>({ });
-    useEffect( () => {
+    const [devices, setDevices] = useState<{ [key: string]: string }>({});
+    useEffect(() => {
         getRegisteredComputers().then(setDevices);
     }, []);
 

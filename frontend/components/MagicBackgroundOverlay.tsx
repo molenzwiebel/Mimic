@@ -42,6 +42,7 @@ export default function MagicBackgroundOverlay({
         <FullscreenOverlay
             marginTop={marginTop}
             visible={visible}
+            onClose={onClose}
             render={() => (
                 <Background source={require("../assets/backgrounds/magic-background.jpg")}>
                     <Header>
@@ -76,7 +77,7 @@ const Header = styled(View)`
 
 const Close = styled(TouchableOpacity)`
     position: absolute;
-    right: 10px;
+    right: 15px;
 `;
 
 const Title = styled(Text)`

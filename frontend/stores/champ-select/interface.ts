@@ -19,7 +19,7 @@ export default class InterfaceStore {
 
     // Information for the rune editor.
     @observable
-    showingRuneOverlay = true;
+    showingRuneOverlay = false;
 
     // Information for becnh.
     @observable

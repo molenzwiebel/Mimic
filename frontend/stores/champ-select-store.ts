@@ -165,7 +165,7 @@ export class ChampSelectStore {
     @computed
     get nextTurn(): ChampSelectTurn | null {
         if (!this.state || this.state.timer.phase !== "BAN_PICK") return null;
-        return this.state.actions.find(x => x.filter(y => !y.completed).length > 0) || null;
+        return this.state.actions.filter(x => x.filter(y => !y.completed).length > 0)[1] || null;
     }
 
     /**

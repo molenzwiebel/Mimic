@@ -13,7 +13,7 @@ export async function markIntroShown() {
  * of { [computer code]: [last computer name] }.
  */
 export async function getRegisteredComputers(): Promise<{ [key: string]: string }> {
-    return JSON.parse(await AsyncStorage.getItem("computers") || "{}");
+    return JSON.parse((await AsyncStorage.getItem("computers")) || "{}");
 }
 
 /**

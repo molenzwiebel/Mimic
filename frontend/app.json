@@ -15,7 +15,7 @@
         "splash": {
             "image": "./assets/splash.png",
             "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
+            "backgroundColor": "#000a13"
         },
         "updates": {
             "fallbackToCacheTimeout": 0
@@ -24,7 +24,11 @@
             "**/*"
         ],
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "bundleIdentifier": "nl.thijsmolendijk.mimic"
+        },
+        "android": {
+            "package": "nl.thijsmolendijk.mimic"
         }
     }
 }

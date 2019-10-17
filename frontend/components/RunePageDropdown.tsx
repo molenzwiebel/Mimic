@@ -30,7 +30,7 @@ const RunePageDropdown = observer(() => {
                     inputIOS: runePageStyling,
                     inputAndroid: runePageStyling
                 }}
-                value={value}
+                value={"" + value}
                 placeholder={{ label: "Select a rune page...", value: null }}
                 onValueChange={id => runes.selectPage(id)}
                 items={options}
@@ -54,9 +54,11 @@ export default RunePageDropdown;
 const runePageStyling = {
     width: "100%",
     fontFamily: "LoL Body",
+    height: 32,
     fontSize: 16,
     padding: 4,
-    marginRight: 10
+    marginRight: 10,
+    color: "#a09b8c"
 };
 
 const RunePagePicker: any = styled(Platform.OS === "web" ? Picker : View)`
