@@ -25,13 +25,13 @@ export default class ChampionPicker extends Vue {
 
     created() {
         // Observe the list of pickable and bannable champions. The list is sorted by name.
-        this.$root.observe("/lol-champ-select/v1/pickable-champions", result => {
-            this.pickableChampions = (result.status === 200 ? result.content.championIds : this.pickableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
+        this.$root.observe("/lol-champ-select/v1/pickable-champion-ids", result => {
+            this.pickableChampions = (result.status === 200 ? result.content : this.pickableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
             this.pickableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
         });
 
-        this.$root.observe("/lol-champ-select/v1/bannable-champions", result => {
-            this.bannableChampions = (result.status === 200 ? result.content.championIds : this.bannableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
+        this.$root.observe("/lol-champ-select/v1/bannable-champion-ids", result => {
+            this.bannableChampions = (result.status === 200 ? result.content : this.bannableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
             this.bannableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
         });
     }
@@ -47,8 +47,8 @@ export default class ChampionPicker extends Vue {
     }
 
     destroyed() {
-        this.$root.unobserve("/lol-champ-select/v1/pickable-champions");
-        this.$root.unobserve("/lol-champ-select/v1/bannable-champions");
+        this.$root.unobserve("/lol-champ-select/v1/pickable-champion-ids");
+        this.$root.unobserve("/lol-champ-select/v1/bannable-champion-ids");
     }
 
     /**
