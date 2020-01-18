@@ -71,7 +71,7 @@ export default function FullscreenOverlay({ marginTop, visible, render, onClose 
 
     useCode(
         // If we stopped dragging...
-        cond(eq(state, State.END), [
+        () => cond(eq(state, State.END), [
             // Either go back up or completely down depending on how far we dragged.
             cond(greaterOrEq(translationY, SCREEN_HEIGHT * 0.1), [call([], goDown)], [call([], goUp)]),
 

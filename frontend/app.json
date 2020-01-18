@@ -1,34 +1,35 @@
 {
-    "expo": {
-        "name": "Mimic",
-        "slug": "mimic-native",
-        "privacy": "public",
-        "sdkVersion": "35.0.0",
-        "platforms": [
-            "ios",
-            "android",
-            "web"
-        ],
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/icon.png",
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#000a13"
-        },
-        "updates": {
-            "fallbackToCacheTimeout": 0
-        },
-        "assetBundlePatterns": [
-            "**/*"
-        ],
-        "ios": {
-            "supportsTablet": true,
-            "bundleIdentifier": "nl.thijsmolendijk.mimic"
-        },
-        "android": {
-            "package": "nl.thijsmolendijk.mimic"
-        }
+  "expo": {
+    "name": "Mimic",
+    "slug": "mimic-native",
+    "privacy": "public",
+    "sdkVersion": "36.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000a13"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "nl.thijsmolendijk.mimic",
+      "buildNumber": "5"
+    },
+    "android": {
+      "package": "nl.thijsmolendijk.mimic"
     }
+  }
 }
