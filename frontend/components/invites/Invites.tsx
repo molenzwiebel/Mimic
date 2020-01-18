@@ -74,7 +74,7 @@ const ActionButton = styled(Ionicons)`
 const InvitesContent = observer(() => {
     return (
         <InviteContainer>
-            <AnimatedFlameBackground height={HEIGHT} />
+            <AnimatedFlameBackground size={HEIGHT} />
 
             <Header>
                 GAME INVITES {invites.pendingInvites.length > 1 ? `(${invites.pendingInvites.length})` : ""}

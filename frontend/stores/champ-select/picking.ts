@@ -22,14 +22,14 @@ export default class PickingStore {
 
     constructor(private store: ChampSelectStore) {
         // Keep track of pickable/bannable champs.
-        socket.observe("/lol-champ-select/v1/pickable-champions", result => {
-            this.pickableChampions = (result.status === 200 ? result.content.championIds : this.pickableChampions)
+        socket.observe("/lol-champ-select/v1/pickable-champion-ids", result => {
+            this.pickableChampions = (result.status === 200 ? result.content : this.pickableChampions)
                 .filter((x: number) => !!getChampion(x))
                 .sort((a: number, b: number) => getChampion(a).name.localeCompare(getChampion(b).name));
         });
 
-        socket.observe("/lol-champ-select/v1/bannable-champions", result => {
-            this.bannableChampions = (result.status === 200 ? result.content.championIds : this.bannableChampions)
+        socket.observe("/lol-champ-select/v1/bannable-champion-ids", result => {
+            this.bannableChampions = (result.status === 200 ? result.content : this.bannableChampions)
                 .filter((x: number) => !!getChampion(x))
                 .sort((a: number, b: number) => getChampion(a).name.localeCompare(getChampion(b).name));
         });

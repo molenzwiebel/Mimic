@@ -1,14 +1,16 @@
 import { ImageBackground, Text } from "react-native";
 import styled from "styled-components/native";
 import React from "react";
+import CreateLobby from "../create-lobby/CreateLobby";
 
 export default function NoLobby() {
-    return (
-        <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
-            <Header>NO LOBBY</Header>
-            <Detail>Wait for an invite, or join a{"\n"}lobby on your desktop.</Detail>
-        </Background>
-    );
+    // return (
+    //     <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
+    //         <Header>NO LOBBY</Header>
+    //         <Detail>Wait for an invite, or join a{"\n"}lobby on your desktop.</Detail>
+    //     </Background>
+    // );
+    return <CreateLobby/>;
 }
 
 const Background = styled(ImageBackground)`
