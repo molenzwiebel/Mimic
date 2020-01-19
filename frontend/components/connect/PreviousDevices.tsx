@@ -56,8 +56,6 @@ export default function PreviousDevices({ onRegisterNew }: { onRegisterNew: () =
         deleteRegisteredComputer(code);
     };
 
-    socket.connect("498477");
-
     return (
         <Container>
             <Header>

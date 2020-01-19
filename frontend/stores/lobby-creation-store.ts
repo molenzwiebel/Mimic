@@ -170,12 +170,15 @@ export class LobbyCreationStore {
      * Creates a lobby with the currently chosen queue.
      */
     createLobby() {
-        socket.request("/lol-lobby/v2/lobby", "POST", JSON.stringify({
-            queueId: this.selectedQueueId
-        }));
+        socket.request(
+            "/lol-lobby/v2/lobby",
+            "POST",
+            JSON.stringify({
+                queueId: this.selectedQueueId
+            })
+        );
     }
 }
 
 const instance = new LobbyCreationStore();
-(<any>window).store = instance;
 export default instance;

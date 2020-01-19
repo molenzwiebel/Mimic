@@ -47,7 +47,7 @@ function Footer({ onSettings }: { onSettings: Function }) {
     ));
 }
 
-export default function NoLobby({
+export default function Root({
     onCreate,
     onJoin,
     onSettings
