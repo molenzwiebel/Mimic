@@ -2,7 +2,6 @@ import React from "react";
 import { useObserver } from "mobx-react";
 import { ImageBackground, View } from "react-native";
 import styled from "styled-components/native";
-import NoLobby from "../components/lobby/NoLobby";
 import LobbyHeader from "../components/lobby/LobbyHeader";
 import LCUButton from "../components/LCUButton";
 import LobbyMembers from "../components/lobby/LobbyMembers";
@@ -16,7 +15,8 @@ import { bottomMargin } from "../utils/notch";
 
 export default function Lobby() {
     return useObserver(() => {
-        if (!lobby.state) return <NoLobby />;
+        // Should never happen.
+        if (!lobby.state) return <></>;
 
         return (
             <Container source={lobby.backgroundImage}>

@@ -3,6 +3,7 @@ import * as React from "react";
 import { View } from "react-native";
 import styled from "styled-components/native";
 import queue from "../stores/queue-store";
+import lobby from "../stores/lobby-store";
 import champSelect from "../stores/champ-select-store";
 
 import socket from "../utils/socket";
@@ -12,6 +13,7 @@ import Connect from "./Connect";
 import Invites from "./Invites";
 import Lobby from "./Lobby";
 import ReadyCheck from "./ReadyCheck";
+import Root from "./Root";
 
 /**
  * This is the main root object that is responsible for rendering the application
@@ -24,6 +26,7 @@ export default function Mimic() {
         if (!socket.connected) return <Connect />;
 
         const inChampionSelect = champSelect.state !== null;
+        const hasLobby = lobby.state !== null;
 
         // We can accept invites if we're not in queue or in champion select.
         const canAcceptInvites = (!queue.state || !queue.state.isCurrentlyInQueue) && !inChampionSelect;
@@ -31,8 +34,11 @@ export default function Mimic() {
         // Else, return a view that contains...
         return (
             <Container>
-                {/* The current lobby, if we're not currently in champion select. */}
-                {!inChampionSelect && <Lobby />}
+                {/* The root view, if we're not currently in a lobby or in champ select. */}
+                {!inChampionSelect && !hasLobby && <Root />}
+
+                {/* The current lobby, if we're not currently in champion select but in a lobby.. */}
+                {!inChampionSelect && hasLobby && <Lobby />}
 
                 {/* The champion select, if we're currently in one.*/}
                 {inChampionSelect && <ChampionSelect />}

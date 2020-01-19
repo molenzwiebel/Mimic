@@ -16,20 +16,28 @@ import store, { Friend, Party } from "../../stores/friends-list-store";
 import { getPlayerAvatarURL } from "../../utils/constants";
 
 function NoOpenLobbies() {
-    return <NoOpenLobbiesContainer>
-        <Poro source={require("../../assets/poros/poro-sad.png")}/>
-        <NoOpenLobbiesText>Nobody in your friends list is hosting an open lobby right now.</NoOpenLobbiesText>
-    </NoOpenLobbiesContainer>;
+    return (
+        <NoOpenLobbiesContainer>
+            <Poro source={require("../../assets/poros/poro-sad.png")} />
+            <NoOpenLobbiesText>Nobody in your friends list is hosting an open lobby right now.</NoOpenLobbiesText>
+        </NoOpenLobbiesContainer>
+    );
 }
 
 function JoinLobbyButton({ onPress }: { onPress: any }) {
     const [isHover, setHover] = useState(false);
-    const image = isHover ? require("../../assets/icons/open-party-join-active.png") : require("../../assets/icons/open-party-join.png");
+    const image = isHover
+        ? require("../../assets/icons/open-party-join-active.png")
+        : require("../../assets/icons/open-party-join.png");
 
-    return <TouchableWithoutFeedback onPressIn={() => setHover(true)} onPressOut={() => setHover(false)}
-                                     onPress={() => (setHover(false), onPress())}>
-        <JoinButton source={image}/>
-    </TouchableWithoutFeedback>;
+    return (
+        <TouchableWithoutFeedback
+            onPressIn={() => setHover(true)}
+            onPressOut={() => setHover(false)}
+            onPress={() => (setHover(false), onPress())}>
+            <JoinButton source={image} />
+        </TouchableWithoutFeedback>
+    );
 }
 
 const Lobby = observer(({ friend }: { friend: Friend }) => {
@@ -39,48 +47,54 @@ const Lobby = observer(({ friend }: { friend: Friend }) => {
     const text = `${party.summoners.length}/${queue.maximumParticipantListSize} - ${queue.shortName}`;
     const avatarURL = getPlayerAvatarURL(friend.icon);
 
-    return <LobbyContainer>
-        <Avatar source={{ uri: avatarURL }}/>
-        <NameAndStatus>
-            <Name>{friend.name}</Name>
-            <Status>{text}</Status>
-        </NameAndStatus>
-        <JoinLobbyButton onPress={() => store.joinFriend(friend)}/>
-    </LobbyContainer>;
+    return (
+        <LobbyContainer>
+            <Avatar source={{ uri: avatarURL }} />
+            <NameAndStatus>
+                <Name>{friend.name}</Name>
+                <Status>{text}</Status>
+            </NameAndStatus>
+            <JoinLobbyButton onPress={() => store.joinFriend(friend)} />
+        </LobbyContainer>
+    );
 });
 
 const OpenLobbies = observer(() => {
     if (!store.friendsWithParties.length) {
-        return <NoOpenLobbies/>;
+        return <NoOpenLobbies />;
     }
 
-    return <LobbiesContainer>
-        {store.friendsWithParties.map(x => <Lobby friend={x} key={x.name}/>)}
-    </LobbiesContainer>;
+    return (
+        <LobbiesContainer>
+            {store.friendsWithParties.map(x => (
+                <Lobby friend={x} key={x.name} />
+            ))}
+        </LobbiesContainer>
+    );
 });
 
-function Header() {
-    return <HeaderView>
-        <TouchableOpacity onPress={() => {
-            // TODO
-        }}>
-            <Ionicons name="ios-arrow-back" size={35} color="#efe5d1"/>
-        </TouchableOpacity>
+function Header({ onClose }: { onClose: Function }) {
+    return (
+        <HeaderView>
+            <TouchableOpacity onPress={() => onClose()}>
+                <Ionicons name="ios-arrow-back" size={35} color="#efe5d1" />
+            </TouchableOpacity>
 
-        <HeaderText>
-            Join Open Lobby
-        </HeaderText>
-    </HeaderView>;
+            <HeaderText>Join Open Lobby</HeaderText>
+        </HeaderView>
+    );
 }
 
-function JoinOpenLobby() {
-    return <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
-        <Header/>
-        <OpenLobbies/>
-    </Background>;
+function JoinOpenLobby({ onClose }: { onClose: Function }) {
+    return (
+        <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
+            <Header onClose={onClose} />
+            <OpenLobbies />
+        </Background>
+    );
 }
 
-export default observer(JoinOpenLobby as any);
+export default observer(JoinOpenLobby);
 
 const Background = styled(ImageBackground)`
     flex: 1;

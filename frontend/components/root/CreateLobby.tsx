@@ -27,7 +27,10 @@ const MAP_ICONS: any = {
 };
 
 function getMapIcon(key: string, isActive: boolean) {
-    return MAP_ICONS[key + "-" + isActive] || (isActive ? require("../../assets/icons/rgm-active.png") : require("../../assets/icons/rgm-default.png"));
+    return (
+        MAP_ICONS[key + "-" + isActive] ||
+        (isActive ? require("../../assets/icons/rgm-active.png") : require("../../assets/icons/rgm-default.png"))
+    );
 }
 
 function QueueDiamond({ selected }: { selected: boolean }) {
@@ -42,31 +45,39 @@ function QueueDiamond({ selected }: { selected: boolean }) {
         }).start();
     }, [selected]);
 
-    return <QueueDiamondOuter>
-        <QueueDiamondInner style={{ transform: [{ scale: innerScale }] }}/>
-    </QueueDiamondOuter>;
+    return (
+        <QueueDiamondOuter>
+            <QueueDiamondInner style={{ transform: [{ scale: innerScale }] }} />
+        </QueueDiamondOuter>
+    );
 }
 
-function Queue({ queue, selected }: { queue: GameQueue, selected: boolean }) {
-    return <TouchableOpacity onPress={() => store.selectQueue(queue)}>
-        <QueueContainer>
-            <QueueDiamond selected={selected}/>
-            <QueueName selected={selected}>{queue.description.toUpperCase()}</QueueName>
-        </QueueContainer>
-    </TouchableOpacity>;
+function Queue({ queue, selected }: { queue: GameQueue; selected: boolean }) {
+    return (
+        <TouchableOpacity onPress={() => store.selectQueue(queue)}>
+            <QueueContainer>
+                <QueueDiamond selected={selected} />
+                <QueueName selected={selected}>{queue.description.toUpperCase()}</QueueName>
+            </QueueContainer>
+        </TouchableOpacity>
+    );
 }
 
 function Queues() {
     return useObserver(() => {
         const queues = store.availableQueues[store.selectedSection] || [];
 
-        return <QueuesContainer>
-            {queues.map(x => <Queue queue={x} selected={store.selectedQueueId === x.id} key={x.id}/>)}
-        </QueuesContainer>;
+        return (
+            <QueuesContainer>
+                {queues.map(x => (
+                    <Queue queue={x} selected={store.selectedQueueId === x.id} key={x.id} />
+                ))}
+            </QueuesContainer>
+        );
     });
 }
 
-function Section({ id, selected }: { id: string, selected: boolean }) {
+function Section({ id, selected }: { id: string; selected: boolean }) {
     // Opacity of the selected image.
     const selectedOpacity = useRef(new Animated.Value(0)).current;
 
@@ -78,61 +89,69 @@ function Section({ id, selected }: { id: string, selected: boolean }) {
         }).start();
     }, [selected]);
 
-    return useObserver(() => <SectionContainer>
-        <TouchableWithoutFeedback onPressIn={() => store.selectSection(id)}>
-            <SectionIconContainer>
-                <SectionIcon source={getMapIcon(id, false)}/>
-                <SectionIcon source={getMapIcon(id, true)} style={{ opacity: selectedOpacity }}/>
-            </SectionIconContainer>
-        </TouchableWithoutFeedback>
-    </SectionContainer>);
+    return useObserver(() => (
+        <SectionContainer>
+            <TouchableWithoutFeedback onPressIn={() => store.selectSection(id)}>
+                <SectionIconContainer>
+                    <SectionIcon source={getMapIcon(id, false)} />
+                    <SectionIcon source={getMapIcon(id, true)} style={{ opacity: selectedOpacity }} />
+                </SectionIconContainer>
+            </TouchableWithoutFeedback>
+        </SectionContainer>
+    ));
 }
 
 function Sections() {
-    return useObserver(() => <SectionsContainer>
-        {store.sections.map(x => <Section id={x} key={x} selected={store.selectedSection === x}/>)}
-    </SectionsContainer>);
+    return useObserver(() => (
+        <SectionsContainer>
+            {store.sections.map(x => (
+                <Section id={x} key={x} selected={store.selectedSection === x} />
+            ))}
+        </SectionsContainer>
+    ));
 }
 
 function SelectedSectionName() {
     // This can't be a text directly since the bottom border doesn't render on iOS.
-    return useObserver(() => <SectionNameContainer>
-        <SectionNameText>
-            {getGamemodeName(store.selectedSection).toUpperCase()}
-        </SectionNameText>
-    </SectionNameContainer>);
+    return useObserver(() => (
+        <SectionNameContainer>
+            <SectionNameText>{getGamemodeName(store.selectedSection).toUpperCase()}</SectionNameText>
+        </SectionNameContainer>
+    ));
 }
 
-function Header() {
-    return <HeaderView>
-        <TouchableOpacity onPress={() => {
-            // TODO
-        }}>
-            <Ionicons name="ios-arrow-back" size={35} color="#efe5d1"/>
-        </TouchableOpacity>
+function Header({ onClose }: { onClose: Function }) {
+    return (
+        <HeaderView>
+            <TouchableOpacity onPress={() => onClose()}>
+                <Ionicons name="ios-arrow-back" size={35} color="#efe5d1" />
+            </TouchableOpacity>
 
-        <HeaderText>
-            Create Lobby
-        </HeaderText>
-    </HeaderView>;
+            <HeaderText>Create Lobby</HeaderText>
+        </HeaderView>
+    );
 }
 
-function CreateLobby() {
-    return <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
-        <Header/>
+function CreateLobby({ onClose }: { onClose: Function }) {
+    return (
+        <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
+            <Header onClose={onClose} />
 
-        <View style={{ flex: 1 }}>
-            <Sections/>
-            <SelectedSectionName/>
-            <Queues/>
-            <LCUButton style={{ paddingLeft: 5, paddingRight: 5, marginBottom: bottomMargin + 5 }} onClick={() => store.createLobby()}>
-                Confirm
-            </LCUButton>
-        </View>
-    </Background>;
+            <View style={{ flex: 1 }}>
+                <Sections />
+                <SelectedSectionName />
+                <Queues />
+                <LCUButton
+                    style={{ paddingLeft: 5, paddingRight: 5, marginBottom: bottomMargin + 5 }}
+                    onClick={() => store.createLobby()}>
+                    Confirm
+                </LCUButton>
+            </View>
+        </Background>
+    );
 }
 
-export default observer(CreateLobby as any);
+export default observer(CreateLobby);
 
 const Background = styled(ImageBackground)`
     flex: 1;
@@ -214,7 +233,7 @@ const QueueName: any = styled(Text)`
     font-family: "LoL Display Bold";
     font-size: 18px;
     margin-left: 10px;
-    color: ${(props: any) => props.selected ? "#e2d5ab" : "#b0a27c"};
+    color: ${(props: any) => (props.selected ? "#e2d5ab" : "#b0a27c")};
 `;
 
 const QueueDiamondOuter = styled(View)`
