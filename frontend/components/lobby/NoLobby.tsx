@@ -2,6 +2,7 @@ import { ImageBackground, Text } from "react-native";
 import styled from "styled-components/native";
 import React from "react";
 import CreateLobby from "../create-lobby/CreateLobby";
+import JoinOpenLobby from "../create-lobby/JoinOpenLobby";
 
 export default function NoLobby() {
     // return (
@@ -10,7 +11,8 @@ export default function NoLobby() {
     //         <Detail>Wait for an invite, or join a{"\n"}lobby on your desktop.</Detail>
     //     </Background>
     // );
-    return <CreateLobby/>;
+    // return <CreateLobby/>;
+    return <JoinOpenLobby/>;
 }
 
 const Background = styled(ImageBackground)`

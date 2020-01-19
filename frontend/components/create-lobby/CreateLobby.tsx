@@ -95,7 +95,7 @@ function Sections() {
 }
 
 function SelectedSectionName() {
-    // This can't be a text directly since it doesn't render on iOS.
+    // This can't be a text directly since the bottom border doesn't render on iOS.
     return useObserver(() => <SectionNameContainer>
         <SectionNameText>
             {getGamemodeName(store.selectedSection).toUpperCase()}

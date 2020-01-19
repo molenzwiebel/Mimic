@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { computed, observable } from "mobx";
 import socket from "../utils/socket";
 
 /**
@@ -79,6 +79,7 @@ export class LobbyCreationStore {
      * Sorts queues by mapId-gameMode, limited to only the queues that are actually
      * available. Also only recomputed if its dependencies change.
      */
+    @computed
     get availableQueues(): MappedQueueList {
         const ret: MappedQueueList = {};
 
@@ -126,6 +127,7 @@ export class LobbyCreationStore {
      * Sorts the available sections (mapId-gamemode) by the order in which they should
      * appear on the screen.
      */
+    @computed
     get sections(): string[] {
         return Object.keys(this.availableQueues).sort((a, b) => {
             const [aMap, aGameMode] = a.split("-");
