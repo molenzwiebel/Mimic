@@ -27,6 +27,10 @@ class Socket {
 
     @observable
     socket: RiftSocket;
+
+    @observable
+    computerName = "";
+
     code = "";
 
     idCounter = 0;
@@ -111,6 +115,7 @@ class Socket {
 
         if (data[0] === MobileOpcode.VERSION_RESPONSE) {
             console.log("Connected to " + data[2]);
+            this.computerName = data[2] as string;
             registerConnectedComputer(this.code, data[2] as string);
 
             // Populate registered listeners.

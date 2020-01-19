@@ -1,21 +1,13 @@
 import { default as React, useEffect, useRef } from "react";
 import { observer } from "mobx-react";
 import { useObserver } from "mobx-react-lite";
-import { Ionicons } from "@expo/vector-icons";
-import {
-    Animated,
-    Easing,
-    ImageBackground,
-    Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View
-} from "react-native";
+import { Animated, Easing, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import styled from "styled-components/native";
-import notchHeight, { bottomMargin } from "../../utils/notch";
+import { bottomMargin } from "../../utils/notch";
 import store, { GameQueue } from "../../stores/lobby-creation-store";
 import { getGamemodeName } from "../../utils/constants";
 import LCUButton from "../LCUButton";
+import RootSubview from "./RootSubview";
 
 const MAP_ICONS: any = {
     "11-CLASSIC-true": require("../../assets/icons/sr-active.png"),
@@ -120,23 +112,9 @@ function SelectedSectionName() {
     ));
 }
 
-function Header({ onClose }: { onClose: Function }) {
-    return (
-        <HeaderView>
-            <TouchableOpacity onPress={() => onClose()}>
-                <Ionicons name="ios-arrow-back" size={35} color="#efe5d1" />
-            </TouchableOpacity>
-
-            <HeaderText>Create Lobby</HeaderText>
-        </HeaderView>
-    );
-}
-
 function CreateLobby({ onClose }: { onClose: Function }) {
     return (
-        <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
-            <Header onClose={onClose} />
-
+        <RootSubview title="Create Lobby" onClose={onClose}>
             <View style={{ flex: 1 }}>
                 <Sections />
                 <SelectedSectionName />
@@ -147,34 +125,11 @@ function CreateLobby({ onClose }: { onClose: Function }) {
                     Confirm
                 </LCUButton>
             </View>
-        </Background>
+        </RootSubview>
     );
 }
 
 export default observer(CreateLobby);
-
-const Background = styled(ImageBackground)`
-    flex: 1;
-    height: 100%;
-`;
-
-const HeaderView = styled(View)`
-    width: 100%;
-    align-items: center;
-    flex-direction: row;
-    padding: 10px 20px;
-    padding-top: ${notchHeight + 10}px;
-    border: 0px solid white;
-    border-bottom-width: 1px;
-    background-color: rgba(0, 0, 0, 0.7);
-`;
-
-const HeaderText = styled(Text)`
-    margin-left: 20px;
-    font-size: 26px;
-    font-family: "LoL Display Bold";
-    color: #f0d9a3;
-`;
 
 const SectionsContainer = styled(View)`
     padding: 20px 5px 0 5px;

@@ -1,19 +1,10 @@
 import { default as React, useState } from "react";
 import { observer } from "mobx-react";
-import { Ionicons } from "@expo/vector-icons";
-import {
-    Image,
-    ImageBackground,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View
-} from "react-native";
+import { Image, ScrollView, Text, TouchableWithoutFeedback, View } from "react-native";
 import styled from "styled-components/native";
-import notchHeight from "../../utils/notch";
 import store, { Friend, Party } from "../../stores/friends-list-store";
 import { getPlayerAvatarURL } from "../../utils/constants";
+import RootSubview from "./RootSubview";
 
 function NoOpenLobbies() {
     return (
@@ -73,51 +64,13 @@ const OpenLobbies = observer(() => {
     );
 });
 
-function Header({ onClose }: { onClose: Function }) {
+export default function JoinOpenLobby({ onClose }: { onClose: Function }) {
     return (
-        <HeaderView>
-            <TouchableOpacity onPress={() => onClose()}>
-                <Ionicons name="ios-arrow-back" size={35} color="#efe5d1" />
-            </TouchableOpacity>
-
-            <HeaderText>Join Open Lobby</HeaderText>
-        </HeaderView>
-    );
-}
-
-function JoinOpenLobby({ onClose }: { onClose: Function }) {
-    return (
-        <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
-            <Header onClose={onClose} />
+        <RootSubview onClose={onClose} title="Join Open Lobby">
             <OpenLobbies />
-        </Background>
+        </RootSubview>
     );
 }
-
-export default observer(JoinOpenLobby);
-
-const Background = styled(ImageBackground)`
-    flex: 1;
-    height: 100%;
-`;
-
-const HeaderView = styled(View)`
-    width: 100%;
-    align-items: center;
-    flex-direction: row;
-    padding: 10px 20px;
-    padding-top: ${notchHeight + 10}px;
-    border: 0px solid white;
-    border-bottom-width: 1px;
-    background-color: rgba(0, 0, 0, 0.7);
-`;
-
-const HeaderText = styled(Text)`
-    margin-left: 20px;
-    font-size: 26px;
-    font-family: "LoL Display Bold";
-    color: #f0d9a3;
-`;
 
 const NoOpenLobbiesContainer = styled(View)`
     width: 100%;
@@ -162,7 +115,7 @@ const NameAndStatus = styled(View)`
 `;
 
 const Name = styled(Text)`
-    font-family: "Lol Body";
+    font-family: "LoL Body";
     font-size: 18px;
     color: white;
 `;

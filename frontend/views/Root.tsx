@@ -1,7 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import CreateLobby from "../components/root/CreateLobby";
 import JoinOpenLobby from "../components/root/JoinOpenLobby";
 import RootComponent from "../components/root/Root";
+import Settings from "../components/root/Settings";
 
 export default function Root() {
     const [creatingLobby, setCreatingLobby] = useState(false);
@@ -14,6 +15,10 @@ export default function Root() {
 
     if (joiningOpenLobby) {
         return <JoinOpenLobby onClose={() => setJoiningOpenLobby(false)} />;
+    }
+
+    if (viewingSettings) {
+        return <Settings onClose={() => setViewingSettings(false)} />;
     }
 
     return (
