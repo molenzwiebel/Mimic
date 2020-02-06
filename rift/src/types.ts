@@ -9,6 +9,41 @@ declare module "http" {
 }
 
 /**
+ * Represents a type of push notification that can be sent by Rift.
+ */
+export const enum NotificationType {
+    // Every client subscribes to this. Clears all received notifications.
+    CLEAR = "CLEAR",
+
+    // Sent when ready check triggers.
+    READY_CHECK = "READY_CHECK",
+
+    // Sent when the game has (almost) started.
+    GAME_STARTED = "GAME_STARTED"
+}
+
+export const NOTIFICATION_TYPES = [
+    NotificationType.CLEAR,
+    NotificationType.READY_CHECK,
+    NotificationType.GAME_STARTED
+];
+
+/**
+ * Represents a platform that can receive push notifications.
+ */
+export const enum NotificationPlatform {
+    IOS = "ios",
+    ANDROID = "android",
+    WEB = "web"
+}
+
+export const NOTIFICATION_PLATFORMS = [
+    NotificationPlatform.IOS,
+    NotificationPlatform.ANDROID,
+    NotificationPlatform.WEB
+];
+
+/**
  * Represents an opcode sent/received by Rift. These are the first element
  * of arrays.
  */

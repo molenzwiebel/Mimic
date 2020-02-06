@@ -7,7 +7,7 @@ import * as uuid from "uuid";
 import { Socket } from "net";
 import { IncomingMessage } from "http";
 import { URL } from "url";
-import { RiftOpcode } from "./types";
+import { RiftOpcode, NOTIFICATION_PLATFORMS, NOTIFICATION_TYPES, NotificationType } from "./types";
 import * as notifications from "./notifications";
 
 /**
@@ -176,26 +176,36 @@ export default class WebSocketManager {
 
                 entry.socket.send(JSON.stringify([RiftOpcode.RECEIVE, message]));
             } else if (op === RiftOpcode.PN_SUBSCRIBE) {
-                const [token, type] = args;
-                if (type !== "ios" && type !== "android") throw new Error("Invalid push notification device type: " + type);
+                const [deviceID, platform, type, token] = args;
 
-                console.log("[+] Registering push notification " + token + " (" + type + ") for " + code);
-                await db.registerPushNotificationToken(token, type, code);
-            } else if (op === RiftOpcode.PN_SEND) {
-                const [type, data] = <["readyCheck" | "gameStart" | "string", string]>args;
-                if (type !== "readyCheck" && type !== "gameStart") throw new Error("Unknown push notification type: " + type);
-
-                // Remove if null was specified.
-                if (!data) {
-                    await notifications.removeNotifications(code, type);
-                    return;
+                if (!NOTIFICATION_PLATFORMS.includes(platform)) {
+                    throw new Error("Invalid push notification platform: " + type);
                 }
 
-                // Create the message.
-                if (type === "readyCheck") {
+                if (!NOTIFICATION_TYPES.includes(type)) {
+                    throw new Error("Invalid push notification type: " + type);
+                }
+
+                if (typeof token !== "string" && token !== null) {
+                    throw new Error("Invalid token: " + token);
+                }
+
+                console.log(`[+] Registering push notification token for device ${deviceID} (${platform}) of type ${type}: ${token}`);
+                await db.updatePushNotificationToken(code, deviceID, platform, type, token);
+            } else if (op === RiftOpcode.PN_SEND) {
+                const [type, data] = args;
+
+                if (!NOTIFICATION_TYPES.includes(type)) {
+                    throw new Error("Invalid push notification type: " + type);
+                }
+
+                switch (type) {
+                case NotificationType.READY_CHECK:
                     await notifications.broadcastReadyCheckNotification(data, code);
-                } else {
+                case NotificationType.GAME_STARTED:
                     await notifications.broadcastGameStartNotification(data, code);
+                case NotificationType.CLEAR:
+                    await notifications.removeNotifications(code);
                 }
             } else {
                 // Just disconnect them.

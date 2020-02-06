@@ -1,4 +1,5 @@
 import { open, Database } from "sqlite";
+import { NotificationPlatform, NotificationType } from "./types";
 import * as fs from "fs";
 
 let database!: Database;
@@ -22,9 +23,11 @@ export async function create() {
 
         await database.exec(`
             CREATE TABLE \`push_notification_tokens\` (
-                \`token\`       TEXT,
+                \`code\`        TEXT,
+                \`deviceID\`    TEXT,
+                \`platform\`    TEXT,
                 \`type\`        TEXT,
-                \`code\`        TEXT
+                \`token\`       TEXT
             );
         `);
     }
@@ -84,23 +87,36 @@ export async function potentiallyUpdate(code: string, pubkey: string): Promise<b
 }
 
 /**
- * Registers the specified push token for the specified device type (ios/android) to
- * receive notifications from any computer that authenticates with the specified code.
+ * Registers or updates the push notification token for the specified device+platform+
+ * notification type combo within the list of registered push notification receivers of
+ * the specified device. If the pnToken is null, the specific push notification type is
+ * deleted instead, preventing the device from receiving those kinds of notifications.
  */
-export async function registerPushNotificationToken(token: string, type: string, code: string): Promise<void> {
+export async function updatePushNotificationToken(code: string, deviceID: string, platform: NotificationPlatform, type: NotificationType, pnToken: string | null): Promise<void> {
     if (!database) throw new Error("Database not loaded yet.");
 
-    // Check if it already existed.
-    const existed = await database.get(`SELECT COUNT(*) as count FROM push_notification_tokens WHERE token = ? AND code = ?`, token, code);
-    if (existed.count) return;
+    // Delete if token == null.
+    if (!pnToken) {
+        await database.run("DELETE FROM push_notification_tokens WHERE code = ? AND type = ? AND deviceId = ?", code, type, deviceID);
+        return;
+    }
+
+    // First, clean the database to ensure that anyone that has a same token but different device ID is removed.
+    // This could technically happen if the device ID resets but the push notification token doesn't (and prevents
+    // us from delivering the same notification twice for what we think are two different devices).
+    await database.run(`DELETE FROM push_notification_tokens WHERE token = ? AND deviceID != ?`, pnToken, deviceID);
+
+    // Also delete an old token of the same type if we had one. Prevents us from having duplicates (and the
+    // old token should no longer be valid anyways).
+    await database.run(`DELETE FROM push_notification_tokens WHERE code = ? AND deviceID = ? AND type = ?`, code, deviceID, type);
 
     // Add to database.
-    await database.run(`INSERT INTO push_notification_tokens VALUES (?, ?, ?)`, token, type, code);
+    await database.run(`INSERT INTO push_notification_tokens (code, deviceID, platform, type, token) VALUES (?, ?, ?, ?, ?)`, code, deviceID, platform, type, pnToken);
 }
 
 /**
  * Returns a list of all registered notification tokens for the specified conduit code.
  */
-export async function getRegisteredNotificationTokens(code: string): Promise<{ token: string, type: string }[]> {
-    return database.all(`SELECT * FROM push_notification_tokens WHERE code = ?`, code);
+export async function getRegisteredNotificationTokens(code: string, type: NotificationType): Promise<{ token: string, deviceID: string, platform: NotificationPlatform }[]> {
+    return database.all(`SELECT * FROM push_notification_tokens WHERE code = ? AND type = ?`, code, type);
 }
