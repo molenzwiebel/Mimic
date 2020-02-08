@@ -92,11 +92,12 @@ namespace Conduit
          * Sends a message to Rift to register the specified PN token and device type for the
          * current conduit instance. Does nothing if we don't have a Rift connection.
          */
-        public void RegisterPushNotificationToken(string token, string type)
+        public void RegisterPushNotificationToken(string deviceID, string platform, string type, string token)
         {
             if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
 
-            socket.Send("[" + (long)RiftOpcode.PNSubscribe + ",\"" + token + "\",\"" + type + "\"]");
+            var tokenJson = token == null ? "null" : "\"" + token + "\"";
+            socket.Send("[" + (long)RiftOpcode.PNSubscribe + ",\"" + deviceID + "\",\"" + platform + "\",\"" + type + "\"," + tokenJson + "]");
         }
 
         /**
