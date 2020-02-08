@@ -1,6 +1,8 @@
 import { computed, observable } from "mobx";
+import Constants from "expo-constants";
 import RiftSocket, { MobileOpcode, RiftSocketState } from "./rift-socket";
-import { registerConnectedComputer } from "./persistence";
+import { withComputerConfig } from "./persistence";
+import { NotificationPlatform, NotificationType } from "./notifications";
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -120,7 +122,11 @@ class Socket {
             console.log("Connected to " + data[2]);
             this.computerName = data[2] as string;
             this.computerVersion = data[1] as string;
-            registerConnectedComputer(this.code, data[2] as string);
+
+            // Save latest computer name to config.
+            withComputerConfig(config => {
+                config.name = data[2] as string;
+            });
 
             // Populate registered listeners.
             this.observers.forEach(x => {
@@ -135,6 +141,16 @@ class Socket {
      */
     public tryReconnect() {
         this.connect(this.code);
+    }
+
+    /**
+     * Registers with Rift this device with the specified push notification token
+     * for the specified notification type. Passing null will unregister from those
+     * notification types instead.
+     */
+    public registerPushNotificationToken(type: NotificationType, token: string | null) {
+        const platform = Constants.platform!.ios ? NotificationPlatform.IOS : Constants.platform!.android ? NotificationPlatform.ANDROID : NotificationPlatform.WEB;
+        this.socket.send(JSON.stringify([MobileOpcode.PN_SUBSCRIBE, Constants.installationId, platform, type, token]));
     }
 
     /**

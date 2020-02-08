@@ -6,15 +6,25 @@ import styled from "styled-components/native";
 import LCUCheckbox from "../LCUCheckbox";
 import LCUButton from "../LCUButton";
 import confirm from "../../utils/confirm";
+import { withComputerConfig } from "../../utils/persistence";
+import { updateNotificationTokens } from "../../utils/notifications";
 
 function QueuePushNotificationSetting() {
     const [isChecked, setChecked] = useState(false);
+    const onToggle = () => {
+        const newValue = !isChecked;
+        setChecked(newValue);
+        withComputerConfig(x => {
+            x.readyCheckNotificationsEnabled = newValue;
+        });
+        updateNotificationTokens();
+    };
 
     return (
         <SettingContainer>
             <ElementAndName>
-                <LCUCheckbox checked={isChecked} onToggle={() => setChecked(!isChecked)} />
-                <TouchableWithoutFeedback onPress={() => setChecked(!isChecked)}>
+                <LCUCheckbox checked={isChecked} onToggle={onToggle} />
+                <TouchableWithoutFeedback onPress={onToggle}>
                     <Name>Enable Queue Push Notifications</Name>
                 </TouchableWithoutFeedback>
             </ElementAndName>
@@ -25,12 +35,20 @@ function QueuePushNotificationSetting() {
 
 function GamePushNotificationSetting() {
     const [isChecked, setChecked] = useState(false);
+    const onToggle = () => {
+        const newValue = !isChecked;
+        setChecked(newValue);
+        withComputerConfig(x => {
+            x.gameStartNotificationsEnabled = newValue;
+        });
+        updateNotificationTokens();
+    };
 
     return (
         <SettingContainer>
             <ElementAndName>
-                <LCUCheckbox checked={isChecked} onToggle={() => setChecked(!isChecked)} />
-                <TouchableWithoutFeedback onPress={() => setChecked(!isChecked)}>
+                <LCUCheckbox checked={isChecked} onToggle={onToggle} />
+                <TouchableWithoutFeedback onPress={onToggle}>
                     <Name>Enable Game Push Notifications</Name>
                 </TouchableWithoutFeedback>
             </ElementAndName>

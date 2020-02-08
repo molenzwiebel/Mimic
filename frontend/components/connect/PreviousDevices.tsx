@@ -1,4 +1,4 @@
-import { deleteRegisteredComputer, getRegisteredComputers } from "../../utils/persistence";
+import { ComputerConfig, deleteRegisteredComputer, getRegisteredComputers } from "../../utils/persistence";
 import React, { useEffect, useState } from "react";
 import socket from "../../utils/socket";
 import styled from "styled-components/native";
@@ -44,7 +44,7 @@ function DeviceEntry({ name, code, onDelete }: { name: string; code: string; onD
 }
 
 export default function PreviousDevices({ onRegisterNew }: { onRegisterNew: () => any }) {
-    const [devices, setDevices] = useState<{ [key: string]: string }>({});
+    const [devices, setDevices] = useState<{ [key: string]: ComputerConfig }>({});
     useEffect(() => {
         getRegisteredComputers().then(setDevices);
     }, []);
@@ -66,7 +66,7 @@ export default function PreviousDevices({ onRegisterNew }: { onRegisterNew: () =
             <ScrollView style={{ flex: 1, alignSelf: "stretch" }} alwaysBounceVertical={false}>
                 {Object.entries(devices).map(entry => (
                     <DeviceEntry
-                        name={entry[1]}
+                        name={entry[1].name}
                         code={entry[0]}
                         key={entry[0]}
                         onDelete={() => removeDevice(entry[0])}

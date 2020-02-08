@@ -1,4 +1,5 @@
 import { AsyncStorage } from "react-native";
+import socket from "./socket";
 
 export async function shouldShowIntro(): Promise<boolean> {
     return (await AsyncStorage.getItem("introShown")) === null;
@@ -9,10 +10,20 @@ export async function markIntroShown() {
 }
 
 /**
+ * Configuration stored locally for a specified computer code.
+ */
+export interface ComputerConfig {
+    name: string; // most recent computer name.
+    hasPromptedForNotifications: boolean; // whether we've asked for push notifications yet
+    readyCheckNotificationsEnabled: boolean;
+    gameStartNotificationsEnabled: boolean;
+}
+
+/**
  * Returns all the computers we've previously connected with. This returns a map
  * of { [computer code]: [last computer name] }.
  */
-export async function getRegisteredComputers(): Promise<{ [key: string]: string }> {
+export async function getRegisteredComputers(): Promise<{ [key: string]: ComputerConfig }> {
     return JSON.parse((await AsyncStorage.getItem("computers")) || "{}");
 }
 
@@ -27,11 +38,26 @@ export async function deleteRegisteredComputer(code: string) {
 }
 
 /**
- * Registers the specified device in the list of cached computers.
+ * Fetches the computer config for the current computer, runs the specified
+ * function on the config, then writes the (possibly modified) config back
+ * to storage. Returns the config.
  */
-export async function registerConnectedComputer(code: string, deviceName: string) {
-    const existing = await getRegisteredComputers();
-    existing[code] = deviceName;
+export async function withComputerConfig(fn: (config: ComputerConfig) => any = () => {}): Promise<ComputerConfig> {
+    const storage = await getRegisteredComputers();
+    let object = storage[socket.code];
 
-    await AsyncStorage.setItem("computers", JSON.stringify(existing));
+    if (!object) {
+        object = storage[socket.code] = {
+            name: "Computer",
+            hasPromptedForNotifications: false,
+            readyCheckNotificationsEnabled: false,
+            gameStartNotificationsEnabled: false
+        };
+    }
+
+    await fn(object);
+
+    await AsyncStorage.setItem("computers", JSON.stringify(storage));
+
+    return object;
 }
