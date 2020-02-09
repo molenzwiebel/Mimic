@@ -26,10 +26,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "nl.thijsmolendijk.mimic",
-      "buildNumber": "5"
+      "buildNumber": "6"
     },
     "android": {
-      "package": "nl.thijsmolendijk.mimic"
+      "package": "nl.thijsmolendijk.mimic",
+      "versionCode": 6
     }
   }
 }

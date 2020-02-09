@@ -18,7 +18,7 @@ export interface Friend {
     name: string;
     icon: number;
     lol?: {
-        pty?: string
+        pty?: string;
     };
 }
 

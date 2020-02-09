@@ -7,11 +7,13 @@ import { StatusBar, YellowBox } from "react-native";
 import Mimic from "./views/Mimic";
 import { loadDdragon } from "./utils/constants";
 import { Asset } from "expo-asset";
+import { registerNotificationCategories } from "./utils/notifications";
 
 // every platform supports this, yet somehow react native doesn't like it?
 YellowBox.ignoreWarnings([
-    'Warning: Failed prop type: Invalid props.style key `borderStyle` supplied to `Image`.',
-    'Require cycle:'
+    "Warning: Failed prop type: Invalid props.style key `borderStyle` supplied to `Image`.",
+    "Require cycle:",
+    "Warning: componentWillReceiveProps has been renamed"
 ]);
 
 @observer
@@ -19,13 +21,12 @@ export default class App extends React.Component {
     state = { isReady: false };
 
     render() {
-        if (!this.state.isReady) return <AppLoading
-            startAsync={this.loadResources}
-            onFinish={this.handleLoadComplete}
-            onError={console.warn}
-        />;
+        if (!this.state.isReady)
+            return (
+                <AppLoading startAsync={this.loadResources} onFinish={this.handleLoadComplete} onError={console.warn} />
+            );
 
-        return <Mimic/>;
+        return <Mimic />;
     }
 
     private handleLoadComplete = () => {
@@ -42,5 +43,6 @@ export default class App extends React.Component {
         });
         await Asset.fromModule(require("./assets/backgrounds/magic-background.jpg")).downloadAsync();
         await loadDdragon();
+        await registerNotificationCategories();
     };
 }

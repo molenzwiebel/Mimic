@@ -149,7 +149,11 @@ class Socket {
      * notification types instead.
      */
     public registerPushNotificationToken(type: NotificationType, token: string | null) {
-        const platform = Constants.platform!.ios ? NotificationPlatform.IOS : Constants.platform!.android ? NotificationPlatform.ANDROID : NotificationPlatform.WEB;
+        const platform = Constants.platform!.ios
+            ? NotificationPlatform.IOS
+            : Constants.platform!.android
+            ? NotificationPlatform.ANDROID
+            : NotificationPlatform.WEB;
         this.socket.send(JSON.stringify([MobileOpcode.PN_SUBSCRIBE, Constants.installationId, platform, type, token]));
     }
 
