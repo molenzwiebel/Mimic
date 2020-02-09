@@ -96,8 +96,7 @@ namespace Conduit
         {
             if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
 
-            var tokenJson = token == null ? "null" : "\"" + token + "\"";
-            socket.Send(SimpleJson.SerializeObject(new List<object> { (long) RiftOpcode.PNSubscribe, deviceID, platform, type, tokenJson }));
+            socket.Send(SimpleJson.SerializeObject(new List<object> { (long) RiftOpcode.PNSubscribe, deviceID, platform, type, token }));
         }
 
         /**
