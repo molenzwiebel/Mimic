@@ -7,7 +7,7 @@ import { StatusBar, YellowBox } from "react-native";
 import Mimic from "./views/Mimic";
 import { loadDdragon } from "./utils/constants";
 import { Asset } from "expo-asset";
-import { registerNotificationCategories } from "./utils/notifications";
+import { registerForNotifications } from "./utils/notifications";
 
 // every platform supports this, yet somehow react native doesn't like it?
 YellowBox.ignoreWarnings([
@@ -43,6 +43,6 @@ export default class App extends React.Component {
         });
         await Asset.fromModule(require("./assets/backgrounds/magic-background.jpg")).downloadAsync();
         await loadDdragon();
-        await registerNotificationCategories();
+        await registerForNotifications();
     };
 }

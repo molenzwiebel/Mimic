@@ -66,6 +66,7 @@ export default function NotificationPrompt({ onClose }: { onClose: Function }) {
 
     const onAccept = async () => {
         setProcessing(true);
+        await Permissions.askAsync(Permissions.NOTIFICATIONS);
         await withComputerConfig(x => {
             x.hasPromptedForNotifications = true;
             x.readyCheckNotificationsEnabled = true;

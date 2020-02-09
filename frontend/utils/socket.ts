@@ -2,7 +2,7 @@ import { computed, observable } from "mobx";
 import Constants from "expo-constants";
 import RiftSocket, { MobileOpcode, RiftSocketState } from "./rift-socket";
 import { withComputerConfig } from "./persistence";
-import { NotificationPlatform, NotificationType } from "./notifications";
+import { NotificationPlatform, NotificationType, updateNotificationTokens } from "./notifications";
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -127,6 +127,9 @@ class Socket {
             withComputerConfig(config => {
                 config.name = data[2] as string;
             });
+
+            // Send notification tokens.
+            updateNotificationTokens();
 
             // Populate registered listeners.
             this.observers.forEach(x => {

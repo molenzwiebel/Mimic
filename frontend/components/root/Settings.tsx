@@ -1,4 +1,4 @@
-import { default as React, useState } from "react";
+import { default as React, useEffect, useState } from "react";
 import { Text, TouchableWithoutFeedback, View } from "react-native";
 import socket from "../../utils/socket";
 import RootSubview from "./RootSubview";
@@ -11,13 +11,18 @@ import { updateNotificationTokens } from "../../utils/notifications";
 
 function QueuePushNotificationSetting() {
     const [isChecked, setChecked] = useState(false);
-    const onToggle = () => {
+
+    useEffect(() => {
+        withComputerConfig().then(x => setChecked(x.readyCheckNotificationsEnabled));
+    }, []);
+
+    const onToggle = async () => {
         const newValue = !isChecked;
         setChecked(newValue);
-        withComputerConfig(x => {
+        await withComputerConfig(x => {
             x.readyCheckNotificationsEnabled = newValue;
         });
-        updateNotificationTokens();
+        await updateNotificationTokens();
     };
 
     return (
@@ -35,13 +40,18 @@ function QueuePushNotificationSetting() {
 
 function GamePushNotificationSetting() {
     const [isChecked, setChecked] = useState(false);
-    const onToggle = () => {
+
+    useEffect(() => {
+        withComputerConfig().then(x => setChecked(x.gameStartNotificationsEnabled));
+    }, []);
+
+    const onToggle = async () => {
         const newValue = !isChecked;
         setChecked(newValue);
-        withComputerConfig(x => {
+        await withComputerConfig(x => {
             x.gameStartNotificationsEnabled = newValue;
         });
-        updateNotificationTokens();
+        await updateNotificationTokens();
     };
 
     return (
