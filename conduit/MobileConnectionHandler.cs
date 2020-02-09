@@ -148,10 +148,10 @@ namespace Conduit
             }
             else if (msg[0] == (long) MobileOpcode.PNSubscribe)
             {
-                var deviceID = (string) msg[0];
-                var platform = (string) msg[1];
-                var type = (string) msg[2];
-                var token = (string) msg[3];
+                var deviceID = (string) msg[1];
+                var platform = (string) msg[2];
+                var type = (string) msg[3];
+                var token = (string) msg[4];
 
                 hub.RegisterPushNotificationToken(deviceID, platform, type, token);
             }

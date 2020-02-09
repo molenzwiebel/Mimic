@@ -76,7 +76,7 @@ namespace Conduit
         public void Uninstall(object sender, EventArgs args)
         {
 #if DEBUG
-            HubConnectionHandler.Instance.SendReadyCheckPushNotification("This is a test notification!");
+            HubConnectionHandler.Instance.SendNotification(NotificationType.ReadyCheck);
 #else
             MessageBoxResult result = MessageBox.Show("Are you sure you want to uninstall Mimic Conduit? All files will be deleted.", "Mimic Conduit", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.No) return;

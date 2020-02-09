@@ -101,25 +101,13 @@ namespace Conduit
         }
 
         /**
-         * Sends a ready check push notification with the specified content. Specify null to
-         * remove all outstanding push notifications instead.
+         * Sends a notification to all registered devices of the specified type.
          */
-        public void SendReadyCheckPushNotification(string content)
+        public void SendNotification(string type)
         {
             if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
 
-            socket.Send("[" + (long)RiftOpcode.PNSend + ", \"readyCheck\", " + (content == null ? "null" : "\"" + content + "\"") + "]");
-        }
-
-        /**
-         * Sends a game push notification with the specified content. Specify null to
-         * remove all outstanding push notifications instead.
-         */
-        public void SendGameStartPushNotification(string content)
-        {
-            if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
-
-            socket.Send("[" + (long)RiftOpcode.PNSend + ", \"gameStart\", " + (content == null ? "null" : "\"" + content + "\"") + "]");
+            socket.Send("[" + (long)RiftOpcode.PNSend + ", \"" + type + "\"]");
         }
 
         private void HandleMessage(object sender, MessageEventArgs ev)
@@ -171,13 +159,13 @@ namespace Conduit
             // Ready check just popped.
             if (newState == "InProgress" && readyCheckState != "InProgress")
             {
-                this.SendReadyCheckPushNotification("🔔 Your queue has popped! Tap here to open Mimic.");
+                SendNotification(NotificationType.ReadyCheck);
             }
 
             // Ready check just got accepted/denied.
             if (newState != "InProgress" && readyCheckState == "InProgress")
             {
-                this.SendReadyCheckPushNotification(null);
+                SendNotification(NotificationType.Clear);
             }
 
             readyCheckState = newState;
@@ -198,7 +186,7 @@ namespace Conduit
             if (newCursorPosition.X == cursorPosition.X && newCursorPosition.Y == cursorPosition.Y)
             {
                 DebugLogger.Global.WriteMessage("Cursor position wasn't changed, emitting notification");
-                this.SendGameStartPushNotification("🎮 The loading screen is complete and minions will spawn soon! Get back to your PC and grab that win!");
+                SendNotification(NotificationType.GameStarted);
             }
         }
     }
@@ -228,5 +216,18 @@ namespace Conduit
 
         // Receive an instant response to an emitted push notification.
         PNResponse = 11
+    }
+
+    /**
+     * Represents a type of push notification that can be sent by Rift.
+     */
+    sealed class NotificationType
+    {
+        // Every client subscribes to this. Clears all received notifications.
+        public const string Clear = "CLEAR";
+        // Sent when ready check triggers.
+        public const string ReadyCheck = "READY_CHECK";
+        // Sent when the game has (almost) started.
+        public const string GameStarted = "GAME_STARTED";
     }
 }
