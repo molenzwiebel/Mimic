@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Asset } from "expo";
+import { Asset } from "expo-asset";
 import CreateLobby from "../components/root/CreateLobby";
 import JoinOpenLobby from "../components/root/JoinOpenLobby";
 import RootComponent from "../components/root/Root";
