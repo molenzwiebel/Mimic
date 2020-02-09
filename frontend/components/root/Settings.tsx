@@ -1,5 +1,7 @@
 import { default as React, useEffect, useState } from "react";
 import { Text, TouchableWithoutFeedback, View } from "react-native";
+import { Updates } from "expo";
+import Constants from "expo-constants";
 import socket from "../../utils/socket";
 import RootSubview from "./RootSubview";
 import styled from "styled-components/native";
@@ -8,6 +10,7 @@ import LCUButton from "../LCUButton";
 import confirm from "../../utils/confirm";
 import { withComputerConfig } from "../../utils/persistence";
 import { updateNotificationTokens } from "../../utils/notifications";
+import { bottomMargin } from "../../utils/notch";
 
 function QueuePushNotificationSetting() {
     const [isChecked, setChecked] = useState(false);
@@ -88,12 +91,37 @@ function DisconnectSetting() {
     );
 }
 
+function Version() {
+    const [status, setStatus] = useState("Check for updates");
+
+    const checkForUpdate = async () => {
+        setStatus("Checking...");
+        const status = await Updates.checkForUpdateAsync();
+        if (!status.isAvailable) {
+            setStatus("No New Updates");
+            return;
+        }
+        setStatus("Downloading v" + status.manifest.version);
+        await Updates.fetchUpdateAsync();
+        setStatus("Relaunching");
+        await Updates.reloadFromCache();
+    };
+
+    return <SettingContainer>
+        <TouchableWithoutFeedback onPress={checkForUpdate}>
+            <VersionDescription>Mimic Mobile v{ Constants.manifest.version } - <Underlined>{status}</Underlined></VersionDescription>
+        </TouchableWithoutFeedback>
+    </SettingContainer>;
+}
+
 export default function Settings({ onClose }: { onClose: Function }) {
     return (
         <RootSubview title="Settings" onClose={onClose}>
             <QueuePushNotificationSetting />
             <GamePushNotificationSetting />
             <DisconnectSetting />
+            <Padder />
+            <Version/>
         </RootSubview>
     );
 }
@@ -121,4 +149,17 @@ const Description = styled(Text)`
     font-size: 14px;
     color: #aaaea0;
     margin-top: 4px;
+`;
+
+const Padder = styled(View)`
+    flex: 1;
+`;
+
+const VersionDescription = styled(Description)`
+    text-align: center;
+    margin-bottom: ${bottomMargin}px;
+`;
+
+const Underlined = styled(Text)`
+    text-decoration: underline #aaaea0;
 `;

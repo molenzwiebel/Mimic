@@ -100,7 +100,8 @@ class Socket {
         try {
             data = JSON.parse(msg.data);
         } catch {
-            console.error(msg.data + " was not valid JSON, ignoring.");
+            // Not using error here, as it causes a big red screen.
+            console.log(msg.data + " was not valid JSON, ignoring.");
             return;
         }
 
@@ -125,11 +126,8 @@ class Socket {
 
             // Save latest computer name to config.
             withComputerConfig(config => {
-                config.name = data[2] as string;
-            });
-
-            // Send notification tokens.
-            updateNotificationTokens();
+                config.name = this.computerName;
+            }).then(updateNotificationTokens);
 
             // Populate registered listeners.
             this.observers.forEach(x => {
