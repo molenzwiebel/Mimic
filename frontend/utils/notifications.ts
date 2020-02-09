@@ -57,6 +57,8 @@ export async function updateNotificationTokens() {
 }
 
 async function handleNotification(notification: Notification) {
+    const action: string | null = (<any>notification).actionId || null;
+
     // Clear notifications if needed.
     if (notification.data.type === NotificationType.CLEAR) {
         await Notifications.dismissAllNotificationsAsync();
@@ -68,6 +70,14 @@ async function handleNotification(notification: Notification) {
         // Ignore it since we aren't interested.
         // TODO (molenzwiebel): Maybe show a local copy of the notification if != READY_CHECK?
         return;
+    }
+
+    // If this is a ready check and the user responded through the notification, apply it.
+    if (notification.data.type === NotificationType.READY_CHECK && action) {
+        // We don't care about the response.
+        fetch(`https://rift.mimic.lol/respond?token=${notification.data.respondToken}&response=${action}`, {
+            method: "POST"
+        });
     }
 
     // TODO: Figure out how to find selected result.

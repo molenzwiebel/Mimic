@@ -35,14 +35,16 @@ export default class App extends React.Component {
     };
 
     private loadResources = async () => {
-        await Font.loadAsync({
-            "LoL Display": require("./assets/fonts/BeaufortforLOL-Regular.ttf"),
-            "LoL Display Bold": require("./assets/fonts/BeaufortforLOL-Bold.ttf"),
-            "LoL Body": require("./assets/fonts/Spiegel-Regular.ttf"),
-            ...Ionicons.font
-        });
-        await Asset.fromModule(require("./assets/backgrounds/magic-background.jpg")).downloadAsync();
-        await loadDdragon();
-        await registerForNotifications();
+        await Promise.all([
+            Font.loadAsync({
+                "LoL Display": require("./assets/fonts/BeaufortforLOL-Regular.ttf"),
+                "LoL Display Bold": require("./assets/fonts/BeaufortforLOL-Bold.ttf"),
+                "LoL Body": require("./assets/fonts/Spiegel-Regular.ttf"),
+                ...Ionicons.font
+            }),
+            Asset.fromModule(require("./assets/backgrounds/magic-background.jpg")).downloadAsync(),
+            loadDdragon(),
+            registerForNotifications()
+        ]);
     };
 }

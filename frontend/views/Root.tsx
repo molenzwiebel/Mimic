@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Asset } from "expo";
 import CreateLobby from "../components/root/CreateLobby";
 import JoinOpenLobby from "../components/root/JoinOpenLobby";
 import RootComponent from "../components/root/Root";
@@ -12,7 +13,16 @@ export default function Root() {
     const [promptingNotifications, setPromptingNotifications] = useState(false);
 
     useEffect(() => {
-        shouldShowNotificationPrompt().then(setPromptingNotifications);
+        shouldShowNotificationPrompt().then(async should => {
+            if (!should) return;
+
+            await Promise.all([
+                Asset.fromModule(require("../assets/notifications/android.png")).downloadAsync(),
+                Asset.fromModule(require("../assets/notifications/ios.png")).downloadAsync()
+            ]);
+
+            setPromptingNotifications(true);
+        });
     }, []);
 
     if (promptingNotifications) {

@@ -11,7 +11,7 @@ import "../generated/node-rsa-browserified.min";
  * WebSocket-esque class that handles messaging with Conduit through rift.
  */
 export default class RiftSocket {
-    private socket = new WebSocket("ws://192.168.1.100:51002/mobile" /*wss://rift.mimic.lol/mobile"*/);
+    private socket = new WebSocket("wss://rift.mimic.lol/mobile");
 
     // Params from the normal websocket.
     public onopen: () => void;
