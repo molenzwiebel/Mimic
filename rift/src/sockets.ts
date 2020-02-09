@@ -201,11 +201,14 @@ export default class WebSocketManager {
 
                 switch (type) {
                 case NotificationType.READY_CHECK:
-                    await notifications.broadcastReadyCheckNotification(data, code);
+                    await notifications.broadcastReadyCheckNotification(code);
+                    break;
                 case NotificationType.GAME_STARTED:
-                    await notifications.broadcastGameStartNotification(data, code);
+                    await notifications.broadcastGameStartNotification(code);
+                    break;
                 case NotificationType.CLEAR:
                     await notifications.removeNotifications(code);
+                    break;
                 }
             } else {
                 // Just disconnect them.

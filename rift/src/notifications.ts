@@ -1,23 +1,7 @@
-import * as apn from "apn";
 import * as db from "./database";
 import * as jwt from "jsonwebtoken";
-import * as admin from "firebase-admin";
-
-// iOS notifications.
-const apnProvider = new apn.Provider({
-    token: {
-        key: process.env.RIFT_IOS_PN_KEY_PATH!,
-        keyId: process.env.RIOT_IOS_PN_KEY_ID!,
-        teamId: process.env.RIFT_IOS_PN_TEAM_ID!
-    },
-    production: false
-});
-
-// Android/Firebase notifications.
-admin.initializeApp({
-    credential: admin.credential.cert(process.env.RIFT_FIREBASE_KEY_PATH!)
-});
-const messaging = admin.messaging();
+import fetch from "node-fetch";
+import { NotificationType, NotificationPlatform } from "./types";
 
 const CATEGORIES = {
     readyCheck: {
@@ -31,14 +15,76 @@ const CATEGORIES = {
 };
 
 /**
+ * Uses the Expo API to send the specified notification.
+ */
+async function sendNotification(notification: any): Promise<void> {
+    await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(notification)
+    });
+}
+
+/**
+ * Helper function that loads the notification tokens needed for the
+ * specified conduit instance and type, then groups them by platform.
+ */
+async function getGroupedNotificationTokens(code: string, type: NotificationType): Promise<{ android: string[], ios: string[] }> {
+    const tokens = await db.getRegisteredNotificationTokens(code, type);
+
+    return {
+        android: tokens.filter(x => x.platform === NotificationPlatform.ANDROID).map(x => x.token),
+        ios: tokens.filter(x => x.platform === NotificationPlatform.IOS).map(x => x.token),
+    };
+}
+
+/**
  * Broadcasts a ready check notification with appropriate content to all devices registered
  * with the computer with the specified code. This function will automatically populate the
  * appropriate fields for the specified notification type. It will also attach a signed token
  * that can be used to give feedback without having to connect to the device itself. These 
  * tokens expire after a minute.
  */
-export async function broadcastReadyCheckNotification(content: string, code: string) {
-    
+export async function broadcastReadyCheckNotification(code: string) {
+    const { ios, android } = await getGroupedNotificationTokens(code, NotificationType.READY_CHECK);
+
+    const respondToken = jwt.sign({
+        code,
+        type: NotificationType.READY_CHECK
+    }, process.env.RIFT_JWT_SECRET!, {
+        expiresIn: 60 // expire in a minute 
+    });
+
+    const common = {
+        data: {
+            type: NotificationType.READY_CHECK,
+            respondToken,
+            code
+        },
+        priority: "high",
+        title: "Mimic - Queue Popped!",
+        body: "🔔 Your queue has popped! Tap here to open Mimic.",
+    };
+
+    // iOS notification.
+    await sendNotification({
+        to: ios,
+        sound: "default",
+        badge: 1,
+        category: NotificationType.READY_CHECK,
+        _category: NotificationType.READY_CHECK,
+        ...common
+    });
+
+    // Android notification
+    await sendNotification({
+        to: android,
+        channelId: NotificationType.READY_CHECK,
+        ...common
+    });
 }
 
 /**
@@ -46,8 +92,34 @@ export async function broadcastReadyCheckNotification(content: string, code: str
  * with the computer with the specified code. This function will automatically populate the
  * appropriate fields for the specified notification type.
  */
-export async function broadcastGameStartNotification(content: string, code: string) {
-    
+export async function broadcastGameStartNotification(code: string) {
+    const { ios, android } = await getGroupedNotificationTokens(code, NotificationType.GAME_STARTED);
+
+    const common = {
+        data: {
+            type: NotificationType.GAME_STARTED,
+            code
+        },
+        priority: "high",
+        title: "Mimic - Game Started!",
+        body: "🎮 The loading screen is complete and minions will spawn soon! Get back to your PC and grab that win!",
+    };
+
+    // iOS notification.
+    await sendNotification({
+        to: ios,
+        sound: "default",
+        badge: 1,
+        _displayInForeground: true,
+        ...common
+    });
+
+    // Android notification
+    await sendNotification({
+        to: android,
+        channelId: NotificationType.GAME_STARTED,
+        ...common
+    });
 }
 
 /**
@@ -55,5 +127,27 @@ export async function broadcastGameStartNotification(content: string, code: stri
  * all outstanding notifications of the specified type.
  */
 export async function removeNotifications(code: string) {
-    
+    const { ios, android } = await getGroupedNotificationTokens(code, NotificationType.CLEAR);
+
+    const common = {
+        data: {
+            type: NotificationType.CLEAR,
+            code
+        },
+        priority: "high"
+    };
+
+    // iOS notification.
+    await sendNotification({
+        to: ios,
+        badge: 0,
+        ...common
+    });
+
+    // Android notification
+    await sendNotification({
+        to: android,
+        channelId: NotificationType.CLEAR,
+        ...common
+    });
 }
