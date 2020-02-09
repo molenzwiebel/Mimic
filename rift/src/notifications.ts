@@ -3,17 +3,6 @@ import * as jwt from "jsonwebtoken";
 import fetch from "node-fetch";
 import { NotificationType, NotificationPlatform } from "./types";
 
-const CATEGORIES = {
-    readyCheck: {
-        ios: "READY_CHECK",
-        android: "readyCheck"
-    },
-    gameStart: {
-        ios: "GAME_START",
-        android: "gameStart"
-    }
-};
-
 /**
  * Uses the Expo API to send the specified notification.
  */
@@ -65,7 +54,6 @@ export async function broadcastReadyCheckNotification(code: string) {
             code
         },
         priority: "high",
-        title: "Mimic - Queue Popped!",
         body: "🔔 Your queue has popped! Tap here to open Mimic.",
     };
 
@@ -74,7 +62,6 @@ export async function broadcastReadyCheckNotification(code: string) {
         to: ios,
         sound: "default",
         badge: 1,
-        category: NotificationType.READY_CHECK,
         _category: NotificationType.READY_CHECK,
         ...common
     });
@@ -82,6 +69,7 @@ export async function broadcastReadyCheckNotification(code: string) {
     // Android notification
     await sendNotification({
         to: android,
+        title: "Mimic - Queue Popped!",
         channelId: NotificationType.READY_CHECK,
         ...common
     });
@@ -101,7 +89,6 @@ export async function broadcastGameStartNotification(code: string) {
             code
         },
         priority: "high",
-        title: "Mimic - Game Started!",
         body: "🎮 The loading screen is complete and minions will spawn soon! Get back to your PC and grab that win!",
     };
 
@@ -117,6 +104,7 @@ export async function broadcastGameStartNotification(code: string) {
     // Android notification
     await sendNotification({
         to: android,
+        title: "Mimic - Game Started!",
         channelId: NotificationType.GAME_STARTED,
         ...common
     });

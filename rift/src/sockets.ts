@@ -202,9 +202,11 @@ export default class WebSocketManager {
                 switch (type) {
                 case NotificationType.READY_CHECK:
                     await notifications.broadcastReadyCheckNotification(code);
+                    setTimeout(() => notifications.removeNotifications(code), 20 * 1000); // 20s later, clear
                     break;
                 case NotificationType.GAME_STARTED:
                     await notifications.broadcastGameStartNotification(code);
+                    setTimeout(() => notifications.removeNotifications(code), 2 * 60 * 1000); // two minutes later, clear
                     break;
                 case NotificationType.CLEAR:
                     await notifications.removeNotifications(code);
