@@ -97,7 +97,7 @@ namespace Conduit
             if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
 
             var tokenJson = token == null ? "null" : "\"" + token + "\"";
-            socket.Send("[" + (long)RiftOpcode.PNSubscribe + ",\"" + deviceID + "\",\"" + platform + "\",\"" + type + "\"," + tokenJson + "]");
+            socket.Send(SimpleJson.SerializeObject(new List<object> { (long) RiftOpcode.PNSubscribe, deviceID, platform, type, tokenJson }));
         }
 
         /**
@@ -107,7 +107,7 @@ namespace Conduit
         {
             if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
 
-            socket.Send("[" + (long)RiftOpcode.PNSend + ", \"" + type + "\"]");
+            socket.Send(SimpleJson.SerializeObject(new List<object> { (long) RiftOpcode.PNSend, type }));
         }
 
         private void HandleMessage(object sender, MessageEventArgs ev)
@@ -124,6 +124,7 @@ namespace Conduit
 
                 connections.Add(contents[1], new MobileConnectionHandler(this, league, msg =>
                 {
+                    // Intentionally manually building JSON, the msg is already a JSON here and we don't want it as a string.
                     socket.Send("[" + (long) RiftOpcode.Reply + ",\"" + contents[1] + "\"," + msg + "]");
                 }));
             }
@@ -144,7 +145,7 @@ namespace Conduit
             {
                 DebugLogger.Global.WriteMessage("User responded with " + (string)contents[2] + " to " + (string)contents[1]);
 
-                if (contents[1].Equals("readyCheck"))
+                if (contents[1].Equals(NotificationType.ReadyCheck))
                 {
                     league.Request("POST", "/lol-matchmaking/v1/ready-check/" + (string) contents[2], null);
                 }

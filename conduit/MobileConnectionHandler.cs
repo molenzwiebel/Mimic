@@ -70,7 +70,8 @@ namespace Conduit
 
                 if (info == null)
                 {
-                    this.SendRaw("[" + MobileOpcode.SecretResponse + ",false]");
+                    this.SendRaw(
+                        SimpleJson.SerializeObject(new List<object> {(long) MobileOpcode.SecretResponse, false}));
                     return;
                 }
 
@@ -81,7 +82,8 @@ namespace Conduit
                 if (Persistence.IsDeviceApproved(contents["identity"]))
                 {
                     this.key = Convert.FromBase64String((string)contents["secret"]);
-                    this.SendRaw("[" + (long) MobileOpcode.SecretResponse + ",true]");
+                    this.SendRaw(
+                        SimpleJson.SerializeObject(new List<object> {(long) MobileOpcode.SecretResponse, true}));
                 }
                 else
                 {
@@ -99,7 +101,9 @@ namespace Conduit
                             }
 
                             // Send the result of the prompt to the device.
-                            this.SendRaw("[" + (long)MobileOpcode.SecretResponse + "," + result.ToString().ToLower() + "]");
+                            this.SendRaw(
+                                SimpleJson.SerializeObject(
+                                    new List<object> {(long) MobileOpcode.SecretResponse, result}));
                         });
 
                         window.Show();
@@ -140,11 +144,12 @@ namespace Conduit
                 var contents = await result.Content.ReadAsStringAsync();
                 if (contents.IsNullOrEmpty()) contents = "null";
 
-                Send("[" + (long) MobileOpcode.Response + "," + id + "," + (long) result.StatusCode + "," + contents + "]");
+                Send(SimpleJson.SerializeObject(new List<object> { (long) MobileOpcode.Response, id, (long) result.StatusCode, SimpleJson.DeserializeObject(contents) }));
             }
             else if (msg[0] == (long) MobileOpcode.Version)
             {
-                Send("[" + (long) MobileOpcode.VersionResponse + ", \"" + Program.VERSION + "\", \"" + Environment.MachineName + "\"]");
+                Send(SimpleJson.SerializeObject(new List<object>
+                    {(long) MobileOpcode.VersionResponse, Program.VERSION, Environment.MachineName}));
             }
             else if (msg[0] == (long) MobileOpcode.PNSubscribe)
             {
@@ -165,7 +170,7 @@ namespace Conduit
             if (!observedPaths.Values.Any(x => x.IsMatch(ev.Path))) return;
 
             var status = ev.Type.Equals("Create") || ev.Type.Equals("Update") ? 200 : 404;
-            Send("[" + (long) MobileOpcode.Update + ",\"" + ev.Path + "\"," + status + "," + (ev.Data != null ? ev.Data.ToString() : "null") + "]");
+            Send(SimpleJson.SerializeObject(new List<object> {(long) MobileOpcode.Update, ev.Path, status, ev.Data}));
         }
     }
 
