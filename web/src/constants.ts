@@ -13,8 +13,7 @@ export function ddragon() {
     req.send();
 
     // Return default until we've loaded.
-    // 10.2.1 -> Aphelios and Sett fix
-    return "10.2.1";
+    return "10.3.1";
 }
 
 export const POSITION_NAMES: { [key: string]: string } = {
