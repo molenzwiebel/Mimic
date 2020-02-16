@@ -7,9 +7,11 @@ export function ddragon() {
     req.open("GET", "https://ddragon.leagueoflegends.com/api/versions.json", true);
     req.send();
     req.onload = () => {
-        if (req.status !== 200 || !req.response || req.readyState !== 4) return "10.3.1";
-        let version = JSON.parse(req.response); // OR: let version: string[] = JSON.parse(req.response);
-        _ddragon = version[0]; // newest patch is first in the list
+        if (req.status == 200)
+            let version = JSON.parse(req.response); // OR: let version: string[] = JSON.parse(req.response);
+            _ddragon = version[0]; // newest patch is first in the list
+        else
+            return "10.3.1";
     };
 }
 
