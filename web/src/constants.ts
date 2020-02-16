@@ -4,16 +4,13 @@ export function ddragon() {
 
     // Load ddragon async.
     const req = new XMLHttpRequest();
-    req.onreadystatechange = () => {
-        if (req.status !== 200 || !req.responseText || req.readyState !== 4) return;
-        const versions: string[] = JSON.parse(req.responseText);
-        _ddragon = versions[0]; // newest patch is first in the list
-    };
     req.open("GET", "https://ddragon.leagueoflegends.com/api/versions.json", true);
     req.send();
-
-    // Return default until we've loaded.
-    return "10.3.1";
+    req.onload = () => {
+        if (req.status !== 200 || !req.response || req.readyState !== 4) return "10.3.1";
+        let version = JSON.parse(req.response); // OR: let version: string[] = JSON.parse(req.response);
+        _ddragon = version[0]; // newest patch is first in the list
+    };
 }
 
 export const POSITION_NAMES: { [key: string]: string } = {
