@@ -6,12 +6,13 @@ export function ddragon() {
     const req = new XMLHttpRequest();
     req.open("GET", "https://ddragon.leagueoflegends.com/api/versions.json", true);
     req.send();
-    req.onload = () => {
-        if (req.status == 200)
+    req.onreadystatechange = () => {
+        if (req.readyState == 4 && req.status == 200) {
             let version = JSON.parse(req.response); // OR: let version: string[] = JSON.parse(req.response);
             _ddragon = version[0]; // newest patch is first in the list
-        else
+        } else {
             return "10.3.1";
+        }
     };
 }
 
