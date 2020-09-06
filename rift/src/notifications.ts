@@ -22,7 +22,7 @@ async function sendNotification(notification: any): Promise<void> {
  * specified conduit instance and type, then groups them by platform.
  */
 async function getGroupedNotificationTokens(code: string, type: NotificationType): Promise<{ android: string[], ios: string[] }> {
-    const tokens = await db.getRegisteredNotificationTokens(code, type);
+    const tokens = await db.getSubscribedDeviceTokens(code, type);
 
     return {
         android: tokens.filter(x => x.platform === NotificationPlatform.ANDROID).map(x => x.token),

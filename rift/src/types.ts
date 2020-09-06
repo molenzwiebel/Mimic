@@ -22,7 +22,7 @@ export const enum NotificationType {
     GAME_STARTED = "GAME_STARTED"
 }
 
-export const NOTIFICATION_TYPES = [
+export const NOTIFICATION_TYPES: string[] = [
     NotificationType.CLEAR,
     NotificationType.READY_CHECK,
     NotificationType.GAME_STARTED
@@ -37,7 +37,7 @@ export const enum NotificationPlatform {
     WEB = "web"
 }
 
-export const NOTIFICATION_PLATFORMS = [
+export const NOTIFICATION_PLATFORMS: string[] = [
     NotificationPlatform.IOS,
     NotificationPlatform.ANDROID,
     NotificationPlatform.WEB
@@ -48,6 +48,9 @@ export const NOTIFICATION_PLATFORMS = [
  * of arrays.
  */
 export const enum RiftOpcode {
+    // Conduit successfully connected to Rift.
+    WELCOME = 0,
+
     // A new Mobile -> Conduit connection was established.
     OPEN = 1,
 
@@ -72,12 +75,6 @@ export const enum RiftOpcode {
     // Mobile receives a message from the connected Conduit instance.
     RECEIVE = 8,
 
-    // Conduit subscribes on behalf of web to push notifications.
-    PN_SUBSCRIBE = 9,
-
-    // Conduit sends a push notification to all subscribed devices.
-    PN_SEND = 10,
-
     // Conduit receives an instant response to an emitted push notification.
-    PN_RESPONSE = 11
+    PN_INSTANT_RESPONSE = 9
 }

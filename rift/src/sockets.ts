@@ -1,14 +1,14 @@
 import { Server as WebSocketServer, VerifyClientCallbackAsync } from "ws";
 import WebSocket = require("ws");
 import * as url from "url";
-import * as jwt from "jsonwebtoken";
 import * as db from "./database";
+import * as jwt from "jsonwebtoken";
+import * as tokens from "./tokens";
 import * as uuid from "uuid";
 import { Socket } from "net";
 import { IncomingMessage } from "http";
 import { URL } from "url";
-import { RiftOpcode, NOTIFICATION_PLATFORMS, NOTIFICATION_TYPES, NotificationType } from "./types";
-import * as notifications from "./notifications";
+import { RiftOpcode } from "./types";
 
 /**
  * Represents a single mobile connection to a specific Conduit instance. The
@@ -88,7 +88,7 @@ export default class WebSocketManager {
         const conn = this.conduitConnections.get(data.code);
         if (!conn || conn.readyState !== WebSocket.OPEN) return;
 
-        conn.send(JSON.stringify([RiftOpcode.PN_RESPONSE, data.type, data.response]));
+        conn.send(JSON.stringify([RiftOpcode.PN_INSTANT_RESPONSE, data.type, data.response]));
     }
 
     /**
@@ -157,6 +157,11 @@ export default class WebSocketManager {
         });
 
         ws.on("message", this.handleConduitMessage(ws, code));
+
+        ws.send(JSON.stringify([
+            RiftOpcode.WELCOME,
+            tokens.createPushNotificationToken(code)
+        ]));
     };
 
     /**
@@ -166,56 +171,19 @@ export default class WebSocketManager {
         try {
             const [op, ...args] = JSON.parse(msg);
 
-            if (op === RiftOpcode.REPLY) {
-                const [peer, message] = args;
-                const entry = this.conduitToMobileMap.get(ws)!.find(x => x.uuid === peer);
-
-                // Conduit may be lagging behind and still trying to reply to an already disconnected
-                // peer. Don't be too harsh and just ignore the message instead of immediately disconnecting.
-                if (!entry) return;
-
-                entry.socket.send(JSON.stringify([RiftOpcode.RECEIVE, message]));
-            } else if (op === RiftOpcode.PN_SUBSCRIBE) {
-                const [deviceID, platform, type, token] = args;
-
-                if (!NOTIFICATION_PLATFORMS.includes(platform)) {
-                    throw new Error("Invalid push notification platform: " + type);
-                }
-
-                if (!NOTIFICATION_TYPES.includes(type)) {
-                    throw new Error("Invalid push notification type: " + type);
-                }
-
-                if (typeof token !== "string" && token !== null) {
-                    throw new Error("Invalid token: " + token);
-                }
-
-                console.log(`[+] Registering push notification token for device ${deviceID} (${platform}) of type ${type}: ${token}`);
-                await db.updatePushNotificationToken(code, deviceID, platform, type, token);
-            } else if (op === RiftOpcode.PN_SEND) {
-                const [type, data] = args;
-
-                if (!NOTIFICATION_TYPES.includes(type)) {
-                    throw new Error("Invalid push notification type: " + type);
-                }
-
-                switch (type) {
-                case NotificationType.READY_CHECK:
-                    await notifications.broadcastReadyCheckNotification(code);
-                    setTimeout(() => notifications.removeNotifications(code), 20 * 1000); // 20s later, clear
-                    break;
-                case NotificationType.GAME_STARTED:
-                    await notifications.broadcastGameStartNotification(code);
-                    setTimeout(() => notifications.removeNotifications(code), 2 * 60 * 1000); // two minutes later, clear
-                    break;
-                case NotificationType.CLEAR:
-                    await notifications.removeNotifications(code);
-                    break;
-                }
-            } else {
+            if (op !== RiftOpcode.REPLY) {
                 // Just disconnect them.
                 throw new Error("Conduit sent invalid opcode.");
             }
+
+            const [peer, message] = args;
+            const entry = this.conduitToMobileMap.get(ws)!.find(x => x.uuid === peer);
+
+            // Conduit may be lagging behind and still trying to reply to an already disconnected
+            // peer. Don't be too harsh and just ignore the message instead of immediately disconnecting.
+            if (!entry) return;
+
+            entry.socket.send(JSON.stringify([RiftOpcode.RECEIVE, message]));
         } catch (e) {
             console.log("[-] Error handling conduit message '" + msg + "':");
             console.log(e);
