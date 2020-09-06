@@ -146,19 +146,10 @@ namespace Conduit
 
                 Send(SimpleJson.SerializeObject(new List<object> { (long) MobileOpcode.Response, id, (long) result.StatusCode, SimpleJson.DeserializeObject(contents) }));
             }
-            else if (msg[0] == (long) MobileOpcode.Version)
+            else if (msg[0] == (long) MobileOpcode.Handshake)
             {
                 Send(SimpleJson.SerializeObject(new List<object>
-                    {(long) MobileOpcode.VersionResponse, Program.VERSION, Environment.MachineName}));
-            }
-            else if (msg[0] == (long) MobileOpcode.PNSubscribe)
-            {
-                var deviceID = (string) msg[1];
-                var platform = (string) msg[2];
-                var type = (string) msg[3];
-                var token = (string) msg[4];
-
-                hub.RegisterPushNotificationToken(deviceID, platform, type, token);
+                    {(long) MobileOpcode.HandshakeComplete, Program.VERSION, Environment.MachineName, hub.NotificationSubscriptionToken}));
             }
         }
 
@@ -182,16 +173,16 @@ namespace Conduit
         // Conduit <- Mobile, sends result of secret negotiation. If true, rest of communications is encrypted.
         SecretResponse = 2,
 
-        // Mobile -> Conduit, request version
-        Version = 3,
+        // Mobile -> Conduit, negotiate handshake
+        Handshake = 3,
 
-        // Conduit <- Mobile, send version
-        VersionResponse = 4,
+        // Conduit <- Mobile, send version and other info to complete handshake
+        HandshakeComplete = 4,
 
         // Mobile -> Conduit, subscribe to LCU updates that match regex
         Subscribe = 5,
 
-        // Mobile -> Conduit, unsibscribe to LCU updates that match regex
+        // Mobile -> Conduit, unsubscribe to LCU updates that match regex
         Unsubscribe = 6,
 
         // Mobile -> Conduit, make LCU request
@@ -201,10 +192,7 @@ namespace Conduit
         Response = 8,
 
         // Conduit -> Mobile, when any subscribed endpoint gets an update
-        Update = 9,
-
-        // Mobile -> Conduit, subscribe to push notifications for that device
-        PNSubscribe = 10
+        Update = 9
     }
 }
  

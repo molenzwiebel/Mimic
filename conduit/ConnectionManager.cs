@@ -73,7 +73,7 @@ namespace Conduit
                 if (!Persistence.GetHubToken().IsNullOrEmpty())
                 {
                     DebugLogger.Global.WriteMessage("Requesting hub token..");
-                    var response = await httpClient.GetStringAsync(Program.HUB + "/check?token=" + Persistence.GetHubToken());
+                    var response = await httpClient.GetStringAsync(Program.HUB + "/v1/conduit/verify?token=" + Persistence.GetHubToken());
                     valid = response == "true";
                     DebugLogger.Global.WriteMessage($"Hub token validity: {(valid ? "valid" : "invalid")}.");
                 }
@@ -83,7 +83,7 @@ namespace Conduit
                 {
                     DebugLogger.Global.WriteMessage($"Requesting hub token..");
                     var payload = "{\"pubkey\":\"" + CryptoHelpers.ExportPublicKey() + "\"}";
-                    var responseBlob = await httpClient.PostAsync(Program.HUB + "/register", new StringContent(payload, Encoding.UTF8, "application/json"));
+                    var responseBlob = await httpClient.PostAsync(Program.HUB + "/v1/conduit/register", new StringContent(payload, Encoding.UTF8, "application/json"));
                     var response = SimpleJson.DeserializeObject<dynamic>(await responseBlob.Content.ReadAsStringAsync());
                     if (!response["ok"]) throw new Exception("Could not receive JWT from Rift");
 

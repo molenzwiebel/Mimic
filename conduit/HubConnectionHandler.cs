@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
-using System.Windows;
 using WebSocketSharp;
 
 namespace Conduit
@@ -14,16 +16,21 @@ namespace Conduit
      */
     class HubConnectionHandler
     {
+        private static readonly HttpClient httpClient = new HttpClient();
+
 #if DEBUG
         public static HubConnectionHandler Instance;
 #endif
 
         private WebSocket socket;
         private LeagueConnection league;
-        private Dictionary<string, MobileConnectionHandler> connections = new Dictionary<string, MobileConnectionHandler>();
+
+        private Dictionary<string, MobileConnectionHandler> connections =
+            new Dictionary<string, MobileConnectionHandler>();
 
         public event Action OnClose;
         private bool hasClosed = false;
+        public string NotificationSubscriptionToken { get; set; }
 
         private POINT cursorPosition;
 
@@ -36,16 +43,13 @@ namespace Conduit
 #endif
 
             this.league = league;
-
             league.Observe("/lol-matchmaking/v1/ready-check", HandleReadyCheckChange);
-            league.OnLeagueGameLaunch += HandleLeagueLaunch;
-            league.OnLeagueGameStart += HandleLeagueStart;
 
             // Pass parameters in the URL.
             socket = new WebSocket(
                 Program.HUB_WS
-                    + "?token=" + HttpUtility.UrlEncode(Persistence.GetHubToken())
-                    + "&publicKey=" + HttpUtility.UrlEncode(CryptoHelpers.ExportPublicKey())
+                + "?token=" + HttpUtility.UrlEncode(Persistence.GetHubToken())
+                + "&publicKey=" + HttpUtility.UrlEncode(CryptoHelpers.ExportPublicKey())
             );
 
             socket.OnMessage += HandleMessage;
@@ -89,24 +93,18 @@ namespace Conduit
         }
 
         /**
-         * Sends a message to Rift to register the specified PN token and device type for the
-         * current conduit instance. Does nothing if we don't have a Rift connection.
-         */
-        public void RegisterPushNotificationToken(string deviceID, string platform, string type, string token)
-        {
-            if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
-
-            socket.Send(SimpleJson.SerializeObject(new List<object> { (long) RiftOpcode.PNSubscribe, deviceID, platform, type, token }));
-        }
-
-        /**
          * Sends a notification to all registered devices of the specified type.
          */
-        public void SendNotification(string type)
+        public async Task SendNotification(string type)
         {
-            if (hasClosed || socket == null || socket.ReadyState != WebSocketState.Open) return;
+            DebugLogger.Global.WriteMessage("Attempting to send notification of type " + type);
 
-            socket.Send(SimpleJson.SerializeObject(new List<object> { (long) RiftOpcode.PNSend, type }));
+            await httpClient.PostAsync(Program.HUB + "/v1/notifications/send", new StringContent(
+                SimpleJson.SerializeObject(new
+                {
+                    token = Persistence.GetHubToken(),
+                    type
+                }), Encoding.UTF8, "application/json"));
         }
 
         private void HandleMessage(object sender, MessageEventArgs ev)
@@ -116,9 +114,16 @@ namespace Conduit
             dynamic contents = SimpleJson.DeserializeObject(ev.Data);
             if (!(contents is JsonArray)) return;
 
-            // We got a new connection!
-            if (contents[0] == (long) RiftOpcode.Open)
+            if (contents[0] == (long) RiftOpcode.Welcome)
             {
+                // We're connected.
+                DebugLogger.Global.WriteMessage("Connected to Rift and received a welcome.");
+
+                NotificationSubscriptionToken = (string) contents[1];
+            }
+            else if (contents[0] == (long) RiftOpcode.Open)
+            {
+                // We got a new connection!
                 if (connections.ContainsKey(contents[1])) return;
 
                 connections.Add(contents[1], new MobileConnectionHandler(this, league, msg =>
@@ -130,7 +135,7 @@ namespace Conduit
             else if (contents[0] == (long) RiftOpcode.Message)
             {
                 if (!connections.ContainsKey(contents[1])) return;
-            
+
                 connections[contents[1]].HandleMessage(contents[2]);
             }
             else if (contents[0] == (long) RiftOpcode.Close)
@@ -140,9 +145,10 @@ namespace Conduit
                 connections[contents[1]].OnClose();
                 connections.Remove(contents[1]);
             }
-            else if (contents[0] == (long) RiftOpcode.PNResponse)
+            else if (contents[0] == (long) RiftOpcode.PNInstantResponse)
             {
-                DebugLogger.Global.WriteMessage("User responded with " + (string)contents[2] + " to " + (string)contents[1]);
+                DebugLogger.Global.WriteMessage("User responded with " + (string) contents[2] + " to " +
+                                                (string) contents[1]);
 
                 if (contents[1].Equals(NotificationType.ReadyCheck))
                 {
@@ -153,7 +159,7 @@ namespace Conduit
 
         private void HandleReadyCheckChange(dynamic data)
         {
-            var newState = data == null ? "Invalid" : (string)data.state;
+            var newState = data == null ? "Invalid" : (string) data.state;
             DebugLogger.Global.WriteMessage("Ready check state changed: " + newState);
 
             // Ready check just popped.
@@ -170,25 +176,6 @@ namespace Conduit
 
             readyCheckState = newState;
         }
-
-        private void HandleLeagueLaunch()
-        {
-            Utils.GetCursorPos(out cursorPosition);
-            DebugLogger.Global.WriteMessage("Detected League of Legends launch.");
-        }
-
-        private void HandleLeagueStart()
-        {
-            DebugLogger.Global.WriteMessage("Detected League of Legends loading screen end.");
-            Utils.GetCursorPos(out var newCursorPosition);
-
-            // If the cursor hasn't changed, the user is likely not at their computer yet.
-            if (newCursorPosition.X == cursorPosition.X && newCursorPosition.Y == cursorPosition.Y)
-            {
-                DebugLogger.Global.WriteMessage("Cursor position wasn't changed, emitting notification");
-                SendNotification(NotificationType.GameStarted);
-            }
-        }
     }
 
     /**
@@ -196,6 +183,9 @@ namespace Conduit
      */
     enum RiftOpcode : long
     {
+        // Rift welcomes us, contains push notification subscription token.
+        Welcome = 0,
+
         // New connection from mobile client.
         Open = 1,
 
@@ -208,14 +198,8 @@ namespace Conduit
         // Send a message to a mobile connected peer.
         Reply = 7,
 
-        // Subscribe a phone to notifications for the current conduit.
-        PNSubscribe = 9,
-
-        // Send a push notification for the current conduit.
-        PNSend = 10,
-
         // Receive an instant response to an emitted push notification.
-        PNResponse = 11
+        PNInstantResponse = 9
     }
 
     /**
@@ -225,8 +209,10 @@ namespace Conduit
     {
         // Every client subscribes to this. Clears all received notifications.
         public const string Clear = "CLEAR";
+
         // Sent when ready check triggers.
         public const string ReadyCheck = "READY_CHECK";
+
         // Sent when the game has (almost) started.
         public const string GameStarted = "GAME_STARTED";
     }

@@ -71,7 +71,7 @@ namespace Conduit
         }
 
         /**
-         * (Attempts to) uninstall sentinel.
+         * (Attempts to) uninstall mimic.
          */
         public void Uninstall(object sender, EventArgs args)
         {

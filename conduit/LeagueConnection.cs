@@ -22,16 +22,12 @@ namespace Conduit
         private static HttpClient HTTP_CLIENT;
 
         private WebSocket socketConnection;
-        private FileSystemWatcher logWatcher;
         private Tuple<Process, string, string, string> processInfo;
         private bool connected;
 
         public event Action OnConnected;
         public event Action OnDisconnected;
         public event Action<OnWebsocketEventArgs> OnWebsocketEvent;
-
-        public event Action OnLeagueGameLaunch; // fired when loading screen launches
-        public event Action OnLeagueGameStart; // fired when loading screen is done
 
         /**
          * Returns if this connection is currently connected.
@@ -109,18 +105,12 @@ namespace Conduit
                 processInfo = status;
                 connected = true;
 
-                // Create the filesystem watcher.
-                logWatcher = new FileSystemWatcher(Path.Combine(status.Item4, "Logs/GameLogs"));
-                logWatcher.Created += HandleGameLogCreated;
-                logWatcher.EnableRaisingEvents = true;
-
                 // Emit our events.
                 OnConnected?.Invoke();
             }
             catch (Exception e)
             {
                 processInfo = null;
-                logWatcher = null;
                 connected = false;
                 DebugLogger.Global.WriteError($"Exception occurred trying to connect to League of Legends: {e.ToString()}");
             }
@@ -147,7 +137,6 @@ namespace Conduit
             processInfo = null;
             connected = false;
             socketConnection = null;
-            logWatcher = null;
 
             // Notify observers.
             OnDisconnected?.Invoke();
@@ -176,54 +165,6 @@ namespace Conduit
                 Type = ev["eventType"],
                 Data = ev["eventType"] == "Delete" ? null : ev["data"]
             });
-        }
-
-        /**
-         * Called when a new file or directory is created in the game logs folder. Responsible
-         * for firing that a game launched and monitoring the log for when it completes loading.
-         */
-        private async void HandleGameLogCreated(object sender, FileSystemEventArgs ev)
-        {
-            // We're only interested in directories.
-            if (!Directory.Exists(ev.FullPath)) return;
-
-            // Wait for a bit to get the file to create.
-            await Task.Delay(200);
-
-            var files = Directory.GetFiles(ev.FullPath);
-            var logFile = files.FirstOrDefault(f => f.EndsWith(".txt"));
-            if (String.IsNullOrEmpty(logFile)) return;
-
-            // We got a valid log file, let conduit know that our game launched.
-            OnLeagueGameLaunch?.Invoke();
-
-            // Constantly monitor the specific file to see if loading screen finished.
-            try
-            {
-                var copyPath = Path.Combine(ev.FullPath, "mimic-copy.txt");
-
-                while (true)
-                {
-                    // Wait half a second
-                    await Task.Delay(500);
-
-                    // Read the contents of the log file. Copy them first to ensure we don't have problems with locks.
-                    File.Copy(logFile, copyPath, overwrite: true);
-                    var contents = File.ReadAllText(copyPath);
-
-                    // If the game hasn't loaded, just try again later.
-                    if (!contents.Contains("Switching Game State from GAMESTATE_PREGAME to GAMESTATE_SPAWN")) continue;
-
-                    File.Delete(copyPath);
-                    OnLeagueGameStart?.Invoke();
-                    return;
-                }
-            } catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
-                // Something went wrong, oh well.
-            }
         }
 
         /**
