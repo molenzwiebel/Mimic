@@ -7,7 +7,7 @@ import { StatusBar, YellowBox } from "react-native";
 import Mimic from "./views/Mimic";
 import { loadDdragon } from "./utils/constants";
 import { Asset } from "expo-asset";
-import { registerForNotifications } from "./utils/notifications";
+import { registerForNotifications, updateRemoteNotificationToken } from "./utils/notifications";
 
 // every platform supports this, yet somehow react native doesn't like it?
 YellowBox.ignoreWarnings([
@@ -46,5 +46,10 @@ export default class App extends React.Component {
             loadDdragon(),
             registerForNotifications()
         ]);
+
+        // Send our potentially changed PN token to server on startup.
+        updateRemoteNotificationToken().catch(() => {
+            /* Ignored */
+        });
     };
 }

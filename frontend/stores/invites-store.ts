@@ -57,7 +57,6 @@ export class InvitesStore {
         // Load and queue summoner info.
         const newInvites: Invite[] = result.content;
         for (const invite of newInvites) {
-            console.dir(invite);
             invite.fromSummoner = (await socket.request("/lol-summoner/v1/summoners/" + invite.fromSummonerId)).content;
 
             const queueInfo = await socket.request("/lol-game-queues/v1/queues/" + invite.gameConfig.queueId);

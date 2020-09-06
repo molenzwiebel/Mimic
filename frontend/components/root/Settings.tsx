@@ -9,8 +9,8 @@ import LCUCheckbox from "../LCUCheckbox";
 import LCUButton from "../LCUButton";
 import confirm from "../../utils/confirm";
 import { withComputerConfig } from "../../utils/persistence";
-import { updateNotificationTokens } from "../../utils/notifications";
 import { bottomMargin } from "../../utils/notch";
+import { updateNotificationSubscriptions } from "../../utils/notifications";
 
 function QueuePushNotificationSetting() {
     const [isChecked, setChecked] = useState(false);
@@ -25,7 +25,7 @@ function QueuePushNotificationSetting() {
         await withComputerConfig(x => {
             x.readyCheckNotificationsEnabled = newValue;
         });
-        await updateNotificationTokens();
+        await updateNotificationSubscriptions();
     };
 
     return (
@@ -54,7 +54,7 @@ function GamePushNotificationSetting() {
         await withComputerConfig(x => {
             x.gameStartNotificationsEnabled = newValue;
         });
-        await updateNotificationTokens();
+        await updateNotificationSubscriptions();
     };
 
     return (

@@ -1,6 +1,6 @@
 import { useObserver } from "mobx-react";
 import * as React from "react";
-import { View } from "react-native";
+import { ImageBackground } from "react-native";
 import styled from "styled-components/native";
 import queue from "../stores/queue-store";
 import lobby from "../stores/lobby-store";
@@ -23,7 +23,12 @@ import Root from "./Root";
 export default function Mimic() {
     return useObserver(() => {
         // If we have no socket connection, return the socket.
-        if (!socket.connected) return <Connect />;
+        if (!socket.connected)
+            return (
+                <Container source={require("../assets/backgrounds/magic-background.jpg")}>
+                    <Connect />
+                </Container>
+            );
 
         const inChampionSelect = champSelect.state !== null;
         const hasLobby = lobby.state !== null;
@@ -33,7 +38,7 @@ export default function Mimic() {
 
         // Else, return a view that contains...
         return (
-            <Container>
+            <Container source={require("../assets/backgrounds/magic-background.jpg")}>
                 {/* The root view, if we're not currently in a lobby or in champ select. */}
                 {!inChampionSelect && !hasLobby && <Root />}
 
@@ -53,7 +58,7 @@ export default function Mimic() {
     });
 }
 
-const Container = styled(View)`
+const Container = styled(ImageBackground)`
     width: 100%;
     height: 100%;
     overflow: hidden;

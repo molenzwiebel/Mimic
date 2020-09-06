@@ -4,6 +4,7 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 import { observable } from "mobx";
 import { decode as atob, encode as btoa } from "base-64";
+import { RIFT_WS_HOST } from "./constants";
 
 import "../generated/node-rsa-browserified.min";
 
@@ -11,7 +12,7 @@ import "../generated/node-rsa-browserified.min";
  * WebSocket-esque class that handles messaging with Conduit through rift.
  */
 export default class RiftSocket {
-    private socket = new WebSocket("wss://rift.mimic.lol/mobile");
+    private socket = new WebSocket(`${RIFT_WS_HOST}/mobile`);
 
     // Params from the normal websocket.
     public onopen: () => void;
@@ -84,7 +85,15 @@ export default class RiftSocket {
                     return;
                 }
 
-                this.state = RiftSocketState.HANDSHAKING;
+                // Delay changing the state slightly so that you don't
+                // have a brief flash of HANDSHAKING if the computer already
+                // knows us. Just some UI tweaks.
+                setTimeout(() => {
+                    if (this.state === RiftSocketState.CONNECTING) {
+                        this.state = RiftSocketState.HANDSHAKING;
+                    }
+                }, 700);
+
                 this.sendIdentity(pubkey);
             } else if (op === RiftOpcode.RECEIVE) {
                 this.handleMobileMessage(data[0]);
@@ -237,10 +246,10 @@ export enum MobileOpcode {
     SECRET_RESPONSE = 2,
 
     // Mobile -> Conduit, request version
-    VERSION = 3,
+    HANDSHAKE = 3,
 
     // Conduit <- Mobile, send version
-    VERSION_RESPONSE = 4,
+    HANDSHAKE_COMPLETE = 4,
 
     // Mobile -> Conduit, subscribe to LCU updates that match regex
     SUBSCRIBE = 5,
@@ -255,10 +264,7 @@ export enum MobileOpcode {
     RESPONSE = 8,
 
     // Conduit -> Mobile, when any subscribed endpoint gets an update
-    UPDATE = 9,
-
-    // Mobile -> Conduit, subscribe to push notifications for that device
-    PN_SUBSCRIBE = 10
+    UPDATE = 9
 }
 
 declare global {

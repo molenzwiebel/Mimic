@@ -2,7 +2,9 @@ import { computed, observable } from "mobx";
 import Constants from "expo-constants";
 import RiftSocket, { MobileOpcode, RiftSocketState } from "./rift-socket";
 import { withComputerConfig } from "./persistence";
-import { NotificationPlatform, NotificationType, updateNotificationTokens } from "./notifications";
+import * as notifications from "./notifications";
+import { NotificationType } from "./notifications";
+import { getNotificationPlatform, RIFT_HOST } from "./constants";
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -35,6 +37,9 @@ class Socket {
 
     @observable
     computerVersion = "";
+
+    @observable
+    pushNotificationSubscriptionToken = "";
 
     code = "";
 
@@ -121,15 +126,17 @@ class Socket {
             delete this.requests[data[1] as number];
         }
 
-        if (data[0] === MobileOpcode.VERSION_RESPONSE) {
+        if (data[0] === MobileOpcode.HANDSHAKE_COMPLETE) {
             console.log("Connected to " + data[2]);
+
+            this.pushNotificationSubscriptionToken = data[3] as string;
             this.computerName = data[2] as string;
             this.computerVersion = data[1] as string;
 
             // Save latest computer name to config.
             withComputerConfig(config => {
                 config.name = this.computerName;
-            }).then(updateNotificationTokens);
+            });
 
             // Populate registered listeners.
             this.observers.forEach(x => {
@@ -149,17 +156,18 @@ class Socket {
     }
 
     /**
-     * Registers with Rift this device with the specified push notification token
-     * for the specified notification type. Passing null will unregister from those
-     * notification types instead.
+     * Subscribes this device to receive notifications of the specified type using the
+     * PN token pushed to Rift on startup.
      */
-    public registerPushNotificationToken(type: NotificationType, token: string | null) {
-        const platform = Constants.platform!.ios
-            ? NotificationPlatform.IOS
-            : Constants.platform!.android
-            ? NotificationPlatform.ANDROID
-            : NotificationPlatform.WEB;
-        this.socket.send(JSON.stringify([MobileOpcode.PN_SUBSCRIBE, Constants.installationId, platform, type, token]));
+    public async subscribeForNotifications(type: NotificationType) {
+        await notifications.subscribeForNotifications(this.pushNotificationSubscriptionToken, type);
+    }
+
+    /**
+     * Unsubscribes this device from receiving notifications of the specified type.
+     */
+    public async unsubscribeFromNotifications(type: NotificationType) {
+        await notifications.unsubscribeForNotification(this.code, type);
     }
 
     /**
@@ -190,7 +198,7 @@ class Socket {
             this.socket.onopen = () => {
                 this.connected = true;
                 this.connecting = false;
-                this.socket.send("[" + MobileOpcode.VERSION + "]");
+                this.socket.send("[" + MobileOpcode.HANDSHAKE + "]");
             };
 
             this.socket.onmessage = this.handleWebsocketMessage;

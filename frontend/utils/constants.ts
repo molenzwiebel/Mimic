@@ -1,3 +1,6 @@
+import Constants from "expo-constants";
+import { NotificationPlatform } from "./notifications";
+
 export interface RuneSlot {
     runes: {
         id: number;
@@ -19,6 +22,9 @@ let championDetails: {
 let summonerSpellDetails: {
     [id: number]: { id: string; key: string; name: string };
 };
+
+export const RIFT_HOST = "http://localhost:51001";
+export const RIFT_WS_HOST = "ws://localhost:51001";
 
 export async function loadDdragon() {
     try {
@@ -53,6 +59,14 @@ export async function loadDdragon() {
     } catch {
         ddragonVersion = "9.14.1";
     }
+}
+
+export function getNotificationPlatform() {
+    return Constants.platform!.ios
+        ? NotificationPlatform.IOS
+        : Constants.platform!.android
+            ? NotificationPlatform.ANDROID
+            : NotificationPlatform.WEB;
 }
 
 export function getPlayerAvatarURL(icon: number) {
