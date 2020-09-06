@@ -10,13 +10,14 @@ import LCUButton from "../LCUButton";
 const NoDesktop = () => (
     <Container>
         <Title>Connection Failed</Title>
-        <Poro source={require("../../assets/poros/poro-question.png")} />
+        <Padding />
+        <ConnectionImage source={require("../../assets/emotes/blitzcrank_confused.png")} />
+        <Padding />
         <Description>
             The computer with that code doesn't seem to be connected with Mimic right now. Make sure that both Conduit
             and League are running on the desktop computer, and that both your phone and your computer are connected to
             the internet.
         </Description>
-        <Padding />
         <Button onClick={() => socket.tryReconnect()}>Try Again</Button>
         <Button onClick={() => socket.close()}>Cancel</Button>
     </Container>
@@ -25,12 +26,13 @@ const NoDesktop = () => (
 const DesktopDenied = () => (
     <Container>
         <Title>Connection Denied</Title>
-        <Poro source={require("../../assets/poros/poro-angry.png")} />
+        <Padding />
+        <ConnectionImage source={require("../../assets/emotes/neeko_angry.png")} />
+        <Padding />
         <Description>
             You cannot connect to this computer right now because it explicitly denied the connection attempt. If this
             is your computer, ensure that you press ALLOW when Mimic asks if the connection should be allowed.
         </Description>
-        <Padding />
         <Button onClick={() => socket.tryReconnect()}>Try Again</Button>
         <Button onClick={() => socket.close()}>Cancel</Button>
     </Container>
@@ -39,11 +41,12 @@ const DesktopDenied = () => (
 const Connecting = () => (
     <Container>
         <Title>Connecting</Title>
-        <Poro source={require("../../assets/poros/poro-coolguy.png")} />
+        <Padding />
+        <SmallConnectionImage source={require("../../assets/emotes/katarina.gif")} />
+        <Padding />
         <Description>
             Trying to connect to Mimic HQ... If this takes longer than a few seconds, check your phone's connection.
         </Description>
-        <Padding />
         <Button type="deny" onClick={() => socket.close()}>
             Cancel
         </Button>
@@ -53,12 +56,13 @@ const Connecting = () => (
 const Handshaking = () => (
     <Container>
         <Title>Waiting For Desktop</Title>
-        <Poro source={require("../../assets/poros/poro-coolguy.png")} />
+        <Padding />
+        <ConnectionImage source={require("../../assets/emotes/sylas_waiting.png")} />
+        <Padding />
         <Description>
             Mimic is waiting for your desktop to approve the connection. Simply click the "Allow" button on your
             computer to accept the connection. Don't worry: you'll only have to do this once per device.
         </Description>
-        <Padding />
         <Button type="deny" onClick={() => socket.close()}>
             Cancel
         </Button>
@@ -109,10 +113,15 @@ const Title = styled(Text)`
     color: #f0e6d3;
 `;
 
-const Poro = styled(Image)`
+const ConnectionImage = styled(Image)`
     width: 200px;
     height: 200px;
     margin-top: 40px;
+`;
+
+const SmallConnectionImage = styled(ConnectionImage)`
+    width: 70px;
+    height: 70px;
 `;
 
 const Description = styled(Text)`
@@ -120,7 +129,7 @@ const Description = styled(Text)`
     font-size: 17px;
     color: #dcd2bf;
     text-align: center;
-    margin: 10px 40px;
+    margin: 20px 40px;
 `;
 
 const Padding = styled(View)`
