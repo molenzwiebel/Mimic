@@ -1,65 +1,9 @@
 import Constants from "expo-constants";
 import { NotificationPlatform } from "./notifications";
 
-export interface RuneSlot {
-    runes: {
-        id: number;
-        icon: string;
-    }[];
-}
-
-export interface RuneTree {
-    id: number;
-    icon: string;
-    slots: RuneSlot[];
-}
-
-let ddragonVersion: string;
-let runeTrees: RuneTree[];
-let championDetails: {
-    [id: number]: { id: string; key: string; name: string };
-};
-let summonerSpellDetails: {
-    [id: number]: { id: string; key: string; name: string };
-};
-
 export const RIFT_HOST = "http://localhost:51001";
 export const RIFT_WS_HOST = "ws://localhost:51001";
-
-export async function loadDdragon() {
-    try {
-        const versions = await fetch("https://ddragon.leagueoflegends.com/api/versions.json").then(x => x.json());
-        ddragonVersion = versions[0];
-
-        championDetails = await fetch(
-            `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/champion.json`
-        )
-            .then(x => x.json())
-            .then(map => {
-                // map to { id: data }
-                const details: any = {};
-                Object.keys(map.data).forEach(x => (details[+map.data[x].key] = map.data[x]));
-                return details;
-            });
-
-        summonerSpellDetails = await fetch(
-            `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/summoner.json`
-        )
-            .then(x => x.json())
-            .then(map => {
-                // map to { id: data }
-                const details: any = {};
-                Object.keys(map.data).forEach(x => (details[+map.data[x].key] = map.data[x]));
-                return details;
-            });
-
-        runeTrees = await fetch(
-            `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/runesReforged.json`
-        ).then(x => x.json());
-    } catch {
-        ddragonVersion = "9.14.1";
-    }
-}
+export const CDN_HOST = "http://localhost:8080";
 
 export function getNotificationPlatform() {
     return Constants.platform!.ios
@@ -67,38 +11,6 @@ export function getNotificationPlatform() {
         : Constants.platform!.android
             ? NotificationPlatform.ANDROID
             : NotificationPlatform.WEB;
-}
-
-export function getPlayerAvatarURL(icon: number) {
-    return `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/profileicon/${icon}.png`;
-}
-
-export function getChampionIcon(id: number) {
-    return `http://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/champion/${championDetails[id].id}.png`;
-}
-
-export function getChampion(id: number) {
-    return championDetails[id];
-}
-
-export function getSummonerSpell(id: number) {
-    return summonerSpellDetails[id];
-}
-
-export function getRuneTree(id: number) {
-    return runeTrees.find(x => x.id === id)!;
-}
-
-export function getSecondaryRuneTree(id: number) {
-    return runeTrees.find(x => x.id !== id)!;
-}
-
-export function getRuneTrees() {
-    return runeTrees;
-}
-
-export function getSummonerSpellImage(id: number) {
-    return `http://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/spell/${summonerSpellDetails[id].id}.png`;
 }
 
 export interface Role {
@@ -121,7 +33,7 @@ export function getRoleImage(role: string) {
     if (role === "TOP") return require("../assets/roles/role-top.png");
     if (role === "JUNGLE") return require("../assets/roles/role-jungle.png");
     if (role === "MIDDLE") return require("../assets/roles/role-mid.png");
-    if (role === "BOTTOM") return require("../assets/roles/role-bot.png");
+    if (role === "BOTTOM" || role === "LANE") return require("../assets/roles/role-bot.png");
     if (role === "UTILITY") return require("../assets/roles/role-support.png");
     if (role === "FILL") return require("../assets/roles/role-fill.png");
     return "";
@@ -161,6 +73,7 @@ export const GAMEMODE_NAMES: { [key: string]: string } = {
     "22-tft": "Teamfight Tactics"
 };
 
+// TODO: Review and remove?
 export function getGamemodeName(key: string) {
     return GAMEMODE_NAMES[key.toLowerCase()] || "Rotating Game Mode";
 }

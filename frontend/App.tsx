@@ -5,8 +5,8 @@ import { observer } from "mobx-react";
 import { default as React } from "react";
 import { StatusBar, YellowBox } from "react-native";
 import Mimic from "./views/Mimic";
-import { loadDdragon } from "./utils/constants";
 import { Asset } from "expo-asset";
+import * as assets from "./utils/static-assets";
 import { registerForNotifications, updateRemoteNotificationToken } from "./utils/notifications";
 
 // every platform supports this, yet somehow react native doesn't like it?
@@ -43,7 +43,7 @@ export default class App extends React.Component {
                 ...Ionicons.font
             }),
             Asset.fromModule(require("./assets/backgrounds/magic-background.jpg")).downloadAsync(),
-            loadDdragon(),
+            assets.initializeStaticAssets(),
             registerForNotifications()
         ]);
 

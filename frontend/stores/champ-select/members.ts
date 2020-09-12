@@ -74,7 +74,7 @@ export default class MembersStore {
         }
 
         if (!member.assignedPosition) return extra;
-        return POSITION_NAMES[member.assignedPosition] + (extra ? " - " + extra : "");
+        return POSITION_NAMES[member.assignedPosition.toUpperCase()] + (extra ? " - " + extra : "");
     }
 
     /**
