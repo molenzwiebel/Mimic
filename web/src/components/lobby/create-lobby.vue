@@ -1,7 +1,7 @@
 <template>
     <div class="create-lobby">
         <div class="header">
-            <i @click="$emit('close')" class="ion-chevron-left"></i>
+            <a class="close"><i @click="$emit('close')" class="ion-chevron-left"></i></a>
             <span>Create Lobby</span>
         </div>
 
@@ -23,7 +23,7 @@
         </div>
 
         <div class="queues" v-if="selectedSection">
-            <div
+            <a
                 class="queue"
                 v-for="queue in availableQueues[selectedSection]"
                 :class="selectedQueueId === queue.id && 'selected'"
@@ -33,7 +33,7 @@
                 </div>
 
                 <span>{{ queue.description }}</span>
-            </div>
+            </a>
         </div>
 
         <div class="create">
@@ -78,6 +78,9 @@
         padding 30px
         background-color rgba(0, 0, 0, 0.7)
         border-bottom 1px solid white
+
+        .close:active i
+            opacity 0.7
 
         & i
             font-size 70px
@@ -162,6 +165,9 @@
             box-sizing border-box
             border 5px solid #08181f
             background-color #f0e6d2
+
+        .queue:active span
+            color #d6c99f
 
         .queue.selected span
             color #efe5d1

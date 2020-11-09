@@ -51,4 +51,11 @@ export default class PlayerSettings extends Vue {
         if (!this.allowsReroll) return "";
         return `(${this.$parent.rerollState.numberOfRolls}/${this.$parent.rerollState.maxRolls})`;
     }
+
+    /**
+     * @returns whether or not the user can pick a skin
+     */
+    get canPickSkins() {
+        return this.$parent.hasLockedChampion;
+    }
 }

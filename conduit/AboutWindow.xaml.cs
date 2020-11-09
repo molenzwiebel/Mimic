@@ -19,6 +19,8 @@ namespace Conduit
             Logo.Source = Imaging.CreateBitmapSourceFromHIcon(Properties.Resources.mimic.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
             StartOnStartupCheckbox.IsChecked = Persistence.LaunchesAtStartup();
 
+            AboutTitle.Content = "Mimic Conduit v" + Program.VERSION;
+
             if (Persistence.GetHubCode() != null)
             {
                 RenderCode();

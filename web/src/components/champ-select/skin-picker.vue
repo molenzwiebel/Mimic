@@ -1,24 +1,23 @@
 <template>
     <transition enter-active-class="fadeInUp" leave-active-class="fadeOutDown">
-        <div class="bench" v-show="show">
+        <div class="skin-selector" v-show="show">
             <i class="ion-android-close close" @click="$emit('close')"></i>
-            <div class="header">Reroll Bench</div>
+            <div class="header">Select Your Skin</div>
 
             <div class="content">
-                <a class="bench-champion" v-for="championId in state.benchChampionIds" @click="swapWithChampion(championId)">
-                    <div class="background" :style="getChampionBackground(championId)"></div>
-                    <div class="darken"></div>
-                    <div class="name">{{ getChampionName(championId) }}</div>
+                <a class="skin" v-if="skin.ownership.owned" v-for="skin in availableSkins" @click="selectSkin(skin)">
+                    <div class="skin-image" :style="getSkinImage(skin)"></div>
+                    <div class="name">{{ skin.name }}</div>
                 </a>
             </div>
         </div>
     </transition>
 </template>
 
-<script lang="ts" src="./bench.ts"></script>
+<script lang="ts" src="./skin-picker.ts"></script>
 
 <style lang="stylus">
-    body.has-notch .bench
+    body.has-notch .skin-selector
         margin-top calc(env(safe-area-inset-top) + 30px)
         padding-bottom calc(env(safe-area-inset-bottom) + 20px)
 </style>
@@ -29,7 +28,7 @@
     .fadeInUp, .fadeOutDown
         animation-duration 0.4s !important
 
-    .bench
+    .skin-selector
         position absolute
         top timer-status-height
         left 0
@@ -63,39 +62,50 @@
             max-height "calc(100vh - %s)" % (timer-status-height + 90px)
             overflow-y scroll
             -webkit-overflow-scrolling touch
-            width 100%
+            width 90%
 
-        .bench-champion
+        .skin
+            height 300px
+            box-sizing border-box
+            border 3px solid #c8aa6e
             position relative
-            width 100%
-            height 160px
-            border-bottom 1px solid #785a28
             display flex
-            align-items center
+            color white
+            width 100%
+            margin 25px 0
+            transition opacity 0.2s ease
 
             &:active
                 opacity 0.7
 
-            .name
-                font-size 60px
-                margin-left 20px
-                font-family LoL Display Bold
-                color #efe5d1
-
-            .background, .darken
+            .skin-image
+                background white
                 position absolute
                 z-index -1
                 left 0
                 top 0
                 bottom 0
                 right 0
-
-            .darken
-                background linear-gradient(to left, transparent, rgba(0, 0, 0, 0.8))
-
-            .background
                 background-repeat no-repeat
-                background-position 0 -80px
                 background-size cover
                 transition 0.3s ease
+
+                &:after
+                    content ""
+                    position absolute
+                    left 0
+                    top 0
+                    bottom 0
+                    right 0
+                    background-image linear-gradient(to left, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)
+
+            .name
+                position absolute
+                bottom 30px
+                flex 1
+                display flex
+                flex-direction column
+                margin 0 20px
+                font-size 45px
+                text-shadow 4px 4px 8px #111
 </style>

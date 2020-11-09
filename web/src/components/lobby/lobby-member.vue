@@ -20,13 +20,18 @@
         </div>
 
         <div class="right" v-if="showPositions && member.isLocalMember">
-            <img
+            <highlightable>
+                <img
                     @click="$emit('roles', true)"
                     :src="roleImage(member.firstPositionPreference)">
-            <img
+            </highlightable>
+
+            <highlightable>
+                <img
                     v-if="member.firstPositionPreference !== 'FILL'"
                     @click="$emit('roles', false)"
                     :src="roleImage(member.secondPositionPreference)">
+            </highlightable>
         </div>
     </div>
 </template>
