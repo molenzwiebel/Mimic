@@ -5,7 +5,7 @@ import { default as NodeRSAType } from "node-rsa";
  * WebSocket-esque class that handles messaging with Conduit through rift.
  */
 export default class RiftSocket {
-    private socket = new WebSocket("wss://rift.mimic.lol/mobile");
+    private socket: WebSocket;
 
     // Params from the normal websocket.
     public onopen: () => void;
@@ -20,6 +20,7 @@ export default class RiftSocket {
     private encrypted = false;
 
     constructor(private code: string) {
+        this.socket = new WebSocket("wss://rift.mimic.lol/mobile?code=" + code);
         this.socket.onopen = this.handleOpen;
         this.socket.onmessage = this.handleMessage;
         this.socket.onclose = this.handleClose;
