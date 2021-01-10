@@ -75,13 +75,15 @@ const ButtonText = styled<any>(Text)`
     color: ${props =>
         props.disabled
             ? "#5c5b57"
-            : (props.active ? {
-                normal: "#80765b",
-                confirm: "#698080",
-                deny: "#80192b"
-            } as any : {
-                normal: "#cdbe91",
-                confirm: "#a3c7c7",
-                deny: "#bd253c"
-            } as any)[props.type]};
+            : (props.active
+                  ? ({
+                        normal: "#80765b",
+                        confirm: "#698080",
+                        deny: "#80192b"
+                    } as any)
+                  : ({
+                        normal: "#cdbe91",
+                        confirm: "#a3c7c7",
+                        deny: "#bd253c"
+                    } as any))[props.type]};
 `;

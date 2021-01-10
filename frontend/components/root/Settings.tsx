@@ -107,11 +107,15 @@ function Version() {
         await Updates.reloadFromCache();
     };
 
-    return <SettingContainer>
-        <TouchableWithoutFeedback onPress={checkForUpdate}>
-            <VersionDescription>Mimic Mobile v{ Constants.manifest.version } - <Underlined>{status}</Underlined></VersionDescription>
-        </TouchableWithoutFeedback>
-    </SettingContainer>;
+    return (
+        <SettingContainer>
+            <TouchableWithoutFeedback onPress={checkForUpdate}>
+                <VersionDescription>
+                    Mimic Mobile v{Constants.manifest.version} - <Underlined>{status}</Underlined>
+                </VersionDescription>
+            </TouchableWithoutFeedback>
+        </SettingContainer>
+    );
 }
 
 export default function Settings({ onClose }: { onClose: Function }) {
@@ -121,7 +125,7 @@ export default function Settings({ onClose }: { onClose: Function }) {
             <GamePushNotificationSetting />
             <DisconnectSetting />
             <Padder />
-            <Version/>
+            <Version />
         </RootSubview>
     );
 }

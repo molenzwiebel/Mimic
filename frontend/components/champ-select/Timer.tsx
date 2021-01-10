@@ -1,11 +1,12 @@
 import styled from "styled-components/native";
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import champSelect from "../../stores/champ-select-store";
 import notchHeight from "../../utils/notch";
 import React from "react";
 import { observer } from "mobx-react";
 import { autorun, observable } from "mobx";
-import { getChampionIcon } from "../../utils/constants";
+import ABImage from "../assets/ABImage";
+import { championIconPath } from "../../utils/assets";
 
 // Stateful class component to handle the timer counting down.
 @observer
@@ -59,11 +60,7 @@ const Bans = ({ banIds }: { banIds: number[] }) => {
                     );
 
                 return (
-                    <Ban
-                        style={{ marginRight: i === banIds.length - 1 ? 0 : 5 }}
-                        source={{ uri: getChampionIcon(x) }}
-                        key={i}
-                    />
+                    <Ban style={{ marginRight: i === banIds.length - 1 ? 0 : 5 }} path={championIconPath(x)} key={i} />
                 );
             })}
         </BanContainer>
@@ -125,7 +122,7 @@ const NoBan = styled(View)`
     background-color: black;
 `;
 
-const Ban = styled(Image)`
+const Ban = styled(ABImage)`
     width: 22px;
     height: 22px;
 `;

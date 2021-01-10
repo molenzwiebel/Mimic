@@ -1,7 +1,7 @@
 import { computed, observable, reaction } from "mobx";
 import { ChampSelectAction, ChampSelectStore } from "../champ-select-store";
 import socket from "../../utils/socket";
-import { getChampion } from "../../utils/constants";
+import { getChampionSummary } from "../../utils/assets";
 
 /**
  * Sub-store for champ select, responsible for handling selectable champions
@@ -24,14 +24,14 @@ export default class PickingStore {
         // Keep track of pickable/bannable champs.
         socket.observe("/lol-champ-select/v1/pickable-champion-ids", result => {
             this.pickableChampions = (result.status === 200 ? result.content : this.pickableChampions)
-                .filter((x: number) => !!getChampion(x))
-                .sort((a: number, b: number) => getChampion(a).name.localeCompare(getChampion(b).name));
+                .filter((x: number) => !!getChampionSummary(x))
+                .sort((a: number, b: number) => getChampionSummary(a).name.localeCompare(getChampionSummary(b).name));
         });
 
         socket.observe("/lol-champ-select/v1/bannable-champion-ids", result => {
             this.bannableChampions = (result.status === 200 ? result.content : this.bannableChampions)
-                .filter((x: number) => !!getChampion(x))
-                .sort((a: number, b: number) => getChampion(a).name.localeCompare(getChampion(b).name));
+                .filter((x: number) => !!getChampionSummary(x))
+                .sort((a: number, b: number) => getChampionSummary(a).name.localeCompare(getChampionSummary(b).name));
         });
 
         // Whenever the state changes, invalidate our local state since it may have changed.
@@ -74,7 +74,7 @@ export default class PickingStore {
         );
 
         return selectable.filter(x =>
-            getChampion(x)
+            getChampionSummary(x)
                 .name.toLowerCase()
                 .includes(term.toLowerCase())
         );

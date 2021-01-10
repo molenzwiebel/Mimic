@@ -1,11 +1,11 @@
 import { computed, observable } from "mobx";
 import socket, { Result } from "../utils/socket";
-import { getChampion } from "../utils/constants";
 import InterfaceStore from "./champ-select/interface";
 import TimerStore from "./champ-select/timer";
 import MembersStore from "./champ-select/members";
 import PickingStore from "./champ-select/picking";
 import SpellsStore from "./champ-select/spells";
+import { getChampionSummary } from "../utils/assets";
 
 export interface ChampSelectMember {
     assignedPosition: string | ""; // blind pick has no role
@@ -72,7 +72,7 @@ export interface GameflowState {
                 reroll: boolean;
             };
         };
-    }
+    };
 }
 
 export interface RerollState {
@@ -115,15 +115,17 @@ export class ChampSelectStore {
         newState.localPlayer = newState.myTeam.filter(x => x.cellId === newState.localPlayerCellId)[0];
 
         // For everyone on our team, request their summoner name.
-        await Promise.all(newState.myTeam.map(async mem => {
-            if (mem.playerType === "BOT") {
-                mem.displayName = (getChampion(mem.championId) || { name: "Unknown" }).name + " Bot";
-            } else {
-                const summ = (await socket.request("/lol-summoner/v1/summoners/" + mem.summonerId)).content;
-                mem.displayName = summ.displayName;
-            }
-            mem.isFriendly = true;
-        }));
+        await Promise.all(
+            newState.myTeam.map(async mem => {
+                if (mem.playerType === "BOT") {
+                    mem.displayName = (getChampionSummary(mem.championId) || { name: "Unknown" }).name + " Bot";
+                } else {
+                    const summ = (await socket.request("/lol-summoner/v1/summoners/" + mem.summonerId)).content;
+                    mem.displayName = summ.displayName;
+                }
+                mem.isFriendly = true;
+            })
+        );
 
         // Give enemy summoners obfuscated names, if we don't know their names
         newState.theirTeam.forEach((mem, idx) => {
@@ -189,13 +191,22 @@ export class ChampSelectStore {
      */
     @computed
     get hasLockedChampion(): boolean {
-        return !!this.state // A state exists.
-            && this.state.actions.filter(x => // and we cannot find a pick turn in which
-                x.filter(y => // there exists an action...
-                    y.actorCellId === this.state!.localPlayerCellId // by the current player
-                    && y.type === "pick" // that has to pick a champion
-                    && !y.completed // and hasn't been completed yet
-                ).length > 0).length === 0;
+        return (
+            !!this.state && // A state exists.
+            this.state.actions.filter(
+                (
+                    x // and we cannot find a pick turn in which
+                ) =>
+                    x.filter(
+                        (
+                            y // there exists an action...
+                        ) =>
+                            y.actorCellId === this.state!.localPlayerCellId && // by the current player
+                            y.type === "pick" && // that has to pick a champion
+                            !y.completed // and hasn't been completed yet
+                    ).length > 0
+            ).length === 0
+        );
     }
 }
 

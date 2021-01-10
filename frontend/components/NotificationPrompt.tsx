@@ -49,7 +49,7 @@ function NotificationImage({ width, height }: { width: number; height: number })
         height: renderHeight
     };
 
-    return <Image source={image.image} style={style}/>;
+    return <Image source={image.image} style={style} />;
 }
 
 export default function NotificationPrompt({ onClose }: { onClose: Function }) {
@@ -90,14 +90,14 @@ export default function NotificationPrompt({ onClose }: { onClose: Function }) {
                     Don't want to constantly monitor your phone for when queue pops? Turn on notifications and we'll let
                     you know when your queue is ready, so you can instantly accept.
                 </Content>
-                <Filler/>
+                <Filler />
                 <Disclaimer>We'll never send you promotional notifications that you didn't ask for.</Disclaimer>
                 <Button type="confirm" onClick={onAccept} disabled={processing}>
                     Turn On
                 </Button>
                 <Button onClick={onDismiss}>Not Now</Button>
             </ContentContainer>
-            <NotificationImage width={width} height={height}/>
+            <NotificationImage width={width} height={height} />
         </Background>
     );
 }

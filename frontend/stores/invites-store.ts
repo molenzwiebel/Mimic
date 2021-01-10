@@ -5,10 +5,10 @@ export interface Invite {
     invitationId: string;
     canAcceptInvitation: boolean;
     fromSummonerId: number;
-    fromSummoner: { displayName: string, profileIconId: number }; // added by us
+    fromSummoner: { displayName: string; profileIconId: number }; // added by us
     queueName: string; // added by us
     mapName: string; // added by us
-    gameConfig: { mapId: number, queueId: number };
+    gameConfig: { mapId: number; queueId: number };
     state: "Pending" | "Declined";
 }
 

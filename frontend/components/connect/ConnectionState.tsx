@@ -42,7 +42,7 @@ const Connecting = () => (
     <Container>
         <Title>Connecting</Title>
         <Padding />
-        <SmallConnectionImage source={require("../../assets/emotes/katarina.gif")} />
+        <SmallConnectionImage source={require("../../assets/emotes/neeko_angry.png")} />
         <Padding />
         <Description>
             Trying to connect to Mimic HQ... If this takes longer than a few seconds, check your phone's connection.

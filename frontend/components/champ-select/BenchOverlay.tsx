@@ -3,12 +3,12 @@ import champSelect from "../../stores/champ-select-store";
 import React from "react";
 import { observer } from "mobx-react";
 import { ScrollView, TouchableOpacity, View, Text } from "react-native";
-import { getChampion } from "../../utils/constants";
 import styled from "styled-components/native";
 import ChampionBackground from "../ChampionBackground";
+import { getChampionSummary } from "../../utils/assets";
 
 const BenchChampionOption = observer(({ id }: { id: number }) => {
-    const champ = getChampion(id);
+    const champ = getChampionSummary(id);
 
     return (
         <TouchableOpacity onPress={() => champSelect.picking.swapWithChampion(id)}>

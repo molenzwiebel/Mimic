@@ -1,6 +1,6 @@
 import { computed, observable } from "mobx";
 import socket from "../utils/socket";
-import { getRuneTree, getRuneTrees, getSecondaryRuneTree } from "../utils/constants";
+import { getPerkStyle, getPerkStyles } from "../utils/assets";
 
 export interface RunePage {
     id: number;
@@ -35,13 +35,13 @@ export class RunesStore {
 
             // Update the isActive param if needed.
             if (this.currentRunePage) {
-                this.runePages.forEach(x => x.isActive = x.id === this.currentRunePage!.id);
+                this.runePages.forEach(x => (x.isActive = x.id === this.currentRunePage!.id));
             }
         });
     }
 
     public selectPage(id: number | string) {
-        this.runePages.forEach(r => r.isActive = r.id == id);
+        this.runePages.forEach(r => (r.isActive = r.id == id));
         socket.request("/lol-perks/v1/currentpage", "PUT", "" + id);
     }
 
@@ -63,10 +63,20 @@ export class RunesStore {
     selectPrimaryTree(id: number) {
         if (!this.currentPage) return;
         this.currentPage.primaryStyleId = id;
-        this.currentPage.subStyleId = getSecondaryRuneTree(id).id;
+        this.currentPage.subStyleId = getPerkStyles().find(x => x.id !== id)!.id;
 
         // Reset all runes except the stat shards.
-        this.currentPage.selectedPerkIds = [0, 0, 0, 0, 0, 0, this.currentPage.selectedPerkIds[6], this.currentPage.selectedPerkIds[7], this.currentPage.selectedPerkIds[8]];
+        this.currentPage.selectedPerkIds = [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            this.currentPage.selectedPerkIds[6],
+            this.currentPage.selectedPerkIds[7],
+            this.currentPage.selectedPerkIds[8]
+        ];
 
         this.secondaryIndex = 0;
         this.savePage();
@@ -107,8 +117,8 @@ export class RunesStore {
 
         // Make sure that we are not selecting two runes from the same slot.
         const otherRune = this.currentPage.selectedPerkIds[4 + this.secondaryIndex];
-        const slot = getRuneTree(this.currentPage.subStyleId).slots.find(x => x.runes.some(x => x.id === id))!;
-        if (slot.runes.some(x => x.id === otherRune)) return;
+        const slot = getPerkStyle(this.currentPage.subStyleId).slots.find(x => x.perks.some(x => x === id))!;
+        if (slot.perks.some(x => x === otherRune)) return;
 
         this.secondaryIndex = (this.secondaryIndex + 1) % 2;
         this.currentPage.selectedPerkIds[4 + this.secondaryIndex] = id;
@@ -130,15 +140,21 @@ export class RunesStore {
      * Creates a new rune page and makes it the current selected page.
      */
     async addPage() {
-        const rsp: RunePage = (await socket.request("/lol-perks/v1/pages", "POST", JSON.stringify({
-            name: "Rune Page " + (this.runePages.length + 1),
-            primaryStyleId: getRuneTrees()[0].id,
-            secondaryStyleId: getRuneTrees()[1].id,
-            selectedPerkIds: [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        }))).content;
+        const rsp: RunePage = (
+            await socket.request(
+                "/lol-perks/v1/pages",
+                "POST",
+                JSON.stringify({
+                    name: "Rune Page " + (this.runePages.length + 1),
+                    primaryStyleId: getPerkStyles()[0].id,
+                    secondaryStyleId: getPerkStyles()[1].id,
+                    selectedPerkIds: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+                })
+            )
+        ).content;
 
         this.runePages.push(rsp);
-        this.runePages.forEach(x => x.isActive = x === rsp);
+        this.runePages.forEach(x => (x.isActive = x === rsp));
         socket.request("/lol-perks/v1/currentpage", "PUT", "" + rsp.id);
     }
 

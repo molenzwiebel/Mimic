@@ -1,6 +1,7 @@
-import { View, Image } from "react-native";
+import { View } from "react-native";
 import React, { useState } from "react";
 import styled from "styled-components/native";
+import ABImage from "./assets/ABImage";
 
 const IMAGE_WIDTH = 1280;
 const IMAGE_HEIGHT = 720;
@@ -15,23 +16,16 @@ export default function ChampionBackground(props: ChampionBackgroundProps) {
     const [width, setWidth] = useState(0);
     const height = IMAGE_HEIGHT * (width / IMAGE_WIDTH);
 
-    let uri;
-    if (props.skinId) {
-        uri = `https://cdn.communitydragon.org/latest/champion/${
-            props.championId
-        }/splash-art/centered/skin/${props.skinId % 1000}`;
-    } else {
-        uri = `https://cdn.communitydragon.org/latest/champion/${props.championId}/splash-art/centered`;
-    }
+    const uri = `v1/champion-splashes/${props.championId}/${props.skinId || props.championId * 1000}.jpg`;
 
     return (
         <Container style={props.style} onLayout={ev => setWidth(ev.nativeEvent.layout.width)}>
-            <BackgroundImage source={{ uri }} style={{ width, height, top: -30 }} />
+            {props.championId && <BackgroundImage path={uri} style={{ width, height, top: -30 }} />}
         </Container>
     );
 }
 
-const BackgroundImage = styled(Image)`
+const BackgroundImage = styled(ABImage)`
     position: absolute;
     left: 0;
     right: 0;

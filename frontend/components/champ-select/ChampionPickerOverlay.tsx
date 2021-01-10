@@ -2,22 +2,23 @@ import MagicBackgroundOverlay from "../MagicBackgroundOverlay";
 import champSelect from "../../stores/champ-select-store";
 import React, { useState } from "react";
 import { observer } from "mobx-react";
-import { View, Text, TextInput, ScrollView, Image, TouchableOpacity } from "react-native";
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import LCUButton from "../LCUButton";
 import styled from "styled-components/native";
 import { bottomMargin } from "../../utils/notch";
-import { getChampion, getChampionIcon } from "../../utils/constants";
+import { championIconPath, getChampionSummary } from "../../utils/assets";
+import ABImage from "../assets/ABImage";
 
 const ChampionOption = observer(({ id }: { id: number }) => {
-    const champ = getChampion(id);
-    const image = getChampionIcon(id);
+    const champ = getChampionSummary(id);
+    const image = championIconPath(id);
 
     const isActive = champSelect.picking.selectedChampion === id;
 
     return (
         <TouchableOpacity onPress={() => champSelect.picking.selectChampion(id)}>
             <OptionContainer>
-                <OptionImage active={isActive} source={{ uri: image }} />
+                <OptionImage active={isActive} path={image} />
                 <OptionText>{champ.name}</OptionText>
             </OptionContainer>
         </TouchableOpacity>
@@ -70,6 +71,7 @@ function ChampionPickerOverlay() {
         </MagicBackgroundOverlay>
     );
 }
+
 export default observer(ChampionPickerOverlay as any);
 
 const Container = styled(View)`
@@ -79,7 +81,7 @@ const Container = styled(View)`
 `;
 
 const Search = styled(TextInput).attrs({ placeholderTextColor: "#978d80" })`
-    height: 40px
+    height: 40px;
     padding-left: 5px;
     background-color: black;
     font-family: "LoL Body";
@@ -106,7 +108,7 @@ const OptionContainer = styled(View)`
     align-items: center;
 `;
 
-const OptionImage: any = styled(Image)`
+const OptionImage: any = styled(ABImage)`
     width: 66px;
     height: 66px;
     opacity: ${(props: any) => (props.active ? 1 : 0.7)};

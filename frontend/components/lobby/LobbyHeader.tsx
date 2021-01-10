@@ -1,8 +1,7 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
 import React from "react";
 import lobby from "../../stores/lobby-store";
-import queue from "../../stores/queue-store";
 import { Ionicons } from "@expo/vector-icons";
 import notchHeight from "../../utils/notch";
 import { useObserver } from "mobx-react";

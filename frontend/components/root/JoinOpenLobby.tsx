@@ -3,8 +3,9 @@ import { observer } from "mobx-react";
 import { Image, ScrollView, Text, TouchableWithoutFeedback, View } from "react-native";
 import styled from "styled-components/native";
 import store, { Friend, Party } from "../../stores/friends-list-store";
-import { getPlayerAvatarURL } from "../../utils/constants";
 import RootSubview from "./RootSubview";
+import { profileIconPath } from "../../utils/assets";
+import ABImage from "../assets/ABImage";
 
 function NoOpenLobbies() {
     return (
@@ -36,11 +37,11 @@ const Lobby = observer(({ friend }: { friend: Friend }) => {
     const queue = store.queues.find(x => x.id === party.queueId)!;
     if (!queue) return <></>;
     const text = `${party.summoners.length}/${queue.maximumParticipantListSize} - ${queue.shortName}`;
-    const avatarURL = getPlayerAvatarURL(friend.icon);
+    const avatarURL = profileIconPath(friend.icon);
 
     return (
         <LobbyContainer>
-            <Avatar source={{ uri: avatarURL }} />
+            <Avatar path={avatarURL} />
             <NameAndStatus>
                 <Name>{friend.name}</Name>
                 <Status>{text}</Status>
@@ -126,7 +127,7 @@ const Status = styled(Text)`
     color: #09a646;
 `;
 
-const Avatar = styled(Image)`
+const Avatar = styled(ABImage)`
     width: 40px;
     height: 40px;
     border-radius: 20px;

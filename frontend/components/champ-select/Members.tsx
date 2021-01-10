@@ -1,11 +1,12 @@
 import styled from "styled-components/native";
-import { Image, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import React from "react";
 import champSelect, { ChampSelectMember } from "../../stores/champ-select-store";
 import { observer } from "mobx-react";
-import { getSummonerSpellImage } from "../../utils/constants";
 import AnimatedFlameBackground from "../AnimatedFlameBackground";
 import ChampionBackground from "../ChampionBackground";
+import ABImage from "../assets/ABImage";
+import { summonerSpellIconPath } from "../../utils/assets";
 
 const MEMBER_HEIGHT = 64;
 
@@ -16,8 +17,8 @@ const FLAME_COLORS = {
 
 const MemberSpells = ({ member }: { member: ChampSelectMember }) => (
     <SummonerSpells>
-        <SummonerSpell source={{ uri: getSummonerSpellImage(member.spell1Id) }} />
-        <SummonerSpell source={{ uri: getSummonerSpellImage(member.spell2Id) }} />
+        <SummonerSpell path={summonerSpellIconPath(member.spell1Id)} />
+        <SummonerSpell path={summonerSpellIconPath(member.spell2Id)} />
     </SummonerSpells>
 );
 
@@ -112,7 +113,7 @@ const SummonerSpells = styled(View)`
     flex-direction: column;
 `;
 
-const SummonerSpell = styled(Image)`
+const SummonerSpell = styled(ABImage)`
     width: ${(MEMBER_HEIGHT - 10) / 2}px;
     height: ${(MEMBER_HEIGHT - 10) / 2}px;
 `;

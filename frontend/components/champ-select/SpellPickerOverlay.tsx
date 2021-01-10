@@ -2,9 +2,10 @@ import MagicBackgroundOverlay from "../MagicBackgroundOverlay";
 import champSelect from "../../stores/champ-select-store";
 import React from "react";
 import { observer } from "mobx-react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
-import { getSummonerSpell, getSummonerSpellImage } from "../../utils/constants";
+import { getSummonerSpell, summonerSpellIconPath } from "../../utils/assets";
+import ABImage from "../assets/ABImage";
 
 const SpellOption = ({ spellId }: { spellId: number }) => {
     const spell = getSummonerSpell(spellId);
@@ -12,7 +13,7 @@ const SpellOption = ({ spellId }: { spellId: number }) => {
     return (
         <TouchableOpacity onPress={() => champSelect.spells.selectSummonerSpell(spellId)}>
             <SpellContainer>
-                <SpellImage source={{ uri: getSummonerSpellImage(spellId) }} />
+                <SpellImage path={summonerSpellIconPath(spellId)} />
                 <SpellName>{spell.name}</SpellName>
             </SpellContainer>
         </TouchableOpacity>
@@ -41,11 +42,11 @@ const SpellContainer = styled(View)`
     padding: 10px;
     flex-direction: row;
     align-items: center;
-    border: 0px solid rgba(205, 190, 147, 0.3);
+    border: 0 solid rgba(205, 190, 147, 0.3);
     border-bottom-width: 1px;
 `;
 
-const SpellImage = styled(Image)`
+const SpellImage = styled(ABImage)`
     width: 40px;
     height: 40px;
 `;

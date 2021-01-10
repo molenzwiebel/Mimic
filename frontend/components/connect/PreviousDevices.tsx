@@ -2,11 +2,21 @@ import { ComputerConfig, deleteRegisteredComputer, getRegisteredComputers } from
 import React, { useEffect, useState } from "react";
 import socket from "../../utils/socket";
 import styled from "styled-components/native";
-import { ActionSheetIOS, ImageBackground, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+    ActionSheetIOS,
+    ImageBackground,
+    Platform,
+    ScrollView,
+    Text,
+    TouchableHighlight,
+    TouchableOpacity,
+    View
+} from "react-native";
 import notchHeight, { bottomMargin } from "../../utils/notch";
 import LCUButton from "../LCUButton";
 import { Ionicons } from "@expo/vector-icons";
 import confirm from "../../utils/confirm";
+import ABImage from "../assets/ABImage";
 
 function DeviceEntry({ name, code, onDelete }: { name: string; code: string; onDelete: () => void }) {
     const maybeDeleteDevice = async () => {

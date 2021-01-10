@@ -4,14 +4,19 @@ import runes from "../../stores/runes-store";
 import React from "react";
 import { observer } from "mobx-react";
 import styled from "styled-components/native";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import RunePageDropdown from "../RunePageDropdown";
 import CircularLCUButton from "../CircularLCUButton";
 import { Ionicons } from "@expo/vector-icons";
-import { getRuneTree, getRuneTrees, RuneSlot, RuneTree } from "../../utils/constants";
 import { bottomMargin } from "../../utils/notch";
+import { getPerkStyle, getPerkStyles, perkIconPath, perkStyleIconPath, PerkStyleSlot } from "../../utils/assets";
+import ABImage from "../assets/ABImage";
 
-const STAT_MODS = [[5008, 5005, 5007], [5008, 5002, 5003], [5001, 5002, 5003]];
+const STAT_MODS = [
+    [5008, 5005, 5007],
+    [5008, 5002, 5003],
+    [5001, 5002, 5003]
+];
 
 const STAT_DESCRIPTIONS: { [key: number]: string } = {
     5008: "AP/AD",
@@ -48,8 +53,7 @@ function Toolbar() {
 }
 
 function StylePicker({ selected, onSelect }: { selected: number; onSelect: (id: number) => any }) {
-    const trees = getRuneTrees();
-    const treeImage = (tree: RuneTree) => `https://ddragon.leagueoflegends.com/cdn/img/${tree.icon}`;
+    const trees = getPerkStyles();
 
     return (
         <StyleContainer>
@@ -65,7 +69,7 @@ function StylePicker({ selected, onSelect }: { selected: number; onSelect: (id: 
                     <StyleOption>
                         <StyleIcon
                             selected={selected === tree.id ? true : undefined}
-                            source={{ uri: treeImage(tree) }}
+                            path={perkStyleIconPath(tree.id)}
                         />
                     </StyleOption>
                 </TouchableOpacity>
@@ -82,7 +86,7 @@ function SlotPicker({
     last = false
 }: {
     selected: number[];
-    slot: RuneSlot;
+    slot: PerkStyleSlot;
     onSelect: (id: number) => any;
     keystone?: boolean;
     last?: boolean;
@@ -93,22 +97,19 @@ function SlotPicker({
         <SlotContainer>
             <Diamond last={last} />
 
-            {slot.runes.map(rune => (
+            {slot.perks.map(perkId => (
                 <TouchableOpacity
                     style={{
                         flex: 1,
                         alignItems: "center",
                         justifyContent: "center"
                     }}
-                    key={rune.id}
-                    onPress={() => onSelect(rune.id)}>
+                    key={perkId}
+                    onPress={() => onSelect(perkId)}>
                     <SlotOption
-                        selected={selected.includes(rune.id) ? true : undefined}
+                        selected={selected.includes(perkId) ? true : undefined}
                         keystone={keystone || undefined}>
-                        <SlotIcon
-                            selected={selected.includes(rune.id) ? true : undefined}
-                            source={{ uri: runeImage(rune) }}
-                        />
+                        <SlotIcon selected={selected.includes(perkId) ? true : undefined} path={perkIconPath(perkId)} />
                     </SlotOption>
                 </TouchableOpacity>
             ))}
@@ -125,8 +126,6 @@ function StatModPicker({
     options: number[];
     onSelect: (id: number) => any;
 }) {
-    const runeImage = (id: number) => `https://stelar7.no/cdragon/latest/perks/${id}.png`;
-
     return (
         <StatModContainer>
             {options.map(id => (
@@ -140,7 +139,7 @@ function StatModPicker({
                     key={id}
                     onPress={() => onSelect(id)}>
                     <StatModOption selected={selected === id || undefined}>
-                        <StatModIcon selected={selected === id || undefined} source={{ uri: runeImage(id) }} />
+                        <StatModIcon selected={selected === id || undefined} path={perkIconPath(id)} />
                     </StatModOption>
                     <StatModText selected={selected === id || undefined}>{STAT_DESCRIPTIONS[id]}</StatModText>
                 </TouchableOpacity>
@@ -153,30 +152,32 @@ const RunePageEditor = observer(() => {
     const page = runes.currentPage;
     if (!page) return null; // no page means we can't edit anything'
 
-    const mainStyle = page.primaryStyleId ? getRuneTree(page.primaryStyleId) : null;
-    const secondaryStyle = page.subStyleId ? getRuneTree(page.subStyleId) : null;
+    const mainStyle = page.primaryStyleId ? getPerkStyle(page.primaryStyleId) : null;
+    const secondaryStyle = page.subStyleId ? getPerkStyle(page.subStyleId) : null;
 
     return (
         <EditorContainer>
             <SectionTitle>PRIMARY TREE</SectionTitle>
             <StylePicker selected={page.primaryStyleId} onSelect={id => runes.selectPrimaryTree(id)} />
             {mainStyle &&
-                mainStyle.slots.map((slot, i) => (
-                    <SlotPicker
-                        keystone={i === 0}
-                        last={i === 3}
-                        selected={page.selectedPerkIds.slice(0, 4)}
-                        slot={slot}
-                        onSelect={id => runes.selectPrimaryRune(i, id)}
-                        key={i}
-                    />
-                ))}
+                mainStyle.slots
+                    .slice(0, 4)
+                    .map((slot, i) => (
+                        <SlotPicker
+                            keystone={i === 0}
+                            last={i === 3}
+                            selected={page.selectedPerkIds.slice(0, 4)}
+                            slot={slot}
+                            onSelect={id => runes.selectPrimaryRune(i, id)}
+                            key={i}
+                        />
+                    ))}
 
             <SectionTitle style={{ marginTop: 10 }}>SECONDARY TREE</SectionTitle>
             <StylePicker selected={page.subStyleId} onSelect={id => runes.selectSecondaryTree(id)} />
             {secondaryStyle &&
                 secondaryStyle.slots
-                    .slice(1)
+                    .slice(1, 4)
                     .map((slot, i) => (
                         <SlotPicker
                             selected={page.selectedPerkIds.slice(4, 6)}
@@ -255,7 +256,7 @@ const StyleOption = styled(View)`
     border-radius: 25px;
 `;
 
-const StyleIcon: any = styled(Image)`
+const StyleIcon: any = styled(ABImage)`
     width: 60%;
     height: 60%;
     ${(props: any) => (props.selected ? "" : `tint-color: gray;`)}
@@ -276,7 +277,7 @@ const SlotOption: any = styled(View)`
     ${(props: any) => (props.selected ? `border: 2px solid #c89c3c;` : "")}
 `;
 
-const SlotIcon: any = styled(Image)`
+const SlotIcon: any = styled(ABImage)`
     width: 100%;
     height: 100%;
     ${(props: any) => (props.selected ? "" : `opacity: 0.6;`)}
@@ -323,7 +324,7 @@ const StatModOption: any = styled(View)`
     ${(props: any) => (props.selected ? `border: 2px solid #c89c3c;` : "")}
 `;
 
-const StatModIcon: any = styled(Image)`
+const StatModIcon: any = styled(ABImage)`
     width: 100%;
     height: 100%;
     ${(props: any) => (props.selected ? "" : `opacity: 0.6;`)}

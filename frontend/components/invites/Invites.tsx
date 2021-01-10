@@ -1,24 +1,21 @@
 import { observer } from "mobx-react";
 import * as React from "react";
 import { useEffect, useRef } from "react";
-import { Animated, Easing, ScrollView, View, Image, Text, TouchableOpacity } from "react-native";
+import { Animated, Easing, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
 import invites, { Invite } from "../../stores/invites-store";
 import notchHeight from "../../utils/notch";
 import AnimatedFlameBackground from "../AnimatedFlameBackground";
-import { getPlayerAvatarURL } from "../../utils/constants";
 import { Ionicons } from "@expo/vector-icons";
+import ABImage from "../assets/ABImage";
+import { profileIconPath } from "../../utils/assets";
 
 const HEIGHT = 105 + notchHeight;
 
 const InviteEntry = ({ invite }: { invite: Invite }) => {
     return (
         <InviteEntryContainer>
-            <Avatar
-                source={{
-                    uri: getPlayerAvatarURL(invite.fromSummoner.profileIconId)
-                }}
-            />
+            <Avatar path={profileIconPath(invite.fromSummoner.profileIconId)} />
 
             <Details>
                 <Name>{invite.fromSummoner.displayName}</Name>
@@ -42,7 +39,7 @@ const InviteEntryContainer = styled(View)`
     margin: 10px 0;
 `;
 
-const Avatar = styled(Image)`
+const Avatar = styled(ABImage)`
     width: 50px;
     height: 50px;
     border-radius: 25px;
@@ -103,6 +100,7 @@ function Invites() {
 
     return <InviteContainerWrapper style={{ height }}>{hasInvites && <InvitesContent />}</InviteContainerWrapper>;
 }
+
 export default observer(Invites as any);
 
 const InviteContainerWrapper = styled(Animated.View)`
@@ -129,9 +127,3 @@ const Header = styled(Text)`
     font-size: 18px;
     letter-spacing: 1px;
 `;
-
-/*padding 20px 20px 10px 20px
-        font-family "LoL Display"
-        color #f0e6d3
-        font-size 40px
-        font-weight bold*/

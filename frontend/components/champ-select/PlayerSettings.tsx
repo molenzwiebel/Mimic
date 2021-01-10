@@ -5,9 +5,10 @@ import React from "react";
 import champSelect from "../../stores/champ-select-store";
 import { Ionicons } from "@expo/vector-icons";
 import CircularLCUButton from "../CircularLCUButton";
-import { getSummonerSpellImage } from "../../utils/constants";
 import { observer } from "mobx-react";
 import RunePageDropdown from "../RunePageDropdown";
+import ABImage from "../assets/ABImage";
+import { summonerSpellIconPath } from "../../utils/assets";
 
 const BUTTON_CONTAINER_HEIGHT = 25;
 
@@ -65,19 +66,11 @@ function PlayerSettings() {
             </CircularLCUButton>
 
             <TouchableOpacity onPress={() => champSelect.interface.toggleSpellPicker(true)}>
-                <SpellImage
-                    source={{
-                        uri: getSummonerSpellImage(champSelect.state!.localPlayer.spell1Id)
-                    }}
-                />
+                <SpellImage path={summonerSpellIconPath(champSelect.state!.localPlayer.spell1Id)} />
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => champSelect.interface.toggleSpellPicker(false)}>
-                <SpellImage
-                    source={{
-                        uri: getSummonerSpellImage(champSelect.state!.localPlayer.spell2Id)
-                    }}
-                />
+                <SpellImage path={summonerSpellIconPath(champSelect.state!.localPlayer.spell2Id)} />
             </TouchableOpacity>
 
             <FloatingButtons />
@@ -97,7 +90,7 @@ const Container = styled(View)`
     align-items: center;
 `;
 
-const SpellImage = styled(Image)`
+const SpellImage = styled(ABImage)`
     margin-left: 10px;
     width: 45px;
     height: 45px;

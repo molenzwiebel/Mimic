@@ -114,7 +114,9 @@ class Socket {
 
         if (data[0] === MobileOpcode.UPDATE) {
             this.observers
-                .filter(x => typeof x.matcher === "string" ? data[1] === x.matcher : x.matcher.test(data[1] as string))
+                .filter(x =>
+                    typeof x.matcher === "string" ? data[1] === x.matcher : x.matcher.test(data[1] as string)
+                )
                 .forEach(x => x.handler({ status: +data[2], content: data[3] }));
         }
 
@@ -140,7 +142,12 @@ class Socket {
 
             // Populate registered listeners.
             this.observers.forEach(x => {
-                this.socket.send(JSON.stringify([MobileOpcode.SUBSCRIBE, typeof x.matcher === "string" ? x.matcher : x.matcher.source]));
+                this.socket.send(
+                    JSON.stringify([
+                        MobileOpcode.SUBSCRIBE,
+                        typeof x.matcher === "string" ? x.matcher : x.matcher.source
+                    ])
+                );
                 if (typeof x.matcher === "string") {
                     this.request(x.matcher).then(x.handler);
                 }

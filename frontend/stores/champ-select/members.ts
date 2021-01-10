@@ -1,6 +1,7 @@
 import { computed } from "mobx";
 import { ChampSelectMember, ChampSelectStore } from "../champ-select-store";
-import { getChampion, POSITION_NAMES } from "../../utils/constants";
+import { POSITION_NAMES } from "../../utils/constants";
+import { getChampionSummary } from "../../utils/assets";
 
 /**
  * Sub-store for champ select, responsible for handling the members
@@ -18,7 +19,7 @@ export default class MembersStore {
         const champId = (act ? act.championId : 0) || member.championId || member.championPickIntent;
         if (!champId) return null;
 
-        const champ = getChampion(champId);
+        const champ = getChampionSummary(champId);
         if (!champ) return null;
 
         const fade = act && !act.completed;
@@ -27,7 +28,7 @@ export default class MembersStore {
         if (this.hasEveryonePicked) {
             return {
                 style: { opacity: fade ? 0.3 : 1 },
-                championId: +champ.key,
+                championId: champ.id,
                 skinId: member.selectedSkinId
             };
         }
@@ -35,7 +36,7 @@ export default class MembersStore {
         // Else just show the champs.
         return {
             style: { opacity: fade ? 0.3 : 1 },
-            championId: +champ.key,
+            championId: champ.id,
             skinId: 0
         };
     }

@@ -2,8 +2,10 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
 import React from "react";
 import lobby, { LobbyMember } from "../../stores/lobby-store";
-import { getPlayerAvatarURL, getRoleImage, POSITION_NAMES } from "../../utils/constants";
+import { getRoleImage, POSITION_NAMES } from "../../utils/constants";
 import { Ionicons } from "@expo/vector-icons";
+import ABImage from "../assets/ABImage";
+import { profileIconPath } from "../../utils/assets";
 
 function MemberActions({ member, showPositions }: { member: LobbyMember; showPositions: boolean }) {
     if (member.isLocalMember) {
@@ -43,7 +45,7 @@ function MemberActions({ member, showPositions }: { member: LobbyMember; showPos
 }
 
 function LobbyMemberEx({ member, showPositions }: { member: LobbyMember; showPositions: boolean }) {
-    const avatar = getPlayerAvatarURL(member.summoner.profileIconId);
+    const avatarUrl = profileIconPath(member.summoner.profileIconId);
 
     const [first, second] = [member.firstPositionPreference, member.secondPositionPreference];
     let roleText;
@@ -60,7 +62,7 @@ function LobbyMemberEx({ member, showPositions }: { member: LobbyMember; showPos
     return (
         <MemberContainer>
             <Left>
-                <Avatar source={{ uri: avatar }} />
+                <Avatar path={avatarUrl} />
                 {member.isLeader && <Ionicons name="md-ribbon" size={20} color="white" style={{ marginLeft: 10 }} />}
                 <MemberNameDetails>
                     <Name>{member.summoner.displayName}</Name>
@@ -125,7 +127,7 @@ const MemberContainer = styled(View)`
     border-right-width: 0;
 `;
 
-const Avatar = styled(Image)`
+const Avatar = styled(ABImage)`
     width: 40px;
     height: 40px;
     border-radius: 20px;

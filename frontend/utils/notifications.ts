@@ -39,8 +39,12 @@ export async function updateNotificationSubscriptions() {
 
     await Promise.all([
         socket.subscribeForNotifications(NotificationType.CLEAR),
-        config.readyCheckNotificationsEnabled ? socket.subscribeForNotifications(NotificationType.READY_CHECK) : socket.unsubscribeFromNotifications(NotificationType.READY_CHECK),
-        config.gameStartNotificationsEnabled ? socket.subscribeForNotifications(NotificationType.GAME_STARTED) : socket.unsubscribeFromNotifications(NotificationType.GAME_STARTED),
+        config.readyCheckNotificationsEnabled
+            ? socket.subscribeForNotifications(NotificationType.READY_CHECK)
+            : socket.unsubscribeFromNotifications(NotificationType.READY_CHECK),
+        config.gameStartNotificationsEnabled
+            ? socket.subscribeForNotifications(NotificationType.GAME_STARTED)
+            : socket.unsubscribeFromNotifications(NotificationType.GAME_STARTED)
     ]);
 }
 
@@ -157,21 +161,23 @@ export async function registerForNotifications() {
         }
     ]);
 
-    await Notifications.createChannelAndroidAsync(NotificationType.READY_CHECK, {
-        name: "Ready Check Notifications",
-        description:
-            "Notifications sent when your queue pops! These are a pretty high priority, to ensure that they get to you as fast as possible.",
-        vibrate: true,
-        priority: "max"
-    });
+    if (Constants.platform?.android) {
+        await Notifications.createChannelAndroidAsync(NotificationType.READY_CHECK, {
+            name: "Ready Check Notifications",
+            description:
+                "Notifications sent when your queue pops! These are a pretty high priority, to ensure that they get to you as fast as possible.",
+            vibrate: true,
+            priority: "max"
+        });
 
-    await Notifications.createChannelAndroidAsync(NotificationType.GAME_STARTED, {
-        name: "Game Start Notifications",
-        description:
-            "Notifications sent when minions are about to spawn and you're still away from your computer. High priority, to ensure that you get back before the first wave spawns.",
-        vibrate: true,
-        priority: "max"
-    });
+        await Notifications.createChannelAndroidAsync(NotificationType.GAME_STARTED, {
+            name: "Game Start Notifications",
+            description:
+                "Notifications sent when minions are about to spawn and you're still away from your computer. High priority, to ensure that you get back before the first wave spawns.",
+            vibrate: true,
+            priority: "max"
+        });
+    }
 
     await Notifications.addListener(handleNotification);
 }

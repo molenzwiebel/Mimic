@@ -6,14 +6,16 @@ import { default as React } from "react";
 import { StatusBar, YellowBox } from "react-native";
 import Mimic from "./views/Mimic";
 import { Asset } from "expo-asset";
-import * as assets from "./utils/static-assets";
+import * as assetBundle from "./utils/asset-bundle";
+import * as assets from "./utils/assets";
 import { registerForNotifications, updateRemoteNotificationToken } from "./utils/notifications";
 
 // every platform supports this, yet somehow react native doesn't like it?
 YellowBox.ignoreWarnings([
     "Warning: Failed prop type: Invalid props.style key `borderStyle` supplied to `Image`.",
     "Require cycle:",
-    "Warning: componentWillReceiveProps has been renamed"
+    "Warning: componentWillReceiveProps has been renamed",
+    "Warning: componentWillMount has been renamed"
 ]);
 
 @observer
@@ -43,7 +45,7 @@ export default class App extends React.Component {
                 ...Ionicons.font
             }),
             Asset.fromModule(require("./assets/backgrounds/magic-background.jpg")).downloadAsync(),
-            assets.initializeStaticAssets(),
+            assetBundle.initializeStaticAssets().then(() => assets.initialize()),
             registerForNotifications()
         ]);
 
