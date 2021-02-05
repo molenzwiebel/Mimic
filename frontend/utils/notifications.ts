@@ -1,8 +1,8 @@
-import { Notifications } from "expo";
+import * as Notifications from "expo-notifications";
+import { AndroidImportance } from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import socket from "./socket";
 import Constants from "expo-constants";
-import { Notification } from "expo/build/Notifications/Notifications.types";
 import { getNotificationPlatform, RIFT_HOST } from "./constants";
 import { withComputerConfig } from "./persistence";
 
@@ -57,7 +57,7 @@ export async function updateRemoteNotificationToken() {
     console.log("[+] Updating notification tokens with remote...");
 
     const response = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-    const token = response.granted ? await Notifications.getExpoPushTokenAsync() : null;
+    const token = response.granted ? (await Notifications.getExpoPushTokenAsync())?.data : null;
 
     console.log("[+] Notification token: " + token);
 
@@ -69,7 +69,7 @@ export async function updateRemoteNotificationToken() {
         body: JSON.stringify({
             uuid: Constants.installationId,
             platform: getNotificationPlatform(),
-            token
+            token: token
         })
     });
 }
@@ -110,18 +110,18 @@ export async function unsubscribeForNotification(machine: string, type: Notifica
     });
 }
 
-async function handleNotification(notification: Notification) {
+async function handleNotification(notification: Notifications.Notification, focused: boolean, action: string | null) {
     console.log("[+] Received notification: ");
     console.log(JSON.stringify(notification));
-    const action: string | null = (<any>notification).actionId || null;
+    console.log("[+] Action: " + action);
 
     // Clear notifications if needed.
-    if (notification.data.type === NotificationType.CLEAR) {
+    if (notification.request.content.data.type === NotificationType.CLEAR) {
         await Notifications.dismissAllNotificationsAsync();
         return;
     }
 
-    if (notification.origin === "received") {
+    if (!focused) {
         // The notification happened while we were focused.
         // Ignore it since we aren't interested.
         // TODO (molenzwiebel): Maybe show a local copy of the notification if != READY_CHECK?
@@ -129,19 +129,22 @@ async function handleNotification(notification: Notification) {
     }
 
     // If this is a ready check and the user responded through the notification, apply it.
-    if (notification.data.type === NotificationType.READY_CHECK && action) {
+    if (notification.request.content.data.type === NotificationType.READY_CHECK && action) {
         // We don't care about the response.
-        fetch(`${RIFT_HOST}/v1/notifications/respond?token=${notification.data.respondToken}&response=${action}`, {
-            method: "POST"
-        }).catch(() => {
+        fetch(
+            `${RIFT_HOST}/v1/notifications/respond?token=${notification.request.content.data.respondToken}&response=${action}`,
+            {
+                method: "POST"
+            }
+        ).catch(() => {
             /* Ignored */
         });
     }
 
     // TODO: Figure out how to find selected result.
     // For now, just connect.
-    if (!socket.connected || socket.code !== notification.data.code) {
-        socket.connect(notification.data.code);
+    if (!socket.connected || socket.code !== notification.request.content.data.code) {
+        socket.connect(notification.request.content.data.code as string);
     }
 }
 
@@ -149,35 +152,48 @@ async function handleNotification(notification: Notification) {
  * Registers the notification categories used in iOS/Android.
  */
 export async function registerForNotifications() {
-    await Notifications.createCategoryAsync(NotificationType.READY_CHECK, [
+    await Notifications.setNotificationCategoryAsync(
+        NotificationType.READY_CHECK,
+        [
+            {
+                identifier: "accept",
+                buttonTitle: "Accept"
+            },
+            {
+                identifier: "decline",
+                buttonTitle: "Decline",
+                options: {
+                    opensAppToForeground: false // handle in the background
+                }
+            }
+        ],
         {
-            actionId: "accept",
-            buttonTitle: "Accept"
-        },
-        {
-            actionId: "decline",
-            buttonTitle: "Decline",
-            doNotOpenInForeground: true // handle in the background
+            showTitle: true,
+            showSubtitle: true,
+            allowAnnouncement: true
         }
-    ]);
+    );
 
     if (Constants.platform?.android) {
-        await Notifications.createChannelAndroidAsync(NotificationType.READY_CHECK, {
+        await Notifications.setNotificationChannelAsync(NotificationType.READY_CHECK, {
             name: "Ready Check Notifications",
+            importance: AndroidImportance.MAX,
             description:
                 "Notifications sent when your queue pops! These are a pretty high priority, to ensure that they get to you as fast as possible.",
-            vibrate: true,
-            priority: "max"
+            enableVibrate: true
         });
 
-        await Notifications.createChannelAndroidAsync(NotificationType.GAME_STARTED, {
+        await Notifications.setNotificationChannelAsync(NotificationType.GAME_STARTED, {
             name: "Game Start Notifications",
+            importance: AndroidImportance.MAX,
             description:
                 "Notifications sent when minions are about to spawn and you're still away from your computer. High priority, to ensure that you get back before the first wave spawns.",
-            vibrate: true,
-            priority: "max"
+            enableVibrate: true
         });
     }
 
-    await Notifications.addListener(handleNotification);
+    Notifications.addNotificationReceivedListener(notif => handleNotification(notif, false, null));
+    Notifications.addNotificationResponseReceivedListener(notif =>
+        handleNotification(notif.notification, false, notif.actionIdentifier)
+    );
 }

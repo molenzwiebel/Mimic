@@ -1,6 +1,6 @@
 import { default as React, useEffect, useState } from "react";
 import { Text, TouchableWithoutFeedback, View } from "react-native";
-import { Updates } from "expo";
+import * as Updates from "expo-updates";
 import Constants from "expo-constants";
 import socket from "../../utils/socket";
 import RootSubview from "./RootSubview";

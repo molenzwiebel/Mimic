@@ -29,7 +29,8 @@
     },
     "android": {
       "package": "nl.thijsmolendijk.mimic",
-      "versionCode": 7
+      "versionCode": 7,
+      "useNextNotificationsApi": true
     }
   }
 }
