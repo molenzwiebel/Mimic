@@ -53,9 +53,9 @@ const normalize = (path: string) => path.replace("/lol-game-data/assets/", "").t
 // icon paths
 export const profileIconPath = (id: number) => `v1/profile-icons/${id}.jpg`;
 export const championIconPath = (id: number) => `v1/champion-icons/${id}.png`;
-export const summonerSpellIconPath = (id: number) => normalize(getSummonerSpell(id).iconPath);
-export const perkIconPath = (id: number) => normalize(getPerk(id).iconPath);
-export const perkStyleIconPath = (id: number) => normalize(getPerkStyle(id).iconPath);
+export const summonerSpellIconPath = (id: number) => normalize(getSummonerSpell(id)?.iconPath || "");
+export const perkIconPath = (id: number) => normalize(getPerk(id)?.iconPath || "");
+export const perkStyleIconPath = (id: number) => normalize(getPerkStyle(id)?.iconPath || "");
 
 // assets
 export const getSummonerSpell = (id: number) => summonerSpells.find(x => x.id === id)!;

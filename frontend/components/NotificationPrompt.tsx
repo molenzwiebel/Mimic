@@ -131,7 +131,7 @@ const Content = styled(Text)`
     margin-top: 10px;
 `;
 
-const Disclaimer = styled(Content)`
+const Disclaimer = styled(Content as any)`
     font-size: 13px;
     width: 80%;
     margin-bottom: 10px;

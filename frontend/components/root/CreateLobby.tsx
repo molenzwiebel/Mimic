@@ -33,7 +33,8 @@ function QueueDiamond({ selected }: { selected: boolean }) {
         Animated.timing(innerScale, {
             toValue: selected ? 1 : 0,
             duration: 200,
-            easing: Easing.ease
+            easing: Easing.ease,
+            useNativeDriver: false
         }).start();
     }, [selected]);
 
@@ -77,7 +78,8 @@ function Section({ id, selected }: { id: string; selected: boolean }) {
         Animated.timing(selectedOpacity, {
             toValue: selected ? 1 : 0,
             duration: 200,
-            easing: Easing.ease
+            easing: Easing.ease,
+            useNativeDriver: true
         }).start();
     }, [selected]);
 

@@ -30,7 +30,8 @@ const ReadyCheckProgressBar = observer(() => {
             const newAnim = Animated.timing(widthAnimation, {
                 toValue: newWidth,
                 duration: 1000,
-                easing: Easing.linear
+                easing: Easing.linear,
+                useNativeDriver: false
             });
 
             // And start it.

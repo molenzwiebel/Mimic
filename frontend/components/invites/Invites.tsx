@@ -94,7 +94,8 @@ function Invites() {
         Animated.timing(height, {
             toValue: hasInvites ? HEIGHT : 0,
             duration: 300,
-            easing: Easing.ease
+            easing: Easing.ease,
+            useNativeDriver: false
         }).start();
     }, [hasInvites]);
 

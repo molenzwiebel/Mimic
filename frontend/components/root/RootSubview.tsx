@@ -20,6 +20,7 @@ export default function RootSubview({ onClose, title, children }: { onClose: Fun
     useEffect(() => {
         const handler = BackHandler.addEventListener("hardwareBackPress", () => {
             onClose();
+            return true;
         });
 
         return () => {

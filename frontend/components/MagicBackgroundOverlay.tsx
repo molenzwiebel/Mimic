@@ -29,6 +29,7 @@ export default function MagicBackgroundOverlay({
             setRegistration(
                 BackHandler.addEventListener("hardwareBackPress", () => {
                     onClose();
+                    return true;
                 })
             );
         }

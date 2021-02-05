@@ -1,9 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
-import { AppLoading } from "expo";
+import AppLoading from "expo-app-loading";
 import * as Font from "expo-font";
 import { observer } from "mobx-react";
 import { default as React } from "react";
-import { StatusBar, YellowBox } from "react-native";
+import { StatusBar, LogBox } from "react-native";
 import Mimic from "./views/Mimic";
 import { Asset } from "expo-asset";
 import * as assetBundle from "./utils/asset-bundle";
@@ -11,7 +11,7 @@ import * as assets from "./utils/assets";
 import { registerForNotifications, updateRemoteNotificationToken } from "./utils/notifications";
 
 // every platform supports this, yet somehow react native doesn't like it?
-YellowBox.ignoreWarnings([
+LogBox.ignoreLogs([
     "Warning: Failed prop type: Invalid props.style key `borderStyle` supplied to `Image`.",
     "Require cycle:",
     "Warning: componentWillReceiveProps has been renamed",

@@ -46,7 +46,8 @@ function QueueStatus() {
         Animated.timing(height, {
             toValue: isInQueue ? HEIGHT : 0,
             duration: 300,
-            easing: Easing.ease
+            easing: Easing.ease,
+            useNativeDriver: false
         }).start();
     }, [isInQueue]);
 

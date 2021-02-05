@@ -1,6 +1,7 @@
 import { observer } from "mobx-react";
 import runes from "../stores/runes-store";
-import { Picker, Platform, View } from "react-native";
+import { Platform, View } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import RNPickerSelect from "react-native-picker-select";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
@@ -38,7 +39,7 @@ const RunePageDropdown = observer(() => {
                     return (
                         <Ionicons
                             style={{ marginTop: 5, marginRight: 5 }}
-                            name="md-arrow-dropdown"
+                            name={"md-arrow-dropdown" as any}
                             size={18}
                             color="#695625"
                         />

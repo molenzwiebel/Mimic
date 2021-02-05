@@ -42,7 +42,7 @@ const InvitedPlayer = observer(({ player }: { player: InvitationMetadata }) => (
                     Kicked: "md-close",
                     Declined: "md-close",
                     Accepted: "md-checkmark"
-                }[player.state] || "ios-more"
+                }[player.state] || ("ios-more" as any)
             }
             size={20}
             color="white"

@@ -159,7 +159,7 @@ const Padder = styled(View)`
     flex: 1;
 `;
 
-const VersionDescription = styled(Description)`
+const VersionDescription = styled(Description as any)`
     text-align: center;
     margin-bottom: ${bottomMargin}px;
 `;

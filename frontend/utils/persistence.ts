@@ -1,4 +1,4 @@
-import { AsyncStorage } from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
 import socket from "./socket";
 
 export async function shouldShowIntro(): Promise<boolean> {

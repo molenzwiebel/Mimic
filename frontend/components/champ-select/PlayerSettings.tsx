@@ -1,5 +1,5 @@
 import styled from "styled-components/native";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { bottomMargin } from "../../utils/notch";
 import React from "react";
 import champSelect from "../../stores/champ-select-store";
@@ -118,7 +118,7 @@ const FloatingButtonContainer = styled(View)`
     background-color: rgba(0, 0, 0, 0.7);
 `;
 
-const RerollFloatingButtonContainer = styled(FloatingButtonContainer)`
+const RerollFloatingButtonContainer = styled(FloatingButtonContainer as any)`
     width: 130px;
     margin-right: 10px;
     border-color: #0596aa;

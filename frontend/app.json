@@ -3,7 +3,6 @@
     "name": "Mimic",
     "slug": "mimic-native",
     "privacy": "public",
-    "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
       "android",
@@ -26,11 +25,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "nl.thijsmolendijk.mimic",
-      "buildNumber": "6"
+      "buildNumber": "7"
     },
     "android": {
       "package": "nl.thijsmolendijk.mimic",
-      "versionCode": 6
+      "versionCode": 7
     }
   }
 }
