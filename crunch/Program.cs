@@ -30,6 +30,11 @@ namespace crunch
             var region = args[0];
             var outDir = args[1];
 
+            if (!Directory.Exists(outDir))
+            {
+                Directory.CreateDirectory(outDir);
+            }
+
             Console.WriteLine($"[+] Creating asset bundle for the latest release on {region}...");
 
             var downloadLink = await QueryLatestRelease(region);
