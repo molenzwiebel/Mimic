@@ -32,7 +32,7 @@ namespace Conduit
         private bool hasClosed = false;
         public string NotificationSubscriptionToken { get; set; }
 
-        private POINT cursorPosition;
+        private uint lastInputEventTime;
 
         private string readyCheckState = "Invalid";
 
@@ -44,6 +44,8 @@ namespace Conduit
 
             this.league = league;
             league.Observe("/lol-matchmaking/v1/ready-check", HandleReadyCheckChange);
+            league.OnLeagueGameLaunch += HandleLeagueLaunch;
+            league.OnLeagueGameStart += HandleLeagueStart;
 
             // Pass parameters in the URL.
             socket = new WebSocket(
@@ -175,6 +177,26 @@ namespace Conduit
             }
 
             readyCheckState = newState;
+        }
+        
+        private void HandleLeagueLaunch()
+        {
+            lastInputEventTime = Utils.GetLastInputTime();
+            DebugLogger.Global.WriteMessage("Detected League of Legends launch. lastInputEventTime = " + lastInputEventTime);
+        }
+
+        private void HandleLeagueStart()
+        {
+            var newestLastInputEventTime = Utils.GetLastInputTime();
+            DebugLogger.Global.WriteMessage("Detected League of Legends loading screen end. newestLastInputEventTime = " + newestLastInputEventTime);
+
+            // If the last event time is the same, it means there haven't been any new events
+            // since the user entered loading screen, i.e. they're probably afk.
+            if (lastInputEventTime == newestLastInputEventTime)
+            {
+                DebugLogger.Global.WriteMessage("No input events since loading screen started, emitting notification");
+                SendNotification(NotificationType.GameStarted);
+            }
         }
     }
 

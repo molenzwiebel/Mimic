@@ -2,12 +2,14 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using WebSocketSharp;
 
 namespace Conduit
@@ -21,6 +23,9 @@ namespace Conduit
     {
         private static HttpClient HTTP_CLIENT;
 
+        private ManagementEventWatcher eventWatcher;
+        private Timer ingameEventPollTimer;
+        
         private WebSocket socketConnection;
         private Tuple<Process, string, string, string> processInfo;
         private bool connected;
@@ -28,6 +33,8 @@ namespace Conduit
         public event Action OnConnected;
         public event Action OnDisconnected;
         public event Action<OnWebsocketEventArgs> OnWebsocketEvent;
+        public event Action OnLeagueGameLaunch;
+        public event Action OnLeagueGameStart;
 
         /**
          * Returns if this connection is currently connected.
@@ -57,6 +64,25 @@ namespace Conduit
                     ServerCertificateCustomValidationCallback = (a, b, c, d) => true
                 });
             }
+
+            // Ensure that the HTTP client times out before one iteration of ingame state polling has resolved.
+            // This ensures that every call to the ingame API resolves before the timer calls again, which prevents
+            // double invocations to the OnGameStart event without the need to keep track of ingame state.
+            HTTP_CLIENT.Timeout = TimeSpan.FromSeconds(1);
+            
+            // Set up a management event watcher to track new process launches.
+            var queryString = "SELECT * FROM __InstanceCreationEvent WITHIN .025 WHERE TargetInstance ISA 'Win32_Process'";
+            eventWatcher = new ManagementEventWatcher(@"\\.\root\CIMV2", queryString);
+            eventWatcher.EventArrived += HandleProcessLaunch;
+            eventWatcher.Start();
+            
+            // Set up a timer for checking the state of the game (but don't start it yet)
+            // Poll every 1.5s (1500 ms)
+            ingameEventPollTimer = new Timer(1500)
+            {
+                AutoReset = true
+            };
+            ingameEventPollTimer.Elapsed += PollInGameState;
 
             // Run after a slight delay.
             Task.Delay(2000).ContinueWith(e => TryConnectOrRetry());
@@ -165,6 +191,52 @@ namespace Conduit
                 Type = ev["eventType"],
                 Data = ev["eventType"] == "Delete" ? null : ev["data"]
             });
+        }
+
+        /**
+         * Invoked when a new process is launched.
+         */
+        private void HandleProcessLaunch(object sender, EventArrivedEventArgs args)
+        {
+            var process = args.NewEvent.Properties["TargetInstance"].Value as ManagementBaseObject;
+            var processName = process.Properties["Name"].Value as string;
+
+            if (processName == "League of Legends.exe")
+            {
+                DebugLogger.Global.WriteMessage("'League of Legends.exe' launched.");
+                
+                OnLeagueGameLaunch?.Invoke();
+                ingameEventPollTimer.Enabled = true;
+            }
+        }
+
+        /**
+         * Invoked periodically when League is launched, to use the ingame API to see
+         * whether the game has launched, and invoke the event listeners when it has.
+         */
+        private async void PollInGameState(object sender, ElapsedEventArgs args)
+        {
+            bool hasStarted;
+            
+            try
+            {
+                var res = await HTTP_CLIENT.GetAsync("https://127.0.0.1:2999/liveclientdata/eventdata");
+                hasStarted = res.StatusCode == HttpStatusCode.OK;
+            }
+            catch
+            {
+                // error connecting means that the http server is not yet up
+                hasStarted = false;
+            }
+
+            // if the game has started, invoke the event listeners and cancel the timer
+            if (hasStarted)
+            {
+                DebugLogger.Global.WriteMessage("Match has started");
+
+                ingameEventPollTimer.Enabled = false;
+                OnLeagueGameStart?.Invoke();
+            }
         }
 
         /**

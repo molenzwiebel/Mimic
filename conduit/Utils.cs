@@ -59,7 +59,8 @@ namespace Conduit
                     }
                     catch (Exception e)
                     {
-                        DebugLogger.Global.WriteError($"Error while trying to get the status for LeagueClientUx: {e.ToString()}\n\n(CommandLine = {commandLine})");
+                        DebugLogger.Global.WriteError(
+                            $"Error while trying to get the status for LeagueClientUx: {e.ToString()}\n\n(CommandLine = {commandLine})");
                     }
                 }
             }
@@ -69,33 +70,33 @@ namespace Conduit
         }
 
         /**
-         * Queries and returns the global cursor position.
+         * Returns the time in ticks of the last time an input was handled by the system
+         * (a keyboard or mouse event). Used to detect whether the user is inactive.
          */
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetCursorPos(out POINT lpPoint);
+        public static uint GetLastInputTime()
+        {
+            LASTINPUTINFO lastInputInfo = new LASTINPUTINFO();
+            lastInputInfo.cbSize = LASTINPUTINFO.SizeOf;
+            lastInputInfo.dwTime = 0;
+
+            GetLastInputInfo(ref lastInputInfo);
+
+            return lastInputInfo.dwTime;
+        }
+
+        /**
+         * Retrieves information on the last input handled by the system (keyboard or mouse)
+         */
+        [DllImport("user32.dll")]
+        public static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct POINT
+    public struct LASTINPUTINFO
     {
-        public int X;
-        public int Y;
+        public static readonly uint SizeOf = (uint) Marshal.SizeOf(typeof(LASTINPUTINFO));
 
-        public POINT(int x, int y)
-        {
-            this.X = x;
-            this.Y = y;
-        }
-
-        public static implicit operator System.Drawing.Point(POINT p)
-        {
-            return new System.Drawing.Point(p.X, p.Y);
-        }
-
-        public static implicit operator POINT(System.Drawing.Point p)
-        {
-            return new POINT(p.X, p.Y);
-        }
+        [MarshalAs(UnmanagedType.U4)] public UInt32 cbSize;
+        [MarshalAs(UnmanagedType.U4)] public UInt32 dwTime;
     }
 }
