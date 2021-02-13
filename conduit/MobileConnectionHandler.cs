@@ -151,6 +151,11 @@ namespace Conduit
                 Send(SimpleJson.SerializeObject(new List<object>
                     {(long) MobileOpcode.HandshakeComplete, Program.VERSION, Environment.MachineName, hub.NotificationSubscriptionToken}));
             }
+            else if (msg[0] == (long) MobileOpcode.Ping)
+            {
+                Send(SimpleJson.SerializeObject(new List<object>
+                    {(long) MobileOpcode.Pong, msg[1]}));
+            }
         }
 
         /**
@@ -192,7 +197,13 @@ namespace Conduit
         Response = 8,
 
         // Conduit -> Mobile, when any subscribed endpoint gets an update
-        Update = 9
+        Update = 9,
+        
+        // Mobile -> Conduit, request the desktop to respond
+        Ping = 10,
+        
+        // Conduit -> Mobile, respond to a ping
+        Pong = 11
     }
 }
  
