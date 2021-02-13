@@ -68,12 +68,7 @@ export default function PreviousDevices({ onRegisterNew }: { onRegisterNew: () =
 
     return (
         <Container>
-            <Header>
-                <Title>CONNECT TO A COMPUTER</Title>
-                <Small>Long-press on an entry for more options.</Small>
-            </Header>
-
-            <ScrollView style={{ flex: 1, alignSelf: "stretch" }} alwaysBounceVertical={false}>
+            <ScrollView style={{ flex: 1, width: "100%" }}>
                 {Object.entries(devices).map(entry => (
                     <DeviceEntry
                         name={entry[1].name}
@@ -84,20 +79,18 @@ export default function PreviousDevices({ onRegisterNew }: { onRegisterNew: () =
                 ))}
             </ScrollView>
 
-            <AddButton onClick={onRegisterNew}>Add new device</AddButton>
+            {/*<AddButton onClick={onRegisterNew}>Add new device</AddButton>*/}
         </Container>
     );
 }
 
-const Container = styled(ImageBackground).attrs({
-    source: require("../../assets/backgrounds/magic-background.jpg")
-})`
-    padding-top: ${notchHeight}px;
+const Container = styled(View)`
     padding-bottom: ${bottomMargin}px;
     flex: 1;
     flex-direction: column;
     align-items: center;
     height: 100%;
+    width: 100%;
 `;
 
 const Header = styled(View)`
@@ -127,10 +120,9 @@ const AddButton = styled(LCUButton)`
 `;
 
 const ComputerContainer = styled(TouchableOpacity)`
-    width: 100%;
     padding: 10px;
-    border: 0 solid rgba(205, 190, 147, 0.1);
-    border-bottom-width: 1px;
+    margin: 10px 10px 0px;
+    border: 1px solid rgb(90, 68, 24);
     flex-direction: row;
     align-items: center;
 `;

@@ -81,8 +81,6 @@ async function doDownloadAsset(path: string): Promise<string> {
     const filePath = `${DIR}/${path}`;
     const dirPath = `${DIR}/${dir}`;
 
-    await new Promise(r => setTimeout(r, 2000));
-
     // ensure directory is created
     await FileSystem.makeDirectoryAsync(dirPath, { intermediates: true });
 
@@ -164,8 +162,6 @@ export async function initializeStaticAssets() {
     for (const file of manifest.files) {
         assetFileByPath.set(file.path, file);
     }
-
-    await FileSystem.deleteAsync(DIR);
 
     console.log("[+] Loaded asset bundle created at " + manifest.created_at);
 }

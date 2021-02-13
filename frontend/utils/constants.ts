@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import { NotificationPlatform } from "./notifications";
 
-export const RIFT_HOST = "http://192.168.1.34 :51001";
+export const RIFT_HOST = "http://192.168.1.34:51001";
 export const RIFT_WS_HOST = "ws://192.168.1.34:51001";
 export const CDN_HOST = "http://192.168.1.34:8080";
 

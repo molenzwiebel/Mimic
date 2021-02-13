@@ -108,7 +108,7 @@ export class RunesStore {
         this.savePage();
     }
 
-    /**
+    /**g
      * Selects the specified secondary rune. This alternates so that the least
      * recently chosen secondary rune is replaced by the current choice.
      */
@@ -117,8 +117,8 @@ export class RunesStore {
 
         // Make sure that we are not selecting two runes from the same slot.
         const otherRune = this.currentPage.selectedPerkIds[4 + this.secondaryIndex];
-        const slot = getPerkStyle(this.currentPage.subStyleId).slots.find(x => x.perks.some(x => x === id))!;
-        if (slot.perks.some(x => x === otherRune)) return;
+        const slot = getPerkStyle(this.currentPage.subStyleId).slots.find(x => x.perks.includes(id))!;
+        if (slot.perks.includes(otherRune)) return;
 
         this.secondaryIndex = (this.secondaryIndex + 1) % 2;
         this.currentPage.selectedPerkIds[4 + this.secondaryIndex] = id;

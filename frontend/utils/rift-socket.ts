@@ -24,6 +24,12 @@ export default class RiftSocket {
     @observable
     public state = RiftSocketState.CONNECTING;
 
+    @observable
+    public ping = -1;
+
+    private lastPingTime: number;
+    private resolvePingPromise: (data: string) => void;
+
     private key: Uint8Array | null = null;
     private encrypted = false;
 
@@ -162,6 +168,16 @@ export default class RiftSocket {
             // Convert to string and dispatch.
             const decryptedString = aesjs.utils.utf8.fromBytes(decrypted);
 
+            // try handle pong
+            try {
+                const value = JSON.parse(decryptedString);
+                if (Array.isArray(value) && value[0] === MobileOpcode.PONG) {
+                    this.resolvePingPromise(value[1]);
+                }
+            } catch {
+                /* Ignored */
+            }
+
             if (this.onmessage !== null) {
                 this.onmessage(<any>{
                     data: decryptedString
@@ -187,7 +203,53 @@ export default class RiftSocket {
             this.readyState = WebSocket.OPEN;
             this.state = RiftSocketState.CONNECTED;
             this.onopen();
+
+            // Configure ping
+            this.sendPing();
         }
+    }
+
+    /**
+     * Invoked on open to configure a periodic heartbeat with Conduit, to retrieve
+     * the current ping and to ensure that Conduit is still around.
+     */
+    private async sendPing() {
+        this.lastPingTime = Date.now();
+        const resolvePromise = new Promise<string>(resolve => (this.resolvePingPromise = resolve));
+
+        const randomId = await Random.getRandomBytesAsync(8).then(x =>
+            Array.from(x)
+                .map(num => num.toString(16).padStart(2, "0"))
+                .join("")
+        );
+
+        try {
+            this.send(JSON.stringify([MobileOpcode.PING, randomId]));
+
+            const returnedId = await Promise.race([
+                resolvePromise,
+                new Promise<[string, number]>((_, reject) => {
+                    setTimeout(reject, 5000);
+                })
+            ]);
+
+            if (returnedId !== randomId) throw new Error("Conduit responded with different ID to ping");
+
+            this.ping = Math.round(Math.abs(this.lastPingTime - Date.now()) / 2);
+            console.log("Ping: " + this.ping + " ms");
+        } catch (e) {
+            console.log("[-] Ping failed: " + e);
+
+            // error, conduit either didn't respond or responded with the wrong value
+            this.close();
+
+            return;
+        }
+
+        // ping again after 30 seconds
+        setTimeout(() => {
+            this.sendPing();
+        }, 30_000);
     }
 }
 
@@ -264,7 +326,13 @@ export enum MobileOpcode {
     RESPONSE = 8,
 
     // Conduit -> Mobile, when any subscribed endpoint gets an update
-    UPDATE = 9
+    UPDATE = 9,
+
+    // Mobile -> Conduit, request the desktop to respond
+    PING = 10,
+
+    // Conduit -> Mobile, respond to a ping
+    PONG = 11
 }
 
 declare global {

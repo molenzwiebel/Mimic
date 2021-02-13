@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import AppLoading from "expo-app-loading";
 import * as Font from "expo-font";
 import { observer } from "mobx-react";
@@ -42,7 +42,9 @@ export default class App extends React.Component {
                 "LoL Display": require("./assets/fonts/BeaufortforLOL-Regular.ttf"),
                 "LoL Display Bold": require("./assets/fonts/BeaufortforLOL-Bold.ttf"),
                 "LoL Body": require("./assets/fonts/Spiegel-Regular.ttf"),
-                ...Ionicons.font
+                ...Ionicons.font,
+                ...AntDesign.font,
+                ...MaterialCommunityIcons.font
             }),
             Asset.fromModule(require("./assets/backgrounds/magic-background.jpg")).downloadAsync(),
             assetBundle.initializeStaticAssets().then(() => assets.initialize()),

@@ -9,7 +9,10 @@
     },
     "dependencies": {
         "@react-native-community/async-storage": "^1.12.1",
+        "@react-native-community/masked-view": "0.1.10",
         "@react-native-picker/picker": "^1.9.10",
+        "@react-navigation/native": "^5.9.2",
+        "@react-navigation/stack": "^5.14.2",
         "aes-js": "^3.1.2",
         "base-64": "^0.1.0",
         "expo": "^40.0.0",
@@ -32,7 +35,10 @@
         "react-native-picker-select": "^6.3.3",
         "react-native-reanimated": "~1.13.0",
         "react-native-redash": "^8.2.1",
+        "react-native-safe-area-context": "3.1.9",
+        "react-native-screens": "~2.15.2",
         "react-native-web": "~0.13.12",
+        "reanimated-bottom-sheet": "^1.0.0-alpha.22",
         "styled-components": "^4.3.2"
     },
     "devDependencies": {

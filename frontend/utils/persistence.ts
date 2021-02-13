@@ -19,11 +19,13 @@ export interface ComputerConfig {
     gameStartNotificationsEnabled: boolean;
 }
 
+export type RegisteredComputers = { [key: string]: ComputerConfig };
+
 /**
  * Returns all the computers we've previously connected with. This returns a map
  * of { [computer code]: [last computer name] }.
  */
-export async function getRegisteredComputers(): Promise<{ [key: string]: ComputerConfig }> {
+export async function getRegisteredComputers(): Promise<RegisteredComputers> {
     return JSON.parse((await AsyncStorage.getItem("computers")) || "{}");
 }
 
