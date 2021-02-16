@@ -1,10 +1,8 @@
 import { computed, observable } from "mobx";
-import Constants from "expo-constants";
 import RiftSocket, { MobileOpcode, RiftSocketState } from "./rift-socket";
 import { withComputerConfig } from "./persistence";
 import * as notifications from "./notifications";
 import { NotificationType } from "./notifications";
-import { getNotificationPlatform, RIFT_HOST } from "./constants";
 
 // Represents a result from the LCU api.
 export interface Result {
@@ -73,7 +71,7 @@ class Socket {
         this.observers = this.observers.filter(x => {
             if (x.matcher !== path) return true;
 
-            if (this.socket.readyState === WebSocket.OPEN) {
+            if (this.socket && this.socket.readyState === WebSocket.OPEN) {
                 // ask to stop observing
                 this.socket.send(JSON.stringify([MobileOpcode.UNSUBSCRIBE, path]));
             }

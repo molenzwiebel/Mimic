@@ -1,18 +1,18 @@
-import React, { createRef, useLayoutEffect, useRef, useState } from "react";
+import React, { createRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import Intro from "../components/connect/Intro";
-import { markIntroShown } from "../utils/persistence";
+import { markIntroShown, shouldShowIntro } from "../utils/persistence";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
-import { Text, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
-import LCUButton from "../components/LCUButton";
-import { StackNavigationOptions } from "@react-navigation/stack/lib/typescript/src/types";
 import styled from "styled-components/native";
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
 import { NavigationContainerRef } from "@react-navigation/core";
 import HelpSheet, { HELP_SHEET_HEIGHT } from "../components/connect/HelpSheet";
 import PreviousDevices from "../components/connect/PreviousDevices";
+import CodeEntry from "../components/connect/CodeEntry";
+import { LCU_NAVBAR_STYLE } from "../utils/constants";
 
 export const connectNavigationRef = createRef<NavigationContainerRef>();
 
@@ -22,10 +22,11 @@ const ConnectStack = createStackNavigator();
 export enum ConnectRoutes {
     MODAL_INTRO = "Intro",
     MODAL_CONTENT = "Content",
-    MIMIC_HOME = "Home",
+    MIMIC_HOME = "Connect",
     ADD_NEW_DEVICE = "Add New Device"
 }
 
+// Simple help button
 function HomeHelpButton({ onPress }: { onPress: () => void }) {
     return (
         <HelpButtonContainer onPress={onPress}>
@@ -34,14 +35,19 @@ function HomeHelpButton({ onPress }: { onPress: () => void }) {
     );
 }
 
-const HelpButtonContainer = styled(TouchableOpacity)`
-    margin-left: 15px;
-`;
-
+// Content for the home screen.
 function HomeContent() {
     const navigation = useNavigation();
     const sheetRef = useRef<BottomSheet | null>(null);
     const [darken] = useState(new Animated.Value(1));
+
+    useEffect(() => {
+        shouldShowIntro().then(showIntro => {
+            if (!showIntro) return;
+
+            navigation.navigate(ConnectRoutes.MODAL_INTRO);
+        });
+    });
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -67,7 +73,7 @@ function HomeContent() {
 
             <BottomSheet
                 ref={sheetRef}
-                initialSnap={0}
+                initialSnap={1}
                 snapPoints={[HELP_SHEET_HEIGHT, 0]}
                 callbackNode={darken}
                 renderContent={HelpSheet}
@@ -76,33 +82,20 @@ function HomeContent() {
     );
 }
 
+// Content for the Add new device screen.
 function AddDeviceContent() {
     const navigation = useNavigation();
 
     return (
-        <View>
-            <Text>Add device</Text>
-        </View>
+        <CodeEntry
+            onDone={() => {
+                navigation.goBack();
+            }}
+        />
     );
 }
 
-const LCU_NAVBAR_STYLE: StackNavigationOptions = {
-    headerStyle: {
-        backgroundColor: "#1D222B",
-        borderBottomWidth: 2,
-        borderBottomColor: "#644d1c",
-        shadowColor: "transparent"
-    },
-    headerTintColor: "#f0e6d3",
-    headerTitleStyle: {
-        color: "#f0e6d3"
-    },
-    cardStyle: {
-        backgroundColor: "#111216"
-    },
-    headerBackTitleVisible: false
-};
-
+// Content of the main modal (horizontal pushes)
 function RootContent() {
     return (
         <ConnectStack.Navigator screenOptions={LCU_NAVBAR_STYLE}>
@@ -112,6 +105,7 @@ function RootContent() {
     );
 }
 
+// Modal that just shows the intro.
 function IntroModal() {
     const navigation = useNavigation();
 
@@ -125,6 +119,7 @@ function IntroModal() {
     );
 }
 
+// Main connect screen that contains a navigator for modals.
 export default function Connect() {
     return (
         <NavigationContainer ref={connectNavigationRef}>
@@ -144,3 +139,7 @@ export default function Connect() {
         </NavigationContainer>
     );
 }
+
+const HelpButtonContainer = styled(TouchableOpacity)`
+    margin-left: 15px;
+`;

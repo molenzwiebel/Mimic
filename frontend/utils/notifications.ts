@@ -1,9 +1,9 @@
 import * as Notifications from "expo-notifications";
 import { AndroidImportance } from "expo-notifications";
 import * as Permissions from "expo-permissions";
+import * as rift from "./rift";
 import socket from "./socket";
 import Constants from "expo-constants";
-import { getNotificationPlatform, RIFT_HOST } from "./constants";
 import { withComputerConfig } from "./persistence";
 
 /**
@@ -61,17 +61,7 @@ export async function updateRemoteNotificationToken() {
 
     console.log("[+] Notification token: " + token);
 
-    await fetch(`${RIFT_HOST}/v1/notifications/register`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            uuid: Constants.installationId,
-            platform: getNotificationPlatform(),
-            token: token
-        })
-    });
+    await rift.updateRemoteNotificationToken(token);
 }
 
 /**
@@ -80,17 +70,7 @@ export async function updateRemoteNotificationToken() {
  * received from Conduit during handshaking.
  */
 export async function subscribeForNotifications(token: string, type: NotificationType) {
-    await fetch(`${RIFT_HOST}/v1/notifications/subscribe`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            uuid: Constants.installationId,
-            token,
-            type
-        })
-    });
+    await rift.subscribeForNotifications(token, type);
 }
 
 /**
@@ -98,16 +78,7 @@ export async function subscribeForNotifications(token: string, type: Notificatio
  * the machine with the given code.
  */
 export async function unsubscribeForNotification(machine: string, type: NotificationType) {
-    await fetch(`${RIFT_HOST}/v1/notifications/unsubscribe/${machine}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            uuid: Constants.installationId,
-            type
-        })
-    });
+    await rift.unsubscribeForNotification(machine, type);
 }
 
 async function handleNotification(notification: Notifications.Notification, focused: boolean, action: string | null) {
@@ -130,15 +101,8 @@ async function handleNotification(notification: Notifications.Notification, focu
 
     // If this is a ready check and the user responded through the notification, apply it.
     if (notification.request.content.data.type === NotificationType.READY_CHECK && action) {
-        // We don't care about the response.
-        fetch(
-            `${RIFT_HOST}/v1/notifications/respond?token=${notification.request.content.data.respondToken}&response=${action}`,
-            {
-                method: "POST"
-            }
-        ).catch(() => {
-            /* Ignored */
-        });
+        // We don't care about the response, so don't await.
+        rift.respondInstantFeedback(notification.request.content.data.respondToken as string, action).catch(() => {});
     }
 
     // TODO: Figure out how to find selected result.

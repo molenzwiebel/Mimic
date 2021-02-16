@@ -249,7 +249,7 @@ export default class RiftSocket {
         // ping again after 30 seconds
         setTimeout(() => {
             this.sendPing();
-        }, 30_000);
+        }, 30000);
     }
 }
 

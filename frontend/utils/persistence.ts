@@ -17,6 +17,10 @@ export interface ComputerConfig {
     hasPromptedForNotifications: boolean; // whether we've asked for push notifications yet
     readyCheckNotificationsEnabled: boolean;
     gameStartNotificationsEnabled: boolean;
+    lastAccount?: {
+        summonerName: string;
+        iconId: number;
+    };
 }
 
 export type RegisteredComputers = { [key: string]: ComputerConfig };

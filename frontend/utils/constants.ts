@@ -1,9 +1,10 @@
 import Constants from "expo-constants";
 import { NotificationPlatform } from "./notifications";
+import { StackNavigationOptions } from "@react-navigation/stack/lib/typescript/src/types";
 
-export const RIFT_HOST = "http://192.168.1.34:51001";
-export const RIFT_WS_HOST = "ws://192.168.1.34:51001";
-export const CDN_HOST = "http://192.168.1.34:8080";
+export const RIFT_HOST = "http://localhost:51001";
+export const RIFT_WS_HOST = "ws://localhost:51001";
+export const CDN_HOST = "http://localhost:8080";
 
 export function getNotificationPlatform() {
     return Constants.platform!.ios
@@ -12,6 +13,23 @@ export function getNotificationPlatform() {
         ? NotificationPlatform.ANDROID
         : NotificationPlatform.WEB;
 }
+
+export const LCU_NAVBAR_STYLE: StackNavigationOptions = {
+    headerStyle: {
+        backgroundColor: "#1D222B",
+        borderBottomWidth: 2,
+        borderBottomColor: "#644d1c",
+        shadowColor: "transparent"
+    },
+    headerTintColor: "#f0e6d3",
+    headerTitleStyle: {
+        color: "#f0e6d3"
+    },
+    cardStyle: {
+        backgroundColor: "#111216"
+    },
+    headerBackTitleVisible: false
+};
 
 export interface Role {
     name: string;

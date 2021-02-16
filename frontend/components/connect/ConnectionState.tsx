@@ -106,7 +106,7 @@ const Container = styled(View)`
 `;
 
 const Title = styled(Text)`
-    font-family: LoL Display;
+    font-family: LoL Display Bold;
     font-size: 35px;
     text-align: center;
     margin-top: 40px;
@@ -119,7 +119,7 @@ const ConnectionImage = styled(Image)`
     margin-top: 40px;
 `;
 
-const SmallConnectionImage = styled(ConnectionImage)`
+const SmallConnectionImage = styled(ConnectionImage as any)`
     width: 70px;
     height: 70px;
 `;

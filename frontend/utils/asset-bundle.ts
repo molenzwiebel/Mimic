@@ -59,6 +59,7 @@ export async function getCachedPath(path: string, md5: string): Promise<string |
  * will deduplicate multiple calls for the same asset.
  */
 export async function downloadAsset(path: string): Promise<string> {
+    if (isWeb) return `${CDN_HOST}${path}`;
     if (ongoingDownloads.has(path)) return ongoingDownloads.get(path)!;
 
     const promise = doDownloadAsset(path);
@@ -163,5 +164,7 @@ export async function initializeStaticAssets() {
         assetFileByPath.set(file.path, file);
     }
 
-    console.log("[+] Loaded asset bundle created at " + manifest.created_at);
+    console.log(
+        "[+] Loaded asset bundle created at " + manifest.created_at + " with " + manifest.files.length + " files."
+    );
 }

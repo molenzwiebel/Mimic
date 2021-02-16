@@ -14,6 +14,29 @@ import Invites from "./Invites";
 import Lobby from "./Lobby";
 import ReadyCheck from "./ReadyCheck";
 import Root from "./Root";
+import ConnectionState from "../components/connect/ConnectionState";
+import { useEffect } from "react";
+import { withComputerConfig } from "../utils/persistence";
+
+// Observes state of the current summoner name and updates the config storage accordingly.
+function SummonerNameObserver() {
+    useEffect(() => {
+        socket.observe("/lol-chat/v1/me", data => {
+            withComputerConfig(config => {
+                config.lastAccount = {
+                    summonerName: data.content.name,
+                    iconId: data.content.icon
+                };
+            });
+        });
+
+        return () => {
+            socket.unobserve("/lol-chat/v1/me");
+        };
+    });
+
+    return null;
+}
 
 /**
  * This is the main root object that is responsible for rendering the application
@@ -22,13 +45,23 @@ import Root from "./Root";
  */
 export default function Mimic() {
     return useObserver(() => {
-        // If we have no socket connection, return the socket.
-        if (!socket.connected)
+        // If we have no socket connection, return the connect screen.
+        if (!socket.connected) {
             return (
                 <Container source={require("../assets/backgrounds/magic-background.jpg")}>
                     <Connect />
                 </Container>
             );
+        }
+
+        // If we're connecting right now, show the state.
+        if (!socket.connected && socket.state !== null) {
+            return (
+                <Container source={require("../assets/backgrounds/magic-background.jpg")}>
+                    <ConnectionState />
+                </Container>
+            );
+        }
 
         const inChampionSelect = champSelect.state !== null;
         const hasLobby = lobby.state !== null;
@@ -53,6 +86,9 @@ export default function Mimic() {
 
                 {/* The absolutely positioned ready check. It will hide/show based on if there is currently one ongoing.*/}
                 {<ReadyCheck />}
+
+                {/* Needed to update the local summoner for the previous devices list. */}
+                {<SummonerNameObserver />}
             </Container>
         );
     });

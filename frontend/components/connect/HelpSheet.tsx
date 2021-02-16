@@ -26,10 +26,12 @@ function Version() {
         await Updates.reloadAsync();
     };
 
+    const build = Constants.manifest.ios?.buildNumber ?? Constants.manifest.android?.buildNumber ?? "???";
+
     return (
         <TouchableWithoutFeedback onPress={checkForUpdate}>
             <VersionDescription>
-                Version v{Constants.manifest.version} - build {Constants.manifest.ios.buildNumber}
+                Version v{Constants.manifest.version} - build {build}
                 {"\n"}
                 <Underlined>{status}</Underlined>
             </VersionDescription>
