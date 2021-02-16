@@ -23,7 +23,7 @@ interface MobileConnection {
 /**
  * Wrapper class that manages the two websocket servers for mobile and conduit clients.
  */
-export default class WebSocketManager {
+export class WebSocketManager {
     private mobileServer: WebSocketServer;
     private conduitServer: WebSocketServer;
 
@@ -51,6 +51,13 @@ export default class WebSocketManager {
                 if (c.readyState === WebSocket.OPEN) c.ping();
             });
         }, 10000);
+    }
+
+    /**
+     * @returns whether the device for `code` is online
+     */
+    public isDeviceOnline(code: string): boolean {
+        return this.conduitConnections.has(code);
     }
 
     /**
@@ -271,3 +278,5 @@ export default class WebSocketManager {
         }
     };
 }
+
+export default new WebSocketManager();

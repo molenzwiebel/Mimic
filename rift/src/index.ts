@@ -2,7 +2,7 @@ import "dotenv/config";
 import * as db from "./database";
 import * as http from "http";
 import app from "./web";
-import WebSocketManager from "./sockets";
+import sockets from "./sockets";
 
 const PORT = process.env.PORT || 51001;
 
@@ -16,8 +16,6 @@ const PORT = process.env.PORT || 51001;
     await db.create();
 
     const server = http.createServer(app);
-
-    const sockets = new WebSocketManager();
     server.on("upgrade", sockets.handleUpgradeRequest);
 
     app.on("notificationResponse", (data: any) => {
