@@ -6,6 +6,7 @@ import * as db from "./database";
 import * as z from "zod";
 import * as notifications from "./notifications";
 import { NOTIFICATION_PLATFORMS, NOTIFICATION_TYPES, NotificationPlatform, NotificationType } from "./types";
+import sockets from "./sockets";
 
 // Create a new express app using CORS and JSON bodies.
 const app = express();
@@ -72,6 +73,24 @@ app.get("/v1/conduit/verify", async (req, res) => {
     const codeExists = code && await db.lookup(code);
 
     res.json(codeExists);
+});
+
+/**
+ * GET /v1/conduit/status/:code
+ * 
+ * Returns whether or not the device with the specified code is currently
+ * connected to Rift. This does not require authentication and as a result
+ * only returns a yes/no answer and no further information.
+ */
+app.get("/v1/conduit/status/:code", async (req, res) => {
+    if (typeof req.params.code !== "string") {
+        return res.status(400).json({
+            ok: false,
+            error: "Invalid conduit code."
+        });
+    }
+
+    res.json(sockets.isDeviceOnline(req.params.code));
 });
 
 /**
