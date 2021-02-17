@@ -1,4 +1,5 @@
 import { open, Database } from "sqlite";
+import { Database as Sqlite3Database } from "sqlite3";
 import { NotificationPlatform, NotificationType } from "./types";
 import * as fs from "fs";
 
@@ -10,7 +11,10 @@ let database!: Database;
 export async function create() {
     const existed = fs.existsSync("database.db");
 
-    database = await open("database.db");
+    database = await open({
+        filename: "database.db",
+        driver: Sqlite3Database
+    });
 
     if (!existed) {
         // List of conduit codes and their accompanying public key.
