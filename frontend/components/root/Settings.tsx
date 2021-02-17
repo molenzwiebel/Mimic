@@ -1,15 +1,8 @@
 import { default as React, useEffect, useState } from "react";
 import { Text, TouchableWithoutFeedback, View } from "react-native";
-import * as Updates from "expo-updates";
-import Constants from "expo-constants";
-import socket from "../../utils/socket";
-import RootSubview from "./RootSubview";
 import styled from "styled-components/native";
 import LCUCheckbox from "../LCUCheckbox";
-import LCUButton from "../LCUButton";
-import confirm from "../../utils/confirm";
 import { withComputerConfig } from "../../utils/persistence";
-import { bottomMargin } from "../../utils/notch";
 import { updateNotificationSubscriptions } from "../../utils/notifications";
 
 function QueuePushNotificationSetting() {
@@ -73,60 +66,12 @@ function GamePushNotificationSetting() {
     );
 }
 
-function DisconnectSetting() {
-    const disconnect = async () => {
-        if (!(await confirm("Are you sure?", "Do you want to disconnect from " + socket.computerName + "?"))) return;
-        socket.close();
-    };
-
+export default function Settings() {
     return (
-        <SettingContainer>
-            <LCUButton type="deny" onClick={disconnect}>
-                Disconnect
-            </LCUButton>
-            <Description>
-                Currently connected to {socket.computerName} running Mimic Conduit v{socket.computerVersion}.
-            </Description>
-        </SettingContainer>
-    );
-}
-
-function Version() {
-    const [status, setStatus] = useState("Check for updates");
-
-    const checkForUpdate = async () => {
-        setStatus("Checking...");
-        const status = await Updates.checkForUpdateAsync();
-        if (!status.isAvailable) {
-            setStatus("No New Updates");
-            return;
-        }
-        setStatus("Downloading v" + status.manifest.version);
-        await Updates.fetchUpdateAsync();
-        setStatus("Relaunching");
-        await Updates.reloadFromCache();
-    };
-
-    return (
-        <SettingContainer>
-            <TouchableWithoutFeedback onPress={checkForUpdate}>
-                <VersionDescription>
-                    Mimic Mobile v{Constants.manifest.version} - <Underlined>{status}</Underlined>
-                </VersionDescription>
-            </TouchableWithoutFeedback>
-        </SettingContainer>
-    );
-}
-
-export default function Settings({ onClose }: { onClose: Function }) {
-    return (
-        <RootSubview title="Settings" onClose={onClose}>
+        <>
             <QueuePushNotificationSetting />
             <GamePushNotificationSetting />
-            <DisconnectSetting />
-            <Padder />
-            <Version />
-        </RootSubview>
+        </>
     );
 }
 
@@ -153,17 +98,4 @@ const Description = styled(Text)`
     font-size: 14px;
     color: #aaaea0;
     margin-top: 4px;
-`;
-
-const Padder = styled(View)`
-    flex: 1;
-`;
-
-const VersionDescription = styled(Description as any)`
-    text-align: center;
-    margin-bottom: ${bottomMargin}px;
-`;
-
-const Underlined = styled(Text)`
-    text-decoration: underline #aaaea0;
 `;

@@ -1,10 +1,6 @@
 import { Image, ImageBackground, Text, TouchableOpacity, View } from "react-native";
-import { useObserver } from "mobx-react-lite";
-import socket from "../../utils/socket";
-import { Ionicons } from "@expo/vector-icons";
 import styled from "styled-components/native";
 import React from "react";
-import { bottomMargin } from "../../utils/notch";
 
 function HeaderIntro() {
     return (
@@ -36,26 +32,7 @@ function JoinLobby({ onJoin }: { onJoin: Function }) {
     );
 }
 
-function Footer({ onSettings }: { onSettings: Function }) {
-    return useObserver(() => (
-        <FooterContainer>
-            <ComputerName>{socket.computerName}</ComputerName>
-            <TouchableOpacity onPress={() => onSettings()}>
-                <Ionicons name="md-settings" size={30} color="#cdbe91" />
-            </TouchableOpacity>
-        </FooterContainer>
-    ));
-}
-
-export default function Root({
-    onCreate,
-    onJoin,
-    onSettings
-}: {
-    onCreate: Function;
-    onJoin: Function;
-    onSettings: Function;
-}) {
+export default function NoLobby({ onCreate, onJoin }: { onCreate: Function; onJoin: Function }) {
     return (
         <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
             <WrapperContainer>
@@ -63,7 +40,6 @@ export default function Root({
                 <CreateLobby onCreate={onCreate} />
                 <JoinLobby onJoin={onJoin} />
             </WrapperContainer>
-            <Footer onSettings={onSettings} />
         </Background>
     );
 }
@@ -82,23 +58,6 @@ const WrapperContainer = styled(View)`
     justify-content: center;
     align-items: center;
     flex-direction: column;
-`;
-
-const FooterContainer = styled(View)`
-    width: 100%;
-    border: 0px solid rgb(120, 90, 40);
-    border-top-width: 1px;
-    padding: 10px 20px;
-    padding-bottom: ${bottomMargin + 10}px;
-    flex-direction: row;
-    align-items: center;
-`;
-
-const ComputerName = styled(Text)`
-    flex: 1;
-    font-family: "LoL Body";
-    font-size: 18px;
-    color: #f0e6d3;
 `;
 
 const Header = styled(Text)`

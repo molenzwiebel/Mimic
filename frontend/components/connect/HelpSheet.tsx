@@ -134,7 +134,7 @@ const Container = styled(View)`
 
 const Divider = styled(View)`
     width: 100%;
-    height: 1;
+    height: 1px;
     background-color: #aaaea0;
     opacity: 0.2;
 `;

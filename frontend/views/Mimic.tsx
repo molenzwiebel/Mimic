@@ -45,20 +45,20 @@ function SummonerNameObserver() {
  */
 export default function Mimic() {
     return useObserver(() => {
-        // If we have no socket connection, return the connect screen.
-        if (!socket.connected) {
-            return (
-                <Container source={require("../assets/backgrounds/magic-background.jpg")}>
-                    <Connect />
-                </Container>
-            );
-        }
-
         // If we're connecting right now, show the state.
         if (!socket.connected && socket.state !== null) {
             return (
                 <Container source={require("../assets/backgrounds/magic-background.jpg")}>
                     <ConnectionState />
+                </Container>
+            );
+        }
+
+        // If we have no socket connection, return the connect screen.
+        if (!socket.connected) {
+            return (
+                <Container source={require("../assets/backgrounds/magic-background.jpg")}>
+                    <Connect />
                 </Container>
             );
         }

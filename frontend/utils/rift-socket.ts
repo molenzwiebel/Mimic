@@ -1,5 +1,6 @@
 import * as aesjs from "aes-js";
 import * as Random from "expo-random";
+import { TextDecoder } from "text-encoding-utf-8";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 import { observable } from "mobx";
@@ -166,7 +167,7 @@ export default class RiftSocket {
             const decrypted = aesjs.padding.pkcs7.strip(aes.decrypt(stringToBuffer(atob(encrypted))));
 
             // Convert to string and dispatch.
-            const decryptedString = aesjs.utils.utf8.fromBytes(decrypted);
+            const decryptedString = TextDecoder("utf-8").decode(decrypted);
 
             // try handle pong
             try {
@@ -236,7 +237,6 @@ export default class RiftSocket {
             if (returnedId !== randomId) throw new Error("Conduit responded with different ID to ping");
 
             this.ping = Math.round(Math.abs(this.lastPingTime - Date.now()) / 2);
-            console.log("Ping: " + this.ping + " ms");
         } catch (e) {
             console.log("[-] Ping failed: " + e);
 

@@ -154,6 +154,13 @@ class Socket {
     };
 
     /**
+     * @returns the ping to the current mimic conduit instance
+     */
+    get ping() {
+        return this.socket?.ping ?? -1;
+    }
+
+    /**
      * Tries to do another connection attempt with the last used code.
      */
     public tryReconnect() {
@@ -218,6 +225,7 @@ class Socket {
                 console.log("Connection to host closed.");
             };
         } catch (e) {
+            console.log("[-] Error during connect:");
             console.log(e.message);
         }
     }

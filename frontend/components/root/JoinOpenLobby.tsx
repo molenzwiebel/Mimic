@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import { Image, ScrollView, Text, TouchableWithoutFeedback, View } from "react-native";
 import styled from "styled-components/native";
 import store, { Friend, Party } from "../../stores/friends-list-store";
-import RootSubview from "./RootSubview";
 import { profileIconPath } from "../../utils/assets";
 import ABImage from "../assets/ABImage";
 
@@ -26,7 +25,10 @@ function JoinLobbyButton({ onPress }: { onPress: any }) {
         <TouchableWithoutFeedback
             onPressIn={() => setHover(true)}
             onPressOut={() => setHover(false)}
-            onPress={() => (setHover(false), onPress())}>
+            onPress={() => {
+                setHover(false);
+                onPress();
+            }}>
             <JoinButton source={image} />
         </TouchableWithoutFeedback>
     );
@@ -51,7 +53,7 @@ const Lobby = observer(({ friend }: { friend: Friend }) => {
     );
 });
 
-const OpenLobbies = observer(() => {
+export default observer(() => {
     if (!store.friendsWithParties.length) {
         return <NoOpenLobbies />;
     }
@@ -64,14 +66,6 @@ const OpenLobbies = observer(() => {
         </LobbiesContainer>
     );
 });
-
-export default function JoinOpenLobby({ onClose }: { onClose: Function }) {
-    return (
-        <RootSubview onClose={onClose} title="Join Open Lobby">
-            <OpenLobbies />
-        </RootSubview>
-    );
-}
 
 const NoOpenLobbiesContainer = styled(View)`
     width: 100%;
@@ -112,7 +106,7 @@ const LobbyContainer = styled(View)`
 const NameAndStatus = styled(View)`
     flex: 1;
     flex-direction: column;
-    margin-left: 10px;
+    margin: 4px 0 4px 10px;
 `;
 
 const Name = styled(Text)`
@@ -128,9 +122,9 @@ const Status = styled(Text)`
 `;
 
 const Avatar = styled(ABImage)`
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
     border: 1px #ae8939;
 `;
 

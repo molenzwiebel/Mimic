@@ -3,10 +3,11 @@ import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import { Image, ImageBackground, Text, View } from "react-native";
 import React, { useState } from "react";
-import { withComputerConfig } from "../utils/persistence";
-import LCUButton from "./LCUButton";
-import notchHeight from "../utils/notch";
-import { updateNotificationSubscriptions } from "../utils/notifications";
+import { withComputerConfig } from "../../utils/persistence";
+import LCUButton from "../LCUButton";
+import notchHeight from "../../utils/notch";
+import { updateNotificationSubscriptions } from "../../utils/notifications";
+import { useNavigation } from "@react-navigation/native";
 
 export async function shouldShowNotificationPrompt(): Promise<boolean> {
     const settings = await withComputerConfig();
@@ -20,12 +21,12 @@ export async function shouldShowNotificationPrompt(): Promise<boolean> {
 
 const IMAGES = {
     ios: {
-        image: require("../assets/notifications/ios.png"),
+        image: require("../../assets/notifications/ios.png"),
         width: 868,
         height: 1736
     },
     android: {
-        image: require("../assets/notifications/android.png"),
+        image: require("../../assets/notifications/android.png"),
         width: 724,
         height: 1488
     }
@@ -52,7 +53,8 @@ function NotificationImage({ width, height }: { width: number; height: number })
     return <Image source={image.image} style={style} />;
 }
 
-export default function NotificationPrompt({ onClose }: { onClose: Function }) {
+export default function NotificationPrompt() {
+    const navigation = useNavigation();
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
     const [processing, setProcessing] = useState(false);
@@ -61,7 +63,7 @@ export default function NotificationPrompt({ onClose }: { onClose: Function }) {
         await withComputerConfig(x => {
             x.hasPromptedForNotifications = true;
         });
-        onClose();
+        navigation.goBack();
     };
 
     const onAccept = async () => {
@@ -74,12 +76,12 @@ export default function NotificationPrompt({ onClose }: { onClose: Function }) {
         });
         await updateNotificationSubscriptions();
         setProcessing(false);
-        onClose();
+        navigation.goBack();
     };
 
     return (
         <Background
-            source={require("../assets/backgrounds/magic-background.jpg")}
+            source={require("../../assets/backgrounds/magic-background.jpg")}
             onLayout={ev => {
                 setWidth(ev.nativeEvent.layout.width);
                 setHeight(ev.nativeEvent.layout.height);

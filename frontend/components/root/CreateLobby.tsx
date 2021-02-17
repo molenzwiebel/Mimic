@@ -1,13 +1,20 @@
 import { default as React, useEffect, useRef } from "react";
 import { observer } from "mobx-react";
 import { useObserver } from "mobx-react-lite";
-import { Animated, Easing, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import {
+    Animated,
+    Easing,
+    ImageBackground,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
+} from "react-native";
 import styled from "styled-components/native";
 import { bottomMargin } from "../../utils/notch";
 import store, { GameQueue } from "../../stores/lobby-creation-store";
 import { getGamemodeName } from "../../utils/constants";
 import LCUButton from "../LCUButton";
-import RootSubview from "./RootSubview";
 
 const MAP_ICONS: any = {
     "11-CLASSIC-true": require("../../assets/icons/sr-active.png"),
@@ -114,24 +121,26 @@ function SelectedSectionName() {
     ));
 }
 
-function CreateLobby({ onClose }: { onClose: Function }) {
+function CreateLobby() {
     return (
-        <RootSubview title="Create Lobby" onClose={onClose}>
-            <View style={{ flex: 1 }}>
-                <Sections />
-                <SelectedSectionName />
-                <Queues />
-                <LCUButton
-                    style={{ paddingLeft: 5, paddingRight: 5, marginBottom: bottomMargin + 5 }}
-                    onClick={() => store.createLobby()}>
-                    Confirm
-                </LCUButton>
-            </View>
-        </RootSubview>
+        <Container source={require("../../assets/backgrounds/magic-background.jpg")}>
+            <Sections />
+            <SelectedSectionName />
+            <Queues />
+            <LCUButton
+                style={{ paddingLeft: 5, paddingRight: 5, marginBottom: bottomMargin + 5 }}
+                onClick={() => store.createLobby()}>
+                Confirm
+            </LCUButton>
+        </Container>
     );
 }
 
 export default observer(CreateLobby);
+
+const Container = styled(ImageBackground)`
+    flex: 1;
+`;
 
 const SectionsContainer = styled(View)`
     padding: 20px 5px 0 5px;
