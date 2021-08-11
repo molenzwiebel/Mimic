@@ -1,3 +1,4 @@
+import "react-native-get-random-values"; // must be first: uuid requires it.
 import { Ionicons, AntDesign, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import AppLoading from "expo-app-loading";
 import * as Font from "expo-font";

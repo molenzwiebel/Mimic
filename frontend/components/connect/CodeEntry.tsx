@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import * as Permissions from "expo-permissions";
 import socket from "../../utils/socket";
 import { Image, Text, View } from "react-native";
 import styled from "styled-components/native";
@@ -27,7 +26,7 @@ export default function CodeEntry({ onDone }: { onDone: () => any }) {
 
     // Ask to use the camera.
     useEffect(() => {
-        Permissions.askAsync(Permissions.CAMERA).then(({ status }) => {
+        BarCodeScanner.requestPermissionsAsync().then(({ status }) => {
             setScannerState(status === "granted");
         });
     }, []);

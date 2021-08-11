@@ -6,6 +6,7 @@ import ChampionBackground from "../ChampionBackground";
 import * as Linking from "expo-linking";
 import Constants from "expo-constants";
 import * as Updates from "expo-updates";
+import { ClassicManifest } from "expo-updates";
 import { connectNavigationRef, ConnectRoutes } from "../../views/Connect";
 
 export const HELP_SHEET_HEIGHT = 450;
@@ -20,18 +21,22 @@ function Version() {
             setStatus("No New Updates");
             return;
         }
-        setStatus("Downloading v" + status.manifest.version);
+        setStatus("Downloading v" + (status.manifest as ClassicManifest)!.version);
         await Updates.fetchUpdateAsync();
         setStatus("Relaunching");
         await Updates.reloadAsync();
     };
 
-    const build = Constants.manifest.ios?.buildNumber ?? Constants.manifest.android?.buildNumber ?? "???";
+    const build =
+        (Constants.manifest as ClassicManifest)!.extra?.build ??
+        (Constants.manifest as ClassicManifest)!.ios?.buildNumber ??
+        (Constants.manifest as ClassicManifest)!.android?.versionCode ??
+        "???";
 
     return (
         <TouchableWithoutFeedback onPress={checkForUpdate}>
             <VersionDescription>
-                Version v{Constants.manifest.version} - build {build}
+                Version v{(Constants.manifest as ClassicManifest)!.version} - build {build}
                 {"\n"}
                 <Underlined>{status}</Underlined>
             </VersionDescription>

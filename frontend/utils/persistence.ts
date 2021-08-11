@@ -1,12 +1,17 @@
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { v4 } from "uuid";
 import socket from "./socket";
 
+const INTRO_SHOWN = "introShown";
+const COMPUTERS = "computers";
+const INSTALLATION_ID = "installation_id";
+
 export async function shouldShowIntro(): Promise<boolean> {
-    return (await AsyncStorage.getItem("introShown")) === null;
+    return (await AsyncStorage.getItem(INTRO_SHOWN)) === null;
 }
 
 export async function markIntroShown() {
-    await AsyncStorage.setItem("introShown", "true");
+    await AsyncStorage.setItem(INTRO_SHOWN, "true");
 }
 
 /**
@@ -30,7 +35,7 @@ export type RegisteredComputers = { [key: string]: ComputerConfig };
  * of { [computer code]: [last computer name] }.
  */
 export async function getRegisteredComputers(): Promise<RegisteredComputers> {
-    return JSON.parse((await AsyncStorage.getItem("computers")) || "{}");
+    return JSON.parse((await AsyncStorage.getItem(COMPUTERS)) || "{}");
 }
 
 /**
@@ -40,7 +45,7 @@ export async function deleteRegisteredComputer(code: string) {
     const existing = await getRegisteredComputers();
     delete existing[code];
 
-    await AsyncStorage.setItem("computers", JSON.stringify(existing));
+    await AsyncStorage.setItem(COMPUTERS, JSON.stringify(existing));
 }
 
 /**
@@ -63,7 +68,20 @@ export async function withComputerConfig(fn: (config: ComputerConfig) => any = (
 
     await fn(object);
 
-    await AsyncStorage.setItem("computers", JSON.stringify(storage));
+    await AsyncStorage.setItem(COMPUTERS, JSON.stringify(storage));
 
     return object;
+}
+
+/**
+ * Returns a unique UUID that identifies this machine and persists across
+ * restarts. It will not survive a reinstallation.
+ */
+export async function getInstallationId(): Promise<string> {
+    const value = await AsyncStorage.getItem(INSTALLATION_ID);
+    if (value) return value;
+
+    const id = v4();
+    await AsyncStorage.setItem(INSTALLATION_ID, id);
+    return id;
 }

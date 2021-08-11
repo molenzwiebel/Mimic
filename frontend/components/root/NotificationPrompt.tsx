@@ -1,6 +1,6 @@
 import styled from "styled-components/native";
 import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
+import * as Notifications from "expo-notifications";
 import { Image, ImageBackground, Text, View } from "react-native";
 import React, { useState } from "react";
 import { withComputerConfig } from "../../utils/persistence";
@@ -11,12 +11,9 @@ import { useNavigation } from "@react-navigation/native";
 
 export async function shouldShowNotificationPrompt(): Promise<boolean> {
     const settings = await withComputerConfig();
-    const canPush = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    const canPush = await Notifications.getPermissionsAsync();
 
-    return (
-        !settings.hasPromptedForNotifications &&
-        (canPush.status !== Permissions.PermissionStatus.DENIED || canPush.canAskAgain)
-    );
+    return !settings.hasPromptedForNotifications && (canPush.status !== "denied" || canPush.canAskAgain);
 }
 
 const IMAGES = {
@@ -68,7 +65,7 @@ export default function NotificationPrompt() {
 
     const onAccept = async () => {
         setProcessing(true);
-        await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        await Notifications.requestPermissionsAsync();
         await withComputerConfig(x => {
             x.hasPromptedForNotifications = true;
             x.readyCheckNotificationsEnabled = true;

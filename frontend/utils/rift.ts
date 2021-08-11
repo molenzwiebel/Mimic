@@ -1,5 +1,5 @@
 import { getNotificationPlatform, RIFT_HOST } from "./constants";
-import Constants from "expo-constants";
+import * as persistence from "./persistence";
 import { NotificationType } from "./notifications";
 
 /**
@@ -13,7 +13,7 @@ export async function unsubscribeForNotification(machine: string, type: Notifica
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            uuid: Constants.installationId,
+            uuid: await persistence.getInstallationId(),
             type
         })
     });
@@ -30,7 +30,7 @@ export async function subscribeForNotifications(token: string, type: Notificatio
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            uuid: Constants.installationId,
+            uuid: await persistence.getInstallationId(),
             token,
             type
         })
@@ -57,7 +57,7 @@ export async function updateRemoteNotificationToken(token: string | null) {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            uuid: Constants.installationId,
+            uuid: await persistence.getInstallationId(),
             platform: getNotificationPlatform(),
             token: token
         })
@@ -69,5 +69,7 @@ export async function updateRemoteNotificationToken(token: string | null) {
  * indicate that the device is available for connections and should be used as a heuristic.
  */
 export async function isDeviceOnline(code: string): Promise<boolean> {
-    return await fetch(`${RIFT_HOST}/v1/conduit/status/${code}`).then(x => x.json());
+    return await fetch(`${RIFT_HOST}/v1/conduit/status/${code}`)
+        .then(x => x.json())
+        .catch(() => false);
 }

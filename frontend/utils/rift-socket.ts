@@ -1,7 +1,7 @@
 import * as aesjs from "aes-js";
 import * as Random from "expo-random";
 import { TextDecoder } from "text-encoding-utf-8";
-import Constants from "expo-constants";
+import * as persistence from "./persistence";
 import { Platform } from "react-native";
 import { observable } from "mobx";
 import { decode as atob, encode as btoa } from "base-64";
@@ -137,7 +137,7 @@ export default class RiftSocket {
         // Create our identification payload with the chosen secret and info on the device.
         const identify = JSON.stringify({
             secret: bufferToBase64(this.key.buffer),
-            identity: Constants.installationId,
+            identity: await persistence.getInstallationId(),
             device: {
                 ios: "iOS Device",
                 android: "Android Device",

@@ -1,6 +1,5 @@
 import * as Notifications from "expo-notifications";
 import { AndroidImportance } from "expo-notifications";
-import * as Permissions from "expo-permissions";
 import * as rift from "./rift";
 import socket from "./socket";
 import Constants from "expo-constants";
@@ -56,7 +55,7 @@ export async function updateNotificationSubscriptions() {
 export async function updateRemoteNotificationToken() {
     console.log("[+] Updating notification tokens with remote...");
 
-    const response = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    const response = await Notifications.getPermissionsAsync();
     const token = response.granted ? (await Notifications.getExpoPushTokenAsync())?.data : null;
 
     console.log("[+] Notification token: " + token);
