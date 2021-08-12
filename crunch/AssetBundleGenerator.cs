@@ -96,11 +96,17 @@ namespace crunch
          * Writes the specified file to the output directory, recording its MD5. Will additionally
          * write the file to the root using its hashed name for caching purposes.
          */
-        private void WriteFile(string path)
+        private bool WriteFile(string path)
         {
+            var file = _wad.GetFile($"plugins/rcp-be-lol-game-data/global/default/{path}");
+            if (file == null)
+            {
+                Console.WriteLine($"[-] File {path} did not exist");
+                return false;
+            }
+            
             Console.WriteLine($"[+] Bundling file {path}");
 
-            var file = _wad.GetFile($"plugins/rcp-be-lol-game-data/global/default/{path}");
             var bytes = file.GetContent(true);
             var hash = HashBytes(bytes);
             var hashPath = "files/" + hash + Path.GetExtension(path);
@@ -122,6 +128,8 @@ namespace crunch
             {
                 File.WriteAllBytes(Path.Combine(_outDir, hashPath), bytes);
             }
+
+            return true;
         }
         
         /**
@@ -129,7 +137,7 @@ namespace crunch
          */
         private void WriteImageFileWithThumbnail(string path, string prefix, int thumbnailWidth, int thumbnailHeight)
         {
-            WriteFile(path);
+            if (!WriteFile(path)) return;
 
             var manifestEntry = _serializedFiles.Last();
             _serializedFiles.RemoveAt(_serializedFiles.Count - 1);
