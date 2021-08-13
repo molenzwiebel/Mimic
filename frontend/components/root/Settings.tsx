@@ -4,6 +4,25 @@ import styled from "styled-components/native";
 import LCUCheckbox from "../LCUCheckbox";
 import { withComputerConfig } from "../../utils/persistence";
 import { updateNotificationSubscriptions } from "../../utils/notifications";
+import * as Notifications from "expo-notifications";
+
+async function assertNotificationsEnabled(): Promise<boolean> {
+    const status = await Notifications.getPermissionsAsync();
+
+    if (!status.granted && status.canAskAgain) {
+        const response = await Notifications.requestPermissionsAsync();
+        if (response.granted) return true;
+    }
+
+    if (!status.granted) {
+        alert(
+            "You have not granted Mimic the permission to send push notifications yet! Please go to your device settings and allow Mimic to send push notifications, then check back here!"
+        );
+        return false;
+    }
+
+    return true;
+}
 
 function QueuePushNotificationSetting() {
     const [isChecked, setChecked] = useState(false);
@@ -14,6 +33,7 @@ function QueuePushNotificationSetting() {
 
     const onToggle = async () => {
         const newValue = !isChecked;
+        if (newValue && !(await assertNotificationsEnabled())) return;
         setChecked(newValue);
         await withComputerConfig(x => {
             x.readyCheckNotificationsEnabled = newValue;
@@ -43,6 +63,7 @@ function GamePushNotificationSetting() {
 
     const onToggle = async () => {
         const newValue = !isChecked;
+        if (newValue && !(await assertNotificationsEnabled())) return;
         setChecked(newValue);
         await withComputerConfig(x => {
             x.gameStartNotificationsEnabled = newValue;

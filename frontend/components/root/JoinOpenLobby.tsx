@@ -1,6 +1,6 @@
 import { default as React, useState } from "react";
 import { observer } from "mobx-react";
-import { Image, ScrollView, Text, TouchableWithoutFeedback, View } from "react-native";
+import { Image, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import styled from "styled-components/native";
 import store, { Friend, Party } from "../../stores/friends-list-store";
 import { profileIconPath } from "../../utils/assets";
@@ -34,7 +34,7 @@ function JoinLobbyButton({ onPress }: { onPress: any }) {
     );
 }
 
-const Lobby = observer(({ friend }: { friend: Friend }) => {
+const OnlineFriend = observer(({ friend }: { friend: Friend }) => {
     const party: Party = JSON.parse(friend.lol!.pty!);
     const queue = store.queues.find(x => x.id === party.queueId)!;
     if (!queue) return <></>;
@@ -42,14 +42,14 @@ const Lobby = observer(({ friend }: { friend: Friend }) => {
     const avatarURL = profileIconPath(friend.icon);
 
     return (
-        <LobbyContainer>
+        <GoldBorderedElement onPress={() => store.joinFriend(friend)}>
             <Avatar path={avatarURL} />
             <NameAndStatus>
                 <Name>{friend.name}</Name>
                 <Status>{text}</Status>
             </NameAndStatus>
             <JoinLobbyButton onPress={() => store.joinFriend(friend)} />
-        </LobbyContainer>
+        </GoldBorderedElement>
     );
 });
 
@@ -59,11 +59,11 @@ export default observer(() => {
     }
 
     return (
-        <LobbiesContainer>
+        <>
             {store.friendsWithParties.map(x => (
-                <Lobby friend={x} key={x.name} />
+                <OnlineFriend friend={x} key={x.name} />
             ))}
-        </LobbiesContainer>
+        </>
     );
 });
 
@@ -89,18 +89,14 @@ const Poro = styled(Image)`
     height: 160px;
 `;
 
-const LobbiesContainer = styled(ScrollView)`
-    width: 100%;
+const GoldBorderedElement = styled(TouchableOpacity)`
+    margin: 10px 10px 0 10px;
+    border: 1px solid #644d1c;
     flex: 1;
-`;
-
-const LobbyContainer = styled(View)`
-    width: 100%;
-    padding: 10px;
-    border: 0px solid rgba(255, 255, 255, 0.1);
-    border-bottom-width: 1px;
     align-items: center;
     flex-direction: row;
+    padding: 10px;
+    background: #111216;
 `;
 
 const NameAndStatus = styled(View)`
@@ -112,7 +108,7 @@ const NameAndStatus = styled(View)`
 const Name = styled(Text)`
     font-family: "LoL Body";
     font-size: 18px;
-    color: white;
+    color: #b9b5ab;
 `;
 
 const Status = styled(Text)`
@@ -131,5 +127,4 @@ const Avatar = styled(ABImage)`
 const JoinButton = styled(Image)`
     width: 35px;
     height: 35px;
-    margin-right: 5px;
 `;

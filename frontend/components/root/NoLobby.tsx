@@ -1,103 +1,158 @@
-import { Image, ImageBackground, Text, TouchableOpacity, View } from "react-native";
+import { Image, ImageBackground, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import creationStore, { RecentQueue } from "../../stores/lobby-creation-store";
+import OnlineFriends from "./JoinOpenLobby";
+import CircularLCUButton from "../CircularLCUButton";
+import { Ionicons } from "@expo/vector-icons";
 
-function HeaderIntro() {
+export default function NoLobby({ onCreate }: { onCreate: Function }) {
+    return (
+        <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
+            <ScrollView>
+                <LobbySectionHeader>CREATE A LOBBY</LobbySectionHeader>
+                <Queues onCreate={onCreate} />
+
+                <LobbySectionHeader>JOIN A FRIEND</LobbySectionHeader>
+                <OnlineFriends />
+            </ScrollView>
+        </Background>
+    );
+}
+
+function CreateLobbyOption({ onCreate }: { onCreate: Function }) {
+    return (
+        <GoldBorderedElement onPress={() => onCreate()}>
+            <View style={{ height: 40, width: 80, position: "relative", marginRight: 10 }}>
+                <MapIcon source={getMapIcon(11)} style={{ position: "absolute", left: 0 }} />
+                <MapIcon source={getMapIcon(12)} style={{ position: "absolute", left: 20 }} />
+                <MapIcon source={getMapIcon(13)} style={{ position: "absolute", left: 40 }} />
+            </View>
+
+            <TitleAndSubtitle>
+                <Title>Select Queue & Gamemode</Title>
+            </TitleAndSubtitle>
+
+            <CircularLCUButton size={30} onClick={() => onCreate()}>
+                <Ionicons name="ios-arrow-forward" size={18} color="#cebf93" />
+            </CircularLCUButton>
+        </GoldBorderedElement>
+    );
+}
+
+function RecentQueueOption({ queue }: { queue: RecentQueue }) {
+    const description =
+        queue.mapDescription === queue.queueDescription
+            ? queue.mapDescription
+            : `${queue.mapDescription} - ${queue.queueDescription}`;
+
+    const onClick = () => creationStore.createLobby(queue.queueId);
+
     return (
         <>
-            <Header>No Lobby</Header>
-            <Detail>
-                You're not currently in a lobby. Wait for one of your friends to send you an invite, or choose one of
-                the options below to get into game!
-            </Detail>
+            <GoldBorderedElement onPress={() => onClick()}>
+                <MapIcon source={getMapIcon(queue.mapId)} />
+                <TitleAndSubtitle>
+                    <Title>Recently Played</Title>
+                    <Subtitle>{description}</Subtitle>
+                </TitleAndSubtitle>
+                <CircularLCUButton size={30} onClick={() => onClick()}>
+                    <Ionicons name="md-checkmark" size={18} color="#cebf93" />
+                </CircularLCUButton>
+            </GoldBorderedElement>
+
+            <CenteredOrText>OR</CenteredOrText>
         </>
     );
 }
 
-function CreateLobby({ onCreate }: { onCreate: Function }) {
+function Queues({ onCreate }: { onCreate: Function }) {
+    const [recentQueue, setRecentQueue] = useState<RecentQueue | null>(null);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        creationStore.getRecentQueue().then(x => {
+            if (!isMounted) return;
+            setRecentQueue(x);
+        });
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
     return (
-        <OptionContainer onPress={() => onCreate()} first>
-            <ButtonIcon source={require("../../assets/icons/create-party.png")} />
-            <OptionText>CREATE A LOBBY</OptionText>
-        </OptionContainer>
+        <>
+            {recentQueue && <RecentQueueOption queue={recentQueue} />}
+            <CreateLobbyOption onCreate={onCreate} />
+        </>
     );
 }
 
-function JoinLobby({ onJoin }: { onJoin: Function }) {
-    return (
-        <OptionContainer onPress={() => onJoin()}>
-            <ButtonIcon source={require("../../assets/icons/open-party-join.png")} />
-            <OptionText>JOIN A LOBBY</OptionText>
-        </OptionContainer>
-    );
-}
+const MAP_ICONS: any = {
+    [11]: require("../../assets/icons/sr-active.png"),
+    [12]: require("../../assets/icons/ha-active.png"),
+    [22]: require("../../assets/icons/tft-active.png")
+};
 
-export default function NoLobby({ onCreate, onJoin }: { onCreate: Function; onJoin: Function }) {
-    return (
-        <Background source={require("../../assets/backgrounds/magic-background.jpg")}>
-            <WrapperContainer>
-                <HeaderIntro />
-                <CreateLobby onCreate={onCreate} />
-                <JoinLobby onJoin={onJoin} />
-            </WrapperContainer>
-        </Background>
-    );
+function getMapIcon(id: number) {
+    return MAP_ICONS[id] || require("../../assets/icons/rgm-active.png");
 }
 
 const Background = styled(ImageBackground)`
     flex: 1;
     height: 100%;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    background-color: #111216;
 `;
 
-const WrapperContainer = styled(View)`
-    flex: 1;
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+const LobbySectionHeader = styled(Text)`
+    margin-top: 20px;
+    margin-left: 10px;
+    font-family: LoL Body;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+    font-size: 14px;
+    color: #aaaea0;
 `;
 
-const Header = styled(Text)`
-    color: #f0e6d3;
-    font-family: "LoL Display Bold";
-    letter-spacing: 1.2px;
-    font-size: 35px;
+const CenteredOrText = styled(LobbySectionHeader as any)`
     width: 100%;
     text-align: center;
+    margin-top: 10px;
+    opacity: 0.6;
 `;
 
-const Detail = styled(Text)`
-    margin-top: 10px;
-    color: #aaaea0;
-    width: 90%;
+const GoldBorderedElement = styled(TouchableOpacity)`
+    margin: 10px 10px 0 10px;
+    border: 1px solid #644d1c;
+    background: #111216;
+    flex: 1;
+    align-items: center;
+    flex-direction: row;
+    padding: 10px;
+`;
+
+const MapIcon = styled(Image)`
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+`;
+
+const TitleAndSubtitle = styled(View)`
+    flex: 1;
+    flex-direction: column;
+    margin: 4px 0 4px 0;
+`;
+
+const Title = styled(Text)`
     font-family: "LoL Body";
     font-size: 18px;
-    text-align: center;
+    color: #b9b5ab;
 `;
 
-const OptionContainer: any = styled(TouchableOpacity)`
-    width: 100%;
-    padding: 20px 10px;
-    background-color: rgb(4, 14, 23);
-    flex-direction: row;
-    align-items: center;
-    margin-top: ${(props: any) => (props.first ? 20 : 0)}px;
-    border: 0px solid rgba(255, 255, 255, 0.2);
-    border-bottom-width: ${(props: any) => (props.first ? 1 : 0)}px;
-`;
-
-const ButtonIcon = styled(Image)`
-    width: 45px;
-    height: 45px;
-    margin-left: 10px;
-`;
-
-const OptionText = styled(Text)`
-    font-family: "LoL Display Bold";
-    font-size: 22px;
-    margin-left: 10px;
-    color: #cdbe91;
+const Subtitle = styled(Text)`
+    font-family: "LoL Body";
+    font-size: 16px;
+    color: #09a646;
 `;

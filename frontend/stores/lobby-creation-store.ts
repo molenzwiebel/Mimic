@@ -1,5 +1,6 @@
 import { computed, observable } from "mobx";
 import socket from "../utils/socket";
+import { getGamemodeName } from "../utils/constants";
 
 /**
  * Represents a game queue. These are shown based on availability and category.
@@ -14,6 +15,17 @@ export interface GameQueue {
 }
 
 type MappedQueueList = { [key: string]: GameQueue[] };
+
+interface RecentGamesDTO {
+    games: {
+        games: RecentGame[];
+    };
+}
+
+interface RecentGame {
+    mapId: number;
+    queueId: number;
+}
 
 /**
  * Quick note: All the logic for displaying which queues where is ripped directly from
@@ -151,6 +163,14 @@ export class LobbyCreationStore {
     }
 
     /**
+     * Retrieves the queue information for the queue with the given ID,
+     * or null if there's no information for that queue.
+     */
+    findQueueById(id: number): GameQueue | null {
+        return this.queues.find(x => x.id === id) || null;
+    }
+
+    /**
      * Selects the specified section, setting the current queue to
      * the first option within the specified section.
      */
@@ -169,15 +189,49 @@ export class LobbyCreationStore {
     /**
      * Creates a lobby with the currently chosen queue.
      */
-    createLobby() {
+    createLobby(queueId = this.selectedQueueId) {
         socket.request(
             "/lol-lobby/v2/lobby",
             "POST",
             JSON.stringify({
-                queueId: this.selectedQueueId
+                queueId
             })
         );
     }
+
+    /**
+     * Attempts to find the queue last played by the user. Returns null if
+     * the user has no recent games or if none of the recent games have a
+     * valid queue. Else, returns some information about the queue.
+     */
+    async getRecentQueue(): Promise<RecentQueue | null> {
+        const recentGames = await socket.request(`/lol-match-history/v1/products/lol/current-summoner/matches`);
+        if (recentGames.status !== 200) return null;
+
+        const {
+            games: { games }
+        } = recentGames.content as RecentGamesDTO;
+        const firstResult = games.find(x => {
+            return this.findQueueById(x.queueId) !== null;
+        });
+
+        if (!firstResult) return null;
+
+        const queueInfo = this.findQueueById(firstResult.queueId)!;
+        return {
+            queueId: firstResult.queueId,
+            mapId: firstResult.mapId,
+            mapDescription: getGamemodeName(queueInfo.mapId + "-" + queueInfo.gameMode.toLowerCase()),
+            queueDescription: queueInfo.description
+        };
+    }
+}
+
+export interface RecentQueue {
+    queueId: number;
+    mapId: number;
+    mapDescription: string;
+    queueDescription: string;
 }
 
 const instance = new LobbyCreationStore();

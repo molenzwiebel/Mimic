@@ -3,7 +3,7 @@ import { AntDesign } from "@expo/vector-icons";
 import Intro from "../components/connect/Intro";
 import { markIntroShown, shouldShowIntro } from "../utils/persistence";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import styled from "styled-components/native";
 import BottomSheet from "reanimated-bottom-sheet";
@@ -13,6 +13,7 @@ import HelpSheet, { HELP_SHEET_HEIGHT } from "../components/connect/HelpSheet";
 import PreviousDevices from "../components/connect/PreviousDevices";
 import CodeEntry from "../components/connect/CodeEntry";
 import { LCU_NAVBAR_STYLE } from "../utils/constants";
+import { BottomSheetBackground } from "../components/BottomSheetBackground";
 
 export const connectNavigationRef = createRef<NavigationContainerRef>();
 
@@ -62,8 +63,10 @@ function HomeContent() {
     }, [navigation]);
 
     return (
-        <>
-            <Animated.View style={{ flex: 1, opacity: Animated.add(0.1, Animated.multiply(darken, 0.9)) }}>
+        <View style={{ flex: 1 }}>
+            <BottomSheetBackground sheetRef={sheetRef} darken={darken} />
+
+            <Animated.View style={{ flex: 1 }}>
                 <PreviousDevices
                     onRegisterNew={() => {
                         navigation.navigate(ConnectRoutes.ADD_NEW_DEVICE);
@@ -78,7 +81,7 @@ function HomeContent() {
                 callbackNode={darken}
                 renderContent={HelpSheet}
             />
-        </>
+        </View>
     );
 }
 

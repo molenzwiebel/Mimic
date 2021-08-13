@@ -153,7 +153,13 @@ export async function initializeStaticAssets() {
     }
 
     // Load manifest MD5.
-    const manifestHash = await fetch(`${CDN_HOST}/manifesthash`).then(x => x.text());
+    const manifestHash = await fetch(`${CDN_HOST}/manifesthash`, {
+        headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
+            Expires: "0"
+        }
+    }).then(x => x.text());
     console.log("[+] Asset manifest bundle hash: " + manifestHash);
 
     // Load manifest.
