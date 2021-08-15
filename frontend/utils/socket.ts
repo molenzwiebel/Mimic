@@ -42,7 +42,7 @@ class Socket {
     code = "";
 
     idCounter = 0;
-    observers: { matcher: string | RegExp; handler: (res: Result) => void }[] = [];
+    observers: { matcher: string; handler: (res: Result) => void }[] = [];
     requests: { [key: number]: Function } = {};
 
     /**
@@ -50,14 +50,12 @@ class Socket {
      * whenever the endpoints contents or HTTP status change. Only a single
      * instance can observe the same path at a time.
      */
-    observe(path: string | RegExp, handler: (result: Result) => void) {
+    observe(path: string, handler: (result: Result) => void) {
         if (this.connected) {
-            if (typeof path === "string") {
-                // Make initial request to populate the handler.
-                this.request(path).then(handler);
-            }
+            // Make initial request to populate the handler.
+            this.request(path).then(handler);
 
-            this.socket.send(JSON.stringify([MobileOpcode.SUBSCRIBE, typeof path === "string" ? path : path.source])); // ask to observe the specified path.
+            this.socket.send(JSON.stringify([MobileOpcode.SUBSCRIBE, path])); // ask to observe the specified path.
         }
 
         this.observers.push({ matcher: path, handler });
@@ -112,9 +110,7 @@ class Socket {
 
         if (data[0] === MobileOpcode.UPDATE) {
             this.observers
-                .filter(x =>
-                    typeof x.matcher === "string" ? data[1] === x.matcher : x.matcher.test(data[1] as string)
-                )
+                .filter(x => data[1] === x.matcher)
                 .forEach(x => x.handler({ status: +data[2], content: data[3] }));
         }
 
@@ -140,15 +136,8 @@ class Socket {
 
             // Populate registered listeners.
             this.observers.forEach(x => {
-                this.socket.send(
-                    JSON.stringify([
-                        MobileOpcode.SUBSCRIBE,
-                        typeof x.matcher === "string" ? x.matcher : x.matcher.source
-                    ])
-                );
-                if (typeof x.matcher === "string") {
-                    this.request(x.matcher).then(x.handler);
-                }
+                this.socket.send(JSON.stringify([MobileOpcode.SUBSCRIBE, x.matcher]));
+                this.request(x.matcher).then(x.handler);
             });
         }
     };

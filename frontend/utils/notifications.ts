@@ -55,12 +55,17 @@ export async function updateNotificationSubscriptions() {
 export async function updateRemoteNotificationToken() {
     console.log("[+] Updating notification tokens with remote...");
 
-    const response = await Notifications.getPermissionsAsync();
-    const token = response.granted ? (await Notifications.getExpoPushTokenAsync())?.data : null;
+    try {
+        const response = await Notifications.getPermissionsAsync();
+        const token = response.granted ? (await Notifications.getExpoPushTokenAsync())?.data : null;
 
-    console.log("[+] Notification token: " + token);
+        console.log("[+] Notification token: " + token);
 
-    await rift.updateRemoteNotificationToken(token);
+        await rift.updateRemoteNotificationToken(token);
+    } catch {
+        // Sometimes this fails, so at least let the server know.
+        await rift.updateRemoteNotificationToken(null);
+    }
 }
 
 /**
@@ -69,6 +74,7 @@ export async function updateRemoteNotificationToken() {
  * received from Conduit during handshaking.
  */
 export async function subscribeForNotifications(token: string, type: NotificationType) {
+    await updateRemoteNotificationToken();
     await rift.subscribeForNotifications(token, type);
 }
 
@@ -77,6 +83,7 @@ export async function subscribeForNotifications(token: string, type: Notificatio
  * the machine with the given code.
  */
 export async function unsubscribeForNotification(machine: string, type: NotificationType) {
+    await updateRemoteNotificationToken();
     await rift.unsubscribeForNotification(machine, type);
 }
 

@@ -1,5 +1,6 @@
 import * as aesjs from "aes-js";
 import * as Random from "expo-random";
+import * as fflate from "fflate/esm/browser.js";
 import { TextDecoder } from "text-encoding-utf-8";
 import * as persistence from "./persistence";
 import { Platform } from "react-native";
@@ -107,6 +108,9 @@ export default class RiftSocket {
             }
         } catch (ignored) {
             // Ignore invalid message.
+            console.warn("Received invalid message");
+            console.error(ignored);
+            console.log(msg.data);
         }
     };
 
@@ -166,8 +170,11 @@ export default class RiftSocket {
             const aes = new aesjs.ModeOfOperation.cbc(this.key!, stringToBuffer(atob(iv)));
             const decrypted = aesjs.padding.pkcs7.strip(aes.decrypt(stringToBuffer(atob(encrypted))));
 
+            // Inflate it
+            const inflated = fflate.inflateSync(decrypted);
+
             // Convert to string and dispatch.
-            const decryptedString = TextDecoder("utf-8").decode(decrypted);
+            const decryptedString = TextDecoder("utf-8").decode(inflated);
 
             // try handle pong
             try {
