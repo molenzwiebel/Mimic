@@ -19,6 +19,7 @@
     "expo-app-loading": "^1.0.1",
     "expo-av": "~9.2.3",
     "expo-barcode-scanner": "~10.2.2",
+    "expo-haptics": "^10.1.0",
     "expo-linear-gradient": "~9.2.0",
     "expo-linking": "^2.3.1",
     "expo-notifications": "~0.12.3",

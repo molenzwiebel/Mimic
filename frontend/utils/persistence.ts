@@ -2,16 +2,26 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { v4 } from "uuid";
 import socket from "./socket";
 
-const INTRO_SHOWN = "introShown";
 const COMPUTERS = "computers";
 const INSTALLATION_ID = "installation_id";
+const SETTINGS = "settings";
 
-export async function shouldShowIntro(): Promise<boolean> {
-    return (await AsyncStorage.getItem(INTRO_SHOWN)) === null;
+/**
+ * App-wide configuration options.
+ */
+export interface MimicSettings {
+    hasShownIntroduction?: boolean;
+    disableContinuousReadyCheckVibration?: boolean;
 }
 
-export async function markIntroShown() {
-    await AsyncStorage.setItem(INTRO_SHOWN, "true");
+export async function getMimicSettings(): Promise<MimicSettings> {
+    return JSON.parse((await AsyncStorage.getItem(SETTINGS)) || "{}");
+}
+
+export async function withMimicSettings(fn: (settings: MimicSettings) => any): Promise<void> {
+    const settings = await getMimicSettings();
+    fn(settings);
+    await AsyncStorage.setItem(SETTINGS, JSON.stringify(settings));
 }
 
 /**

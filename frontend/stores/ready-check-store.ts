@@ -1,12 +1,21 @@
 import { computed, observable } from "mobx";
+import { Vibration } from "react-native";
 import { Audio } from "expo-av";
 import socket, { Result } from "../utils/socket";
+import { getMimicSettings } from "../utils/persistence";
 
 export interface ReadyCheckState {
     timer: number;
     state: "Invalid" | "InProgress";
     playerResponse: "Accepted" | "Declined";
 }
+
+// Ensure that our sound plays even if the user has the phone
+// set to silent.
+Audio.setAudioModeAsync({
+    playsInSilentModeIOS: true,
+    interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS
+});
 
 const queuePop = new Audio.Sound();
 const queuePopLoadPromise = queuePop.loadAsync(require("../assets/queue-pop.mp3"));
@@ -21,6 +30,7 @@ export class ReadyCheckStore {
 
     private handleReadyCheckChange = (result: Result) => {
         if (result.status !== 200) {
+            Vibration.cancel();
             this.state = null;
             return;
         }
@@ -30,11 +40,23 @@ export class ReadyCheckStore {
         if ((!this.state || this.state.state === "Invalid") && newState.state === "InProgress") {
             // Play the queue pop sound.
             queuePopLoadPromise.then(() => {
-                queuePop.playAsync().then(() =>{});
+                queuePop.playAsync().then(() => {});
+            });
+
+            getMimicSettings().then(x => {
+                if (!x.disableContinuousReadyCheckVibration) {
+                    Vibration.vibrate([400], true);
+                } else {
+                    Vibration.vibrate();
+                }
             });
         }
 
         this.state = newState;
+
+        if (this.hasResponded) {
+            Vibration.cancel();
+        }
     };
 
     /**

@@ -1,7 +1,7 @@
 import React, { createRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import Intro from "../components/connect/Intro";
-import { markIntroShown, shouldShowIntro } from "../utils/persistence";
+import * as persistence from "../utils/persistence";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { TouchableOpacity, View } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -43,8 +43,8 @@ function HomeContent() {
     const [darken] = useState(new Animated.Value(1));
 
     useEffect(() => {
-        shouldShowIntro().then(showIntro => {
-            if (!showIntro) return;
+        persistence.getMimicSettings().then(settings => {
+            if (settings.hasShownIntroduction) return;
 
             navigation.navigate(ConnectRoutes.MODAL_INTRO);
         });
@@ -114,8 +114,10 @@ function IntroModal() {
 
     return (
         <Intro
-            onDone={() => {
-                markIntroShown();
+            onDone={async () => {
+                await persistence.withMimicSettings(s => {
+                    s.hasShownIntroduction = true;
+                });
                 navigation.goBack();
             }}
         />

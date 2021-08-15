@@ -95,6 +95,7 @@ const ContainerBorder = styled(LinearGradient)`
     width: 85%;
     align-items: center;
     justify-content: center;
+    overflow: visible;
 `;
 
 const Container = styled(View)`
@@ -104,11 +105,12 @@ const Container = styled(View)`
     background-color: #010a13;
     flex-direction: column;
     align-items: center;
+    overflow: visible;
 `;
 
 const Title = styled(Text)`
     color: #f0e6d2;
-    font-family: "LoL Body";
+    font-family: "LoL Display";
     margin: 20px;
     font-size: 35px;
     letter-spacing: 1px;
