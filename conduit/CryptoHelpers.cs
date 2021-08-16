@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -65,9 +66,13 @@ namespace Conduit
         }
 
         /**
-         * Encrypts the specified message using the specified key and a random IV.
+         * Compress the specified message using raw deflate with the highest
+         * compression, then encrypt the result with the given key. A random
+         * IV will be generated and used. The final result is the base64
+         * representation of the IV and the base64 representation of the data,
+         * joined with `:`.
          */
-        public static string EncryptAES(byte[] key, string payload)
+        public static string CompressAndEncryptAes(byte[] key, string payload)
         {
             using (Aes aesAlg = Aes.Create())
             using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
@@ -86,9 +91,10 @@ namespace Conduit
                 using (MemoryStream msEncrypt = new MemoryStream())
                 {
                     using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                    using (DeflateStream gzDeflate = new DeflateStream(csEncrypt, CompressionLevel.Optimal))
+                    using (StreamWriter swEncrypt = new StreamWriter(gzDeflate))
                     {
-                        //Write all data to the stream.
+                        // Write all data to the stream.
                         swEncrypt.Write(payload);
                     }
 

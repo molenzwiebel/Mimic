@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using WebSocketSharp;
 
@@ -20,7 +21,7 @@ namespace Conduit
         private HubConnectionHandler hub;
         private LeagueConnection league;
         private byte[] key;
-        private Dictionary<string, Regex> observedPaths = new Dictionary<string, Regex>();
+        private HashSet<string> observedPaths = new HashSet<string>();
 
         private SendMessageDelegate Send;
         private SendMessageDelegate SendRaw;
@@ -32,7 +33,7 @@ namespace Conduit
             this.league.OnWebsocketEvent += HandleLeagueEvent;
 
             this.SendRaw = send;
-            this.Send = msg => SendRaw("\"" + CryptoHelpers.EncryptAES(key, msg) + "\"");
+            this.Send = msg => SendRaw("\"" + CryptoHelpers.CompressAndEncryptAes(key, msg) + "\"");
         }
 
         /**
@@ -46,14 +47,14 @@ namespace Conduit
         /**
          * Handles a message incoming through rift. First checks its opcode, then possibly decrypts the contents.
          */
-        public void HandleMessage(dynamic msg)
+        public async void HandleMessage(dynamic msg)
         {
             if (key != null)
             {
                 try
                 {
                     var contents = CryptoHelpers.DecryptAES(key, (string) msg);
-                    this.HandleMimicMessage(SimpleJson.DeserializeObject(contents));
+                    await this.HandleMimicMessage(SimpleJson.DeserializeObject(contents));
                 }
                 catch
                 {
@@ -119,19 +120,20 @@ namespace Conduit
         /**
          * Handles a message post-decryption, which is the raw message sent by the mobile client.
          */
-        private async void HandleMimicMessage(dynamic msg)
+        private async Task HandleMimicMessage(dynamic msg)
         {
             if (!(msg is JsonArray)) return;
 
             if (msg[0] == (long) MobileOpcode.Subscribe)
             {
                 var path = (string) msg[1];
-                if (!observedPaths.ContainsKey(path)) observedPaths.Add(path, new Regex(path));
+                DebugLogger.Global.WriteMessage("Subscribing to " + path);
+                observedPaths.Add(path.ToLower());
             }
             else if (msg[0] == (long) MobileOpcode.Unsubscribe)
             {
                 var path = (string) msg[1];
-                if (observedPaths.ContainsKey(path)) observedPaths.Remove(path);
+                observedPaths.Remove(path.ToLower());
             }
             else if (msg[0] == (long) MobileOpcode.Request)
             {
@@ -163,10 +165,10 @@ namespace Conduit
          */
         private void HandleLeagueEvent(OnWebsocketEventArgs ev)
         {
-            if (!observedPaths.Values.Any(x => x.IsMatch(ev.Path))) return;
+            if (!observedPaths.Contains(ev.Path.ToLower())) return;
 
             var status = ev.Type.Equals("Create") || ev.Type.Equals("Update") ? 200 : 404;
-            Send(SimpleJson.SerializeObject(new List<object> {(long) MobileOpcode.Update, ev.Path, status, ev.Data}));
+            Send(SimpleJson.SerializeObject(new List<object> {(long) MobileOpcode.Update, ev.Path.ToLower(), status, ev.Data}));
         }
     }
 
