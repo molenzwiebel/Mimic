@@ -80,6 +80,19 @@ export interface RerollState {
     maxRolls: number;
 }
 
+const summonerNameCache = new Map<number, string>();
+
+async function batchQuerySummonerNames(ids: number[]): Promise<string[]> {
+    const toRequest = ids.filter(x => !summonerNameCache.has(x));
+    for (const id of toRequest) {
+        // TODO: use /lol-summoner/v2/summoner-names here? Some part doesn't seem to like this.
+        const results = (await socket.request(`/lol-summoner/v1/summoners/${id}`)).content;
+        summonerNameCache.set(results.summonerId, results.displayName);
+    }
+
+    return ids.map(x => summonerNameCache.get(x)!);
+}
+
 export class ChampSelectStore {
     @observable state: ChampSelectState | null = null;
     @observable gameflowState: GameflowState | null = null;
@@ -114,18 +127,21 @@ export class ChampSelectStore {
         const newState: ChampSelectState = result.content;
         newState.localPlayer = newState.myTeam.filter(x => x.cellId === newState.localPlayerCellId)[0];
 
-        // For everyone on our team, request their summoner name.
-        await Promise.all(
-            newState.myTeam.map(async mem => {
-                if (mem.playerType === "BOT") {
-                    mem.displayName = (getChampionSummary(mem.championId) || { name: "Unknown" }).name + " Bot";
-                } else {
-                    const summ = (await socket.request("/lol-summoner/v1/summoners/" + mem.summonerId)).content;
-                    mem.displayName = summ.displayName;
-                }
-                mem.isFriendly = true;
-            })
-        );
+        // Find some names for the players on our team.
+        // For bots, this is easy:
+        for (const member of newState.myTeam) {
+            if (member.playerType !== "BOT") continue;
+            member.displayName = (getChampionSummary(member.championId) || { name: "Unknown" }).name + " Bot";
+            member.isFriendly = true;
+        }
+
+        // For human members, request all of the summoner names at once.
+        const humanMembers = newState.myTeam.filter(x => x.playerType !== "BOT");
+        const humanNames = await batchQuerySummonerNames(humanMembers.map(x => x.summonerId));
+        humanMembers.forEach((mem, i) => {
+            mem.displayName = humanNames[i];
+            mem.isFriendly = true;
+        });
 
         // Give enemy summoners obfuscated names, if we don't know their names
         newState.theirTeam.forEach((mem, idx) => {

@@ -74,7 +74,7 @@ function ConnectionState() {
 
     const Element = {
         [RiftSocketState.CONNECTING]: Connecting,
-        [RiftSocketState.CONNECTED]: () => null,
+        [RiftSocketState.CONNECTED]: Connecting,
         [RiftSocketState.DISCONNECTED]: () => null,
         [RiftSocketState.FAILED_NO_DESKTOP]: NoDesktop,
         [RiftSocketState.HANDSHAKING]: Handshaking,

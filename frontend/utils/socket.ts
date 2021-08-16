@@ -85,7 +85,7 @@ class Socket {
      * responses.
      */
     request(path: string, method: string = "GET", body?: string): Promise<Result> {
-        if (!this.connected) throw new Error("Not connected.");
+        if (!this.socket || this.socket.state !== RiftSocketState.CONNECTED) throw new Error("Not connected.");
 
         return new Promise(resolve => {
             const id = this.idCounter++;
@@ -134,10 +134,21 @@ class Socket {
                 config.name = this.computerName;
             });
 
-            // Populate registered listeners.
-            this.observers.forEach(x => {
-                this.socket.send(JSON.stringify([MobileOpcode.SUBSCRIBE, x.matcher]));
-                this.request(x.matcher).then(x.handler);
+            // Load all observers that were previously registered, so that
+            // data is ready to go as soon as we show the 'connected' UI.
+            Promise.all(
+                this.observers.map(x => {
+                    this.socket.send(JSON.stringify([MobileOpcode.SUBSCRIBE, x.matcher]));
+
+                    return this.request(x.matcher).then(res => {
+                        x.handler(res);
+                    });
+                })
+            ).then(() => {
+                setTimeout(() => {
+                    this.connected = true;
+                    this.connecting = false;
+                }, 200);
             });
         }
     };
@@ -197,8 +208,6 @@ class Socket {
             this.socket = new RiftSocket(code);
 
             this.socket.onopen = () => {
-                this.connected = true;
-                this.connecting = false;
                 this.socket.send("[" + MobileOpcode.HANDSHAKE + "]");
             };
 

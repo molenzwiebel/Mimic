@@ -33,7 +33,7 @@ function SummonerNameObserver() {
         return () => {
             socket.unobserve("/lol-chat/v1/me");
         };
-    });
+    }, []);
 
     return null;
 }

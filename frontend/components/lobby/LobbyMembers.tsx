@@ -3,11 +3,14 @@ import styled from "styled-components/native";
 import React from "react";
 import lobby, { LobbyMember } from "../../stores/lobby-store";
 import { getRoleImage, POSITION_NAMES } from "../../utils/constants";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import ABImage from "../assets/ABImage";
 import { profileIconPath } from "../../utils/assets";
+import { useActionSheet } from "@expo/react-native-action-sheet";
 
 function MemberActions({ member, showPositions }: { member: LobbyMember; showPositions: boolean }) {
+    const { showActionSheetWithOptions } = useActionSheet();
+
     if (member.isLocalMember) {
         if (!showPositions) return <></>; // we can't moderate ourselves
 
@@ -27,18 +30,34 @@ function MemberActions({ member, showPositions }: { member: LobbyMember; showPos
 
     if (!lobby.state!.localMember.isLeader) return <></>; // can't do anything
 
+    const onMenuPress = () => {
+        showActionSheetWithOptions(
+            {
+                options: [
+                    member.allowedInviteOthers ? "Revoke Invite Privileges" : "Grant Invite Privileges",
+                    "Promote To Lobby Owner",
+                    "Kick",
+                    "Cancel"
+                ],
+                cancelButtonIndex: 3,
+                destructiveButtonIndex: [1, 2] as any
+            },
+            idx => {
+                if (idx === 0) {
+                    lobby.toggleInvite(member);
+                } else if (idx === 1) {
+                    lobby.promoteMember(member);
+                } else if (idx === 2) {
+                    lobby.kickMember(member);
+                }
+            }
+        );
+    };
+
     return (
         <MemberActionContainer>
-            <TouchableOpacity onPress={() => lobby.promoteMember(member)}>
-                <ActionIcon name="md-ribbon" size={30} color="white" />
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => lobby.toggleInvite(member)}>
-                <ActionIcon name={member.allowedInviteOthers ? "md-person-add" : "md-person"} size={30} color="white" />
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => lobby.kickMember(member)}>
-                <ActionIcon name="ios-remove-circle" size={30} color="white" />
+            <TouchableOpacity onPress={onMenuPress}>
+                <MaterialCommunityIcons name="dots-horizontal" color="white" size={30} />
             </TouchableOpacity>
         </MemberActionContainer>
     );
@@ -157,14 +176,11 @@ const Positions = styled(Text)`
 const MemberActionContainer = styled(View)`
     align-items: center;
     flex-direction: row;
+    margin-right: 5px;
 `;
 
 const PositionImage = styled(Image)`
     width: 35px;
     height: 35px;
-    margin-left: 10px;
-`;
-
-const ActionIcon = styled(Ionicons)`
     margin-left: 10px;
 `;

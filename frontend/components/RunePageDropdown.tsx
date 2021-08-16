@@ -3,7 +3,7 @@ import runes from "../stores/runes-store";
 import { Platform, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import RNPickerSelect from "react-native-picker-select";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import React from "react";
 import styled from "styled-components/native";
 
@@ -37,12 +37,7 @@ const RunePageDropdown = observer(() => {
                 items={options}
                 Icon={() => {
                     return (
-                        <Ionicons
-                            style={{ marginTop: 5, marginRight: 5 }}
-                            name={"md-arrow-dropdown" as any}
-                            size={18}
-                            color="#695625"
-                        />
+                        <AntDesign style={{ marginTop: 5, marginRight: 5 }} name={"down"} size={18} color="#695625" />
                     );
                 }}
             />

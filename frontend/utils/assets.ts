@@ -59,6 +59,8 @@ export const perkStyleIconPath = (id: number) => normalize(getPerkStyle(id)?.ico
 
 // assets
 export const getSummonerSpell = (id: number) => summonerSpells.find(x => x.id === id)!;
+export const getAvailableSummonerSpellsInMode = (gameMode: string) =>
+    summonerSpells.filter(x => x.gameModes.includes(gameMode));
 export const getChampionSummary = (id: number) => championSummaries.find(x => x.id === id)!;
 export const getPerkStyles = () => perkStyles;
 export const getPerkStyle = (id: number) => perkStyles.find(x => x.id === id)!;

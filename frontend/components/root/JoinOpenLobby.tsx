@@ -69,6 +69,7 @@ export default observer(() => {
 
 const NoOpenLobbiesContainer = styled(View)`
     width: 100%;
+    margin-top: 20px;
     flex: 1;
     flex-direction: column;
     align-items: center;

@@ -23,7 +23,7 @@ const QueueStatusContent = observer(() => {
             <AnimatedFlameBackground size={HEIGHT} />
 
             <LeftItems>
-                <Ionicons name="md-search" size={50} color="white" />
+                <Ionicons name="ios-search-sharp" size={40} color="white" />
 
                 <Time>
                     <QueueTime />
@@ -32,7 +32,7 @@ const QueueStatusContent = observer(() => {
             </LeftItems>
 
             <TouchableOpacity onPress={() => queue.leaveQueue()}>
-                <Ionicons style={{ zIndex: 1 }} name="md-log-out" size={35} color="white" />
+                <Ionicons style={{ zIndex: 1 }} name="close-outline" size={35} color="white" />
             </TouchableOpacity>
         </QueueStatusContainer>
     );
@@ -44,7 +44,7 @@ function QueueStatus() {
 
     useEffect(() => {
         Animated.timing(height, {
-            toValue: isInQueue ? HEIGHT : 0,
+            toValue: isInQueue ? HEIGHT + 30 : 0,
             duration: 300,
             easing: Easing.ease,
             useNativeDriver: false
@@ -58,9 +58,9 @@ export default observer(QueueStatus as any);
 
 const QueuePositioner = styled(Animated.View)`
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: -3px;
+    left: -3px;
+    right: -3px;
     overflow: hidden;
 `;
 
@@ -68,11 +68,8 @@ const QueueStatusContainer = styled(View)`
     height: ${HEIGHT}px;
     overflow: hidden;
     border: 3px solid #785a28;
-    border-top-width: 0;
-    border-left-width: 0;
-    border-right-width: 0;
     flex-direction: row;
-    padding: 10px 20px;
+    padding: 13px 20px;
     padding-top: ${notchHeight + 10}px;
     align-items: center;
     justify-content: space-between;
@@ -98,5 +95,5 @@ const ElapsedTime = styled(Text)`
 const EstimatedTime = styled(Text)`
     font-size: 20px;
     color: #0acbe6;
-    font-family: "LoL Display";
+    font-family: "LoL Body";
 `;

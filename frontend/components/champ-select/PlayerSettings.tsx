@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { bottomMargin } from "../../utils/notch";
 import React from "react";
 import champSelect from "../../stores/champ-select-store";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import CircularLCUButton from "../CircularLCUButton";
 import { observer } from "mobx-react";
 import RunePageDropdown from "../RunePageDropdown";
@@ -45,7 +45,7 @@ const FloatingButtons = () => {
             {!hasReroll && (
                 <TouchableOpacity onPress={() => champSelect.interface.toggleChampionPicker()}>
                     <FloatingButtonContainer>
-                        <Ionicons name="ios-arrow-up" size={20} color="white" />
+                        <AntDesign name="up" size={20} color="white" />
                     </FloatingButtonContainer>
                 </TouchableOpacity>
             )}
@@ -62,7 +62,7 @@ function PlayerSettings() {
             <RunePageDropdown />
 
             <CircularLCUButton size={35} onClick={() => champSelect.interface.toggleRuneEditor()}>
-                <Ionicons name="md-create" size={15} color="white" />
+                <MaterialIcons name="edit" size={15} color="white" />
             </CircularLCUButton>
 
             <TouchableOpacity onPress={() => champSelect.interface.toggleSpellPicker(true)}>

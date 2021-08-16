@@ -1,27 +1,19 @@
-import { computed, observable } from "mobx";
+import { computed } from "mobx";
 import champSelect, { ChampSelectStore } from "../champ-select-store";
 import socket from "../../utils/socket";
+import { getAvailableSummonerSpellsInMode } from "../../utils/assets";
 
 /**
  * Sub-store for champ select, responsible for handling the summoner spell picker.
  */
 export default class SpellsStore {
-    @observable
-    summonerSpellMetadata: { id: number; gameModes: string[] }[] = [];
-
-    constructor(private store: ChampSelectStore) {
-        socket.observe("/lol-game-data/assets/v1/summoner-spells.json", x => {
-            this.summonerSpellMetadata = x.content;
-        });
-    }
+    constructor(private store: ChampSelectStore) {}
 
     @computed
     get availableSummoners() {
         const gm = champSelect.gameflowState ? champSelect.gameflowState.gameData.queue.gameMode : "CLASSIC";
 
-        return this.summonerSpellMetadata.filter(x => {
-            return x.gameModes.includes(gm);
-        });
+        return getAvailableSummonerSpellsInMode(gm);
     }
 
     /**
