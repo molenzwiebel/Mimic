@@ -62,7 +62,7 @@ export async function broadcastReadyCheckNotification(code: string) {
         to: ios,
         sound: "default",
         badge: 1,
-        _category: NotificationType.READY_CHECK,
+        categoryId: NotificationType.READY_CHECK,
         ...common
     });
 
@@ -71,6 +71,7 @@ export async function broadcastReadyCheckNotification(code: string) {
         to: android,
         title: "Mimic - Queue Popped!",
         channelId: NotificationType.READY_CHECK,
+        categoryId: NotificationType.READY_CHECK,
         ...common
     });
 }
