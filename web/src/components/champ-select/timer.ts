@@ -1,10 +1,11 @@
 import Vue from "vue";
 import { Component, Prop, Watch } from "vue-property-decorator";
 import { default as ChampSelect, ChampSelectState, ChampSelectTimer, ChampSelectAction } from "./champ-select";
-import { ddragon } from "../../constants";
+import Root from "../root/root";
 
 @Component
 export default class Timer extends Vue {
+    $root: Root;
     $parent: ChampSelect;
 
     @Prop()
@@ -83,7 +84,7 @@ export default class Timer extends Vue {
         if (id === -1) return "https://raw.communitydragon.org/8.1/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/-1.png";
 
         if (!this.$parent.championDetails[id]) return "";
-        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
+        return `https://ddragon.leagueoflegends.com/cdn/${this.$root.ddragonVersion}/img/champion/${this.$parent.championDetails[id].id}.png`;
     }
 
     @Watch("state.timer")

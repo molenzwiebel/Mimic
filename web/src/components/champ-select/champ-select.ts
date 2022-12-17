@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
-import { ddragon, mapBackground, Role } from "@/constants";
+import { loadDdragon, mapBackground, Role } from "@/constants";
 
 import Timer from "./timer.vue";
 import Members from "./members.vue";
@@ -135,8 +135,8 @@ export default class ChampSelect extends Vue {
     pickingSkin = false;
 
     // These two are used to map summoner/champion id -> data.
-    championDetails: { [id: number]: { id: string, key: string, name: string } };
-    summonerSpellDetails: { [id: number]: { id: string, key: string, name: string } };
+    championDetails: { [id: number]: { id: string, key: string, name: string } } = {};
+    summonerSpellDetails: { [id: number]: { id: string, key: string, name: string } } = {};
 
     // Information for the summoner spell overlay.
     pickingSummonerSpell = false;
@@ -327,7 +327,8 @@ export default class ChampSelect extends Vue {
     /**
      * Helper method to load the specified json name from the ddragon static data.
      */
-    public loadStatic(filename: string): Promise<any> {
+    public async loadStatic(filename: string): Promise<any> {
+        const ddragonVersion = await loadDdragon();
         return new Promise(resolve => {
             const req = new XMLHttpRequest();
             req.onreadystatechange = () => {
@@ -335,7 +336,7 @@ export default class ChampSelect extends Vue {
                 const map = JSON.parse(req.responseText);
                 resolve(map);
             };
-            req.open("GET", "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/data/en_US/" + filename, true);
+            req.open("GET", `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/${filename}`, true);
             req.send();
         });
     }

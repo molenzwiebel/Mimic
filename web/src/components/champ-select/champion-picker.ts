@@ -2,7 +2,6 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { ChampSelectAction, ChampSelectState, default as ChampSelect } from "./champ-select";
 import Root from "../root/root";
-import { ddragon } from "../../constants";
 
 @Component
 export default class ChampionPicker extends Vue {
@@ -160,7 +159,7 @@ export default class ChampionPicker extends Vue {
     getChampionImage(id: number) {
         if (!this.$parent.championDetails[id]) return "";
 
-        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
+        return `https://ddragon.leagueoflegends.com/cdn/${this.$root.ddragonVersion}/img/champion/${this.$parent.championDetails[id].id}.png`;
     }
 
     /**

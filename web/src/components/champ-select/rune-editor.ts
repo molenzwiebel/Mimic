@@ -2,7 +2,6 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { default as ChampSelect, RunePage } from "./champ-select";
 import Root from "../root/root";
-import { ddragon } from "../../constants";
 
 interface RuneSlot {
     runes: {
