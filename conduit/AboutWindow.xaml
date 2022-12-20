@@ -8,7 +8,7 @@
         Title="Mimic Conduit - About" Height="430" Width="500" ResizeMode="NoResize" Closing="Window_Closing">
     <Grid>
         <Image x:Name="Logo" HorizontalAlignment="Left" Height="80" Margin="15,227,0,0" VerticalAlignment="Top" Width="80" />
-        <Label Content="Mimic Conduit v2.0.0" HorizontalAlignment="Left" Margin="100,227,0,0" VerticalAlignment="Top" FontSize="24" FontWeight="Bold" FontFamily="Arial"/>
+        <Label x:Name="AboutTitle" Content="Mimic Conduit v2.0.0" HorizontalAlignment="Left" Margin="100,227,0,0" VerticalAlignment="Top" FontSize="24" FontWeight="Bold" FontFamily="Arial"/>
         <Label Content="Made with ♥ by molenzwiebel and contributors." HorizontalAlignment="Left" Margin="100,278,0,0" VerticalAlignment="Top" FontSize="14"/>
         <Label Content="CONNECTION DETAILS" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="16"/>
         <Label Content="ABOUT" HorizontalAlignment="Left" Margin="10,184,0,0" VerticalAlignment="Top" FontSize="16"/>

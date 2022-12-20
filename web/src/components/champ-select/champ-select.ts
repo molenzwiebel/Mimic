@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Root, { Result } from "../root/root";
 import { Component } from "vue-property-decorator";
-import { ddragon, mapBackground, Role } from "@/constants";
+import { loadDdragon, mapBackground, Role } from "@/constants";
 
 import Timer from "./timer.vue";
 import Members from "./members.vue";
@@ -10,6 +10,7 @@ import SummonerPicker from "./summoner-picker.vue";
 import ChampionPicker from "./champion-picker.vue";
 import RuneEditor from "./rune-editor.vue";
 import Bench from "./bench.vue";
+import SkinPicker from "./skin-picker.vue";
 
 import MagicBackground from "../../static/magic-background.jpg";
 
@@ -19,6 +20,7 @@ export interface ChampSelectMember {
     cellId: number;
     championId: number;
     championPickIntent: number;
+    selectedSkinId: number;
     displayName: string;
     summonerId: number;
     spell1Id: number;
@@ -96,6 +98,17 @@ export interface RunePage {
     selectedPerkIds: number[]; // 0 or not included if not selected
 }
 
+export interface SkinItem {
+    championId: number;
+    id: number;
+    name: string;
+    isBase: boolean;
+    disabled: boolean;
+    ownership: {
+        owned: boolean
+    };
+}
+
 @Component({
     components: {
         timer: Timer,
@@ -104,7 +117,8 @@ export interface RunePage {
         summonerPicker: SummonerPicker,
         championPicker: ChampionPicker,
         runeEditor: RuneEditor,
-        bench: Bench
+        bench: Bench,
+        skinPicker: SkinPicker
     }
 })
 export default class ChampSelect extends Vue {
@@ -117,9 +131,12 @@ export default class ChampSelect extends Vue {
     runePages: RunePage[] = [];
     currentRunePage: RunePage | null = null;
 
+    skins: SkinItem[] = [];
+    pickingSkin = false;
+
     // These two are used to map summoner/champion id -> data.
-    championDetails: { [id: number]: { id: string, key: string, name: string } };
-    summonerSpellDetails: { [id: number]: { id: string, key: string, name: string } };
+    championDetails: { [id: number]: { id: string, key: string, name: string } } = {};
+    summonerSpellDetails: { [id: number]: { id: string, key: string, name: string } } = {};
 
     // Information for the summoner spell overlay.
     pickingSummonerSpell = false;
@@ -185,6 +202,16 @@ export default class ChampSelect extends Vue {
         
         const newState: ChampSelectState = result.content;
         newState.localPlayer = newState.myTeam.filter(x => x.cellId === newState.localPlayerCellId)[0];
+
+        // If we haven't loaded skins before, do so now.
+        if (!this.skins.length) {
+            const url = `/lol-champions/v1/inventories/${newState.localPlayer.summonerId}/skins-minimal`;
+            this.skins = await this.$root.request(url).then(x => x.content);
+
+            this.$root.observe(url, data => {
+                this.skins = data.status === 200 ? data.content : []
+            });
+        }
 
         // For everyone on our team, request their summoner name.
         await Promise.all(newState.myTeam.map(async mem => {
@@ -273,9 +300,35 @@ export default class ChampSelect extends Vue {
     }
 
     /**
+     * @returns whether the local summoner still needs to pick a champion or not
+     */
+    get hasLockedChampion(): boolean {
+        return !!this.state // A state exists.
+            && this.state.actions.filter(x => // and we cannot find a pick turn in which
+                x.filter(y => // there exists an action...
+                    y.actorCellId === this.state!.localPlayerCellId // by the current player
+                    && y.type === "pick" // that has to pick a champion
+                    && !y.completed // and hasn't been completed yet
+                ).length > 0).length === 0;
+    }
+
+    /**
+     * @returns whether everyone has picked their champion already
+     */
+    get hasEveryonePicked(): boolean {
+        return !!this.state // A state exists.
+            && this.state.actions.filter(x => // and we cannot find a pick turn in which
+                x.filter(y => // there exists an action...
+                    y.type === "pick" // that has to pick a champion
+                    && !y.completed // and hasn't been completed yet
+                ).length > 0).length === 0;
+    }
+
+    /**
      * Helper method to load the specified json name from the ddragon static data.
      */
-    public loadStatic(filename: string): Promise<any> {
+    public async loadStatic(filename: string): Promise<any> {
+        const ddragonVersion = await loadDdragon();
         return new Promise(resolve => {
             const req = new XMLHttpRequest();
             req.onreadystatechange = () => {
@@ -283,7 +336,7 @@ export default class ChampSelect extends Vue {
                 const map = JSON.parse(req.responseText);
                 resolve(map);
             };
-            req.open("GET", "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/data/en_US/" + filename, true);
+            req.open("GET", `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/${filename}`, true);
             req.send();
         });
     }

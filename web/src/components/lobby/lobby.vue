@@ -22,7 +22,7 @@
                         <span class="info">{{ lobbySubtitle }}</span>
                     </div>
 
-                    <i @click="leaveLobby()" class="ion-android-close"></i>
+                    <highlightable><i @click="leaveLobby()" class="ion-android-close"></i></highlightable>
                 </div>
 
                 <transition-group enter-active-class="slideInLeft" leave-active-class="slideOutRight">
@@ -40,9 +40,9 @@
                 </transition-group>
 
                 <!-- Show the invite overlay toggle if we can invite people. -->
-                <div class="invite-prompt" v-if="showInvitePrompt" @click="showingInvites = true">
+                <a class="invite-prompt" v-if="showInvitePrompt" @click="showingInvites = true">
                     <i class="ion-plus"></i>  Invite Others
-                </div>
+                </a>
             </div>
 
             <div class="bottom">
@@ -63,13 +63,19 @@
 
             <div class="no-lobby" v-show="!creatingLobby">
                 <span class="header">No Lobby</span>
-                <span class="detail">Wait for your friends to invite<br> you, or <span style="text-decoration: underline" @click="creatingLobby = true"> create a new lobby now.</span></span>
+                <span class="detail">
+                    Wait for your friends to invite<br>you, or
+
+                    <highlightable>
+                        <span style="text-decoration: underline" @click="creatingLobby = true"> create a new lobby now.</span>
+                    </highlightable>
+                </span>
 
                 <span v-if="!isStandalone" class="tip">
                     <b>PRO TIP: </b>
 
                     <template v-if="canTriggerHomescreenPrompt">
-                        <span style="text-decoration: underline" @click="triggerInstallPrompt">Add this site to your homescreen</span>
+                        <highlightable><span style="text-decoration: underline" @click="triggerInstallPrompt">Add this site to your homescreen</span></highlightable>
                     </template>
 
                     <template v-else>
@@ -136,6 +142,9 @@
             color #aaaea0
             font-size 50px
 
+        .close:active
+            opacity 0.7
+
         i
             margin-right 20px
             font-size 80px
@@ -152,6 +161,9 @@
         font-family "LoL Display"
         font-weight 700
         letter-spacing 0.075em
+
+        &:active
+            color rgba(246, 236, 216, 0.3)
 
         i
             padding-top 2px

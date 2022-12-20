@@ -68,6 +68,34 @@
     body.has-notch .rune-editor
         margin-top calc(env(safe-area-inset-top) + 30px)
         padding-bottom calc(env(safe-area-inset-bottom) + 20px)
+
+    // Mobile safari crashes if we add circles for some dumb reason.
+    // Thus, only add them if we aren't on safari.
+    body:not(.is-ios) .tree-selector .tree::after
+        transition 0.3s ease
+        position absolute
+        content ""
+        width 130px
+        height 130px
+        top -25px
+        left -25px
+        border-radius 50%
+        z-index -1
+        background radial-gradient(transparent 62%, #785b28 65%, #c89c3c 76%, #c8a355 88%, #c8aa6e 100%)
+        opacity 0
+
+    body:not(.is-ios) .tree-runes .rune::after
+        transition 0.3s ease
+        position absolute
+        content ""
+        width 160px
+        height 160px
+        top -((160px - 128px) / 2)
+        left -((160px - 128px) / 2)
+        border-radius 50%
+        z-index -1
+        background radial-gradient(transparent 62%, #785b28 65%, #c89c3c 76%, #c8a355 88%, #c8aa6e 100%)
+        opacity 0
 </style>
 
 <style lang="stylus" scoped>
@@ -122,6 +150,7 @@
 
     .content
         overflow-y scroll
+        overflow-x hidden
         -webkit-overflow-scrolling touch
         padding-bottom 20px
 
@@ -150,19 +179,6 @@
                 background-size cover
                 transition 0.3s ease
                 filter grayscale(100%)
-
-            .tree::after
-                transition 0.3s ease
-                position absolute
-                content ""
-                width 130px
-                height 130px
-                top -25px
-                left -25px
-                border-radius 50%
-                z-index -1
-                background radial-gradient(transparent 62%, #785b28 65%, #c89c3c 76%, #c8a355 88%, #c8aa6e 100%)
-                opacity 0
 
             .tree.selected::after
                 opacity 1
@@ -226,19 +242,6 @@
 
             .rune.selected
                 filter none
-
-            .rune::after
-                transition 0.3s ease
-                position absolute
-                content ""
-                width 160px
-                height 160px
-                top -((160px - 128px) / 2)
-                left -((160px - 128px) / 2)
-                border-radius 50%
-                z-index -1
-                background radial-gradient(transparent 62%, #785b28 65%, #c89c3c 76%, #c8a355 88%, #c8aa6e 100%)
-                opacity 0
 
             .rune.stat::after
                 width 120px

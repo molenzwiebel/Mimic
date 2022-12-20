@@ -1,3 +1,4 @@
+import { loadDdragon } from "@/constants";
 import Vue from "vue";
 import Component from "vue-class-component";
 
@@ -38,6 +39,7 @@ export default class Root extends Vue {
     socket: RiftSocket | null = null;
     peerVersion: Version = <any>null; // null is required to allow vue to observe
     notifications: string[] = [];
+    ddragonVersion: string = "";
 
     connecting = false;
 
@@ -68,6 +70,17 @@ export default class Root extends Vue {
 
             document.body.classList.add("has-notch");
         }, 500);
+
+        loadDdragon().then(version => {
+            console.log("Latest ddragon: " + version);
+            this.ddragonVersion = version;
+        });
+
+        // Add a class to the body if we're on iOS. We use it to selectively turn off some things.
+        const iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+        if (iOS) {
+            document.body.classList.add("is-ios");
+        }
     }
 
     /**
