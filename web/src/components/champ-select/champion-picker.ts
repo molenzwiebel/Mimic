@@ -149,9 +149,10 @@ export default class ChampionPicker extends Vue {
      */
     completeAction() {
         const act = this.$parent.getActions(this.state.localPlayer)!;
-        this.$root.request("/lol-champ-select/v1/session/actions/" + act.id, "POST", JSON.stringify({
-            complete: true
-        }));
+        this.$root.request("/lol-champ-select/v1/session/actions/" + act.id, "PATCH", JSON.stringify({
+        championId: act.championId,
+        completed: true
+    }));
         this.$emit("close");
     }
 
