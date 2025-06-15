@@ -1,10 +1,12 @@
+import Root from "../root/root";
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { default as ChampSelect, ChampSelectState, ChampSelectMember } from "./champ-select";
-import { ddragon, POSITION_NAMES } from "../../constants";
+import { POSITION_NAMES } from "@/constants";
 
 @Component
 export default class Members extends Vue {
+    $root: Root;
     $parent: ChampSelect;
 
     @Prop()
@@ -22,7 +24,14 @@ export default class Members extends Vue {
         if (!champ) return "background-color: transparent;";
 
         const fade = champId === member.championPickIntent ? "opacity: 0.6;" : "";
-        return "background-image: url(https://ddragon.leagueoflegends.com/cdn/img/champion/splash/" + champ.id + "_0.jpg);" + fade;
+
+        // Show skins if everyone has picked.
+        if (this.$parent.hasEveryonePicked) {
+            return `background-image: url(https://cdn.communitydragon.org/latest/champion/${champ.key}/splash-art/centered/skin/${member.selectedSkinId % 1000}), url(https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_${member.selectedSkinId % 1000}.jpg); ${fade}`;
+        }
+
+        // Else just show the champs.
+        return `background-image: url(https://cdn.communitydragon.org/latest/champion/${champ.key}/splash-art/centered), url(https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champ.id}_0.jpg); ${fade}`;
     }
 
     /**
@@ -54,7 +63,7 @@ export default class Members extends Vue {
         }
 
         if (!member.assignedPosition) return extra;
-        return POSITION_NAMES[member.assignedPosition] + (extra ? " - " + extra : "");
+        return POSITION_NAMES[member.assignedPosition.toUpperCase()] + (extra ? " - " + extra : "");
     }
 
     /**
@@ -63,6 +72,6 @@ export default class Members extends Vue {
     getSummonerSpellImage(id: number): string {
         if (!this.$parent.summonerSpellDetails[id]) return "";
 
-        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
+        return `https://ddragon.leagueoflegends.com/cdn/${this.$root.ddragonVersion}/img/spell/${this.$parent.summonerSpellDetails[id].id}.png`;
     }
 }

@@ -85,6 +85,7 @@
 
         .name
             font-size 45px
+            text-shadow 4px 4px 5px #111
 
         .state
             display inline-block
@@ -92,6 +93,7 @@
             transition 0.3s ease
             font-size 30px
             color #fffaef
+            text-shadow 4px 4px 5px #111
 
         .state:empty
             height 0

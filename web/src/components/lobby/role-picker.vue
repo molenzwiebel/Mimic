@@ -4,10 +4,10 @@
             <i class="ion-android-close close" @click="close()"></i>
             <div class="header">Select {{ selectingFirst ? 'First' : 'Second' }} Role</div>
 
-            <div class="role" @click="select(role.key)" v-for="role in ROLES">
+            <a class="role" @click="select(role.key)" v-for="role in ROLES">
                 <img :src="roleImage(role.key)">
                 <span>{{ role.name }}</span>
-            </div>
+            </a>
         </div>
     </transition>
 </template>
@@ -57,6 +57,9 @@
             border-bottom 1px solid #cdbe93
             font-family "LoL Display"
             font-size 60px
+
+            &:active span, &:active img
+                opacity 0.7
 
             span
                 margin-left 30px

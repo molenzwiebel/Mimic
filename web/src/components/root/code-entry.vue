@@ -24,6 +24,16 @@
             this.value.split("").forEach((digit, idx) => {
                 (<any>this.$refs[keys[idx]]).value = digit;
             });
+
+            for (const key of keys) {
+                (<any>this.$refs[key]).addEventListener("focus", () => {
+                    document.body.classList.add("in-input");
+                });
+
+                (<any>this.$refs[key]).addEventListener("blur", () => {
+                    document.body.classList.remove("in-input");
+                });
+            }
         }
 
         nextCharacter(ev: KeyboardEvent) {

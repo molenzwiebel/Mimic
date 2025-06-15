@@ -1,7 +1,6 @@
 import Vue from "vue";
 import Root from "../root/root";
 import { Component } from "vue-property-decorator";
-import { ddragon } from "../../constants";
 
 interface Invite {
     invitationId: string;
@@ -84,6 +83,6 @@ export default class Invites extends Vue {
      * @returns the path to the summoner icon for the inviter
      */
     getSummonerIcon(invite: Invite): string {
-        return `https://ddragon.leagueoflegends.com/cdn/${ddragon()}/img/profileicon/${invite.fromSummoner.profileIconId}.png`;
+        return `https://ddragon.leagueoflegends.com/cdn/${this.$root.ddragonVersion}/img/profileicon/${invite.fromSummoner.profileIconId}.png`;
     }
 }

@@ -1,19 +1,19 @@
 <template>
     <div class="player-settings">
-        <div class="chevron expand-button" @click="$emit('expand')" v-if="!allowsReroll">
+        <a class="chevron expand-button" @click="$emit('expand')" v-if="!allowsReroll">
             <i class="ion-chevron-up"></i>
-        </div>
+        </a>
 
         <div class="chevron" v-else>
-            <div class="reroll-button bordered" @click="reroll()" :class="canReroll || 'disabled'">
+            <a class="reroll-button bordered" @click="reroll()" :class="canReroll || 'disabled'">
                 <i class="ion-loop" style="margin-right: 15px"></i>
                 <span>Reroll {{ rerollState }}</span>
-            </div>
+            </a>
 
-            <div class="bench-button bordered" @click="$emit('bench')">
+            <a class="bench-button bordered" @click="$emit('bench')">
                 <i class="ion-chevron-up" style="margin-right: 15px"></i>
                 Bench
-            </div>
+            </a>
         </div>
 
         <div class="runes">
@@ -24,9 +24,15 @@
             <div class="circular-button" @click="$emit('runes')"><i class="ion-edit"></i></div>
         </div>
 
+        <div class="skins" :class="!canPickSkins && 'disabled'">
+            <div class="circular-button squared" @click="canPickSkins && $emit('skins')">
+                <img :src="require('../../static/skin_picker_icon.png')" style="height: 70px">
+            </div>
+        </div>
+
         <div class="summoners">
-            <img :src="getSummonerSpellImage(state.localPlayer.spell1Id)" @click="$emit('spell', true)">
-            <img :src="getSummonerSpellImage(state.localPlayer.spell2Id)" @click="$emit('spell', false)">
+            <highlightable><img :src="getSummonerSpellImage(state.localPlayer.spell1Id)" @click="$emit('spell', true)"></highlightable>
+            <highlightable><img :src="getSummonerSpellImage(state.localPlayer.spell2Id)" @click="$emit('spell', false)"></highlightable>
         </div>
     </div>
 </template>
@@ -40,6 +46,18 @@
 
 <style lang="stylus" scoped>
     @require "../../common.styl"
+
+    .skins.disabled
+        filter grayscale()
+
+    .circular-button.squared
+        border-radius 0
+
+        &::after
+            border-radius 0
+
+    .reroll-button:active, .bench-button:active, .expand-button:active
+        opacity 0.7
 
     .player-settings
         position relative
@@ -106,11 +124,11 @@
     .summoners
         display flex
         align-items center
-        padding 10px
+        padding 10px 10px 10px 0
 
         img
-            margin 20px
+            margin 10px
             border 1px solid #3c3c41
-            height player-dropdown-height * 1.8
-            width player-dropdown-height * 1.8
+            height player-dropdown-height * 1.5
+            width player-dropdown-height * 1.5
 </style>

@@ -5,7 +5,7 @@ import { default as NodeRSAType } from "node-rsa";
  * WebSocket-esque class that handles messaging with Conduit through rift.
  */
 export default class RiftSocket {
-    private socket = new WebSocket("wss://rift.mimic.lol/mobile");
+    private socket: WebSocket;
 
     // Params from the normal websocket.
     public onopen: () => void;
@@ -20,6 +20,7 @@ export default class RiftSocket {
     private encrypted = false;
 
     constructor(private code: string) {
+        this.socket = new WebSocket("wss://rift.mimic.lol/mobile?code=" + code);
         this.socket.onopen = this.handleOpen;
         this.socket.onmessage = this.handleMessage;
         this.socket.onclose = this.handleClose;
@@ -34,7 +35,7 @@ export default class RiftSocket {
         window.crypto.getRandomValues(iv);
 
         // Encrypt using AES-CBC.
-        const encryptedBuffer = await window.crypto.subtle.encrypt({
+        const encryptedBuffer = await (window.crypto.subtle || window.crypto.webkitSubtle).encrypt({
             name: "AES-CBC",
             iv
         }, this.key!, stringToBuffer(contents));
@@ -99,7 +100,7 @@ export default class RiftSocket {
         window.crypto.getRandomValues(secret);
 
         // Generate a WebCrypto key.
-        this.key = await window.crypto.subtle.importKey("raw", secret.buffer, <any>{
+        this.key = await (window.crypto.subtle || window.crypto.webkitSubtle).importKey("raw", secret.buffer, <any>{
             name: "AES-CBC"
         }, false, ["encrypt", "decrypt"]);
 
@@ -133,7 +134,7 @@ export default class RiftSocket {
             const [iv, encrypted] = parts.split(":");
 
             // Decrypt incoming message.
-            const decrypted = await window.crypto.subtle.decrypt({
+            const decrypted = await (window.crypto.subtle || window.crypto.webkitSubtle).decrypt({
                 name: "AES-CBC",
                 iv: stringToBuffer(atob(iv))
             }, this.key!, stringToBuffer(atob(encrypted)));
@@ -244,4 +245,11 @@ export const enum MobileOpcode {
 
     // Conduit -> Mobile, when any subscribed endpoint gets an update
     UPDATE = 9
+}
+
+declare global {
+    interface Crypto {
+        readonly subtle: SubtleCrypto;
+        readonly webkitSubtle?: SubtleCrypto; // iOS 8 - 10.
+    }
 }

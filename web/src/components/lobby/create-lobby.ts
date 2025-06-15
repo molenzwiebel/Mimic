@@ -40,7 +40,7 @@ export default class CreateLobby extends Vue {
     created() {
         // Prepare icon paths.
         // Note that even though promises are used, these all resolve synchronously.
-        for (const map of ["sr", "ha", "tt", "rgm"]) {
+        for (const map of ["sr", "ha", "tt", "tft", "rgm"]) {
             import(/* webpackMode: "eager" */ `../../static/maps/${map}-default.png`).then(result => {
                 this.iconPaths[map + "-default"] = result.default;
             });
@@ -143,17 +143,17 @@ export default class CreateLobby extends Vue {
             const [aMap, aGameMode] = a.split("-");
             const [bMap, bGameMode] = b.split("-");
 
-            // First: prefer classic over anything other.
+            // First, prefer map 11 (rift) over anything else.
+            if (aMap === "11" && bMap !== "11") return -1;
+            if (bMap === "11") return 1;
+
+            // Then, prefer classic over anything other.
             if (aGameMode === "CLASSIC" && bGameMode !== "CLASSIC") return -1;
             if (bGameMode === "CLASSIC") return 1;
 
-            // Then, prefer ARAM over anything else.
+            // Finally, prefer ARAM over anything else.
             if (aGameMode === "ARAM" && bGameMode !== "ARAM") return -1;
             if (bGameMode === "ARAM") return 1;
-
-            // Finally, prefer map 11 (rift) over anything else.
-            if (aMap === "11" && bMap !== "11") return -1;
-            if (bMap === "11") return 1;
 
             // Else, return 0.
             return 0;
@@ -177,6 +177,7 @@ export default class CreateLobby extends Vue {
             "10-CLASSIC": "tt",
             "11-CLASSIC": "sr",
             "12-ARAM": "ha",
+            "22-TFT": "tft"
         })[section] || "rgm";
 
         return this.iconPaths[mapName + "-" + extra];

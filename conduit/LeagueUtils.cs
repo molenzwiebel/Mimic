@@ -28,13 +28,35 @@ namespace Conduit
                 using (var moc = mos.Get())
                 {
                     var commandLine = (string)moc.OfType<ManagementObject>().First()["CommandLine"];
+                    if (commandLine == null) // We can't get the commandline sometimes without admin access, so let's elevate
+                    {
+                        if (Administrator.IsAdmin())
+                        {
+                            DebugLogger.Global.WriteError("We cannot determine why the commandline is null! Cannot get the League of Legends information from this process!");
+                            continue;
+                        }
+                        else
+                        {
+                            Administrator.Elevate();
+                        }
+                    }
 
-                    // Use regex to extract data, return it.
-                    return new Tuple<Process, string, string>(
-                        p,
-                        AUTH_TOKEN_REGEX.Match(commandLine).Groups[1].Value,
-                        PORT_REGEX.Match(commandLine).Groups[1].Value
-                    );
+                    try
+                    {
+                        var authToken = AUTH_TOKEN_REGEX.Match(commandLine).Groups[1].Value;
+                        var port = PORT_REGEX.Match(commandLine).Groups[1].Value;
+                        // Use regex to extract data, return it.
+                        return new Tuple<Process, string, string>
+                        (
+                            p,
+                            authToken,
+                            port
+                        );
+                    }
+                    catch (Exception e)
+                    {
+                        DebugLogger.Global.WriteError($"Error while trying to get the status for LeagueClientUx: {e.ToString()}\n\n(CommandLine = {commandLine})");
+                    }
                 }
             }
 

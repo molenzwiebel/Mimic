@@ -9,7 +9,7 @@
             </div>
         </div>
 
-        <i @click="leaveQueue" class="ion-log-out"></i>
+        <highlightable><i @click="leaveQueue" class="ion-log-out"></i></highlightable>
     </div>
 </template>
 
@@ -72,7 +72,7 @@
             font-size 50px
             color #0acbe6
 
-    .queue > i
+    .queue > a > i
         font-size 80px
         color #f0e6d3
         margin 40px

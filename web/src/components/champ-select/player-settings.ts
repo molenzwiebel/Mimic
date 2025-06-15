@@ -1,7 +1,6 @@
 import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { ChampSelectState, default as ChampSelect } from "./champ-select";
-import { ddragon } from "../../constants";
 import Root from "../root/root";
 
 @Component({})
@@ -18,7 +17,7 @@ export default class PlayerSettings extends Vue {
     getSummonerSpellImage(id: number): string {
         if (!this.$parent.summonerSpellDetails[id]) return "";
 
-        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/spell/" + this.$parent.summonerSpellDetails[id].id + ".png";
+        return `https://ddragon.leagueoflegends.com/cdn/${this.$root.ddragonVersion}/img/spell/${this.$parent.summonerSpellDetails[id].id}.png`;
     }
 
     /**
@@ -50,5 +49,12 @@ export default class PlayerSettings extends Vue {
     get rerollState(): string {
         if (!this.allowsReroll) return "";
         return `(${this.$parent.rerollState.numberOfRolls}/${this.$parent.rerollState.maxRolls})`;
+    }
+
+    /**
+     * @returns whether or not the user can pick a skin
+     */
+    get canPickSkins() {
+        return this.$parent.hasLockedChampion;
     }
 }
