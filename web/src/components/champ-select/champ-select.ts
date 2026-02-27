@@ -67,7 +67,7 @@ export interface ChampSelectState {
     };
 
     benchEnabled: boolean;
-    benchChampionIds: number[];
+    benchChampions: { championId: number }[];
 }
 
 export interface GameflowState {
