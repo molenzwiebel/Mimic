@@ -1,3 +1,6 @@
+> [!CAUTION]
+> This open source version of Mimic is no longer maintained. Thanks for all the positive feedback over the years!
+
 ![Mimic Logo](assets/mimic-logo.png?raw=true)
 
 [![Build Status](https://travis-ci.org/molenzwiebel/Mimic.svg?branch=master)](https://travis-ci.org/molenzwiebel/Mimic)
