@@ -37,6 +37,7 @@ export const GAMEMODE_NAMES: { [key: string]: string } = {
     "11-siege": "Nexus Siege",
     "11-lcurgmdisabled": "Rotating Game Mode",
     "12-aram": "ARAM",
+    "12-kiwi": "ARAM: Mayhem",
     "12-portalparty": "Portal Party",
     "12-kingporo": "Legend of the Poro King",
     "12-basic_tutorial": "TUTORIAL",

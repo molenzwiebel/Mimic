@@ -97,7 +97,8 @@ export default class CreateLobby extends Vue {
         // Collect queues.
         for (const queue of this.queues) {
             if (queue.category !== "PvP") continue; // only render pvp queues
-            if (queue.queueAvailability !== "Available" || !this.enabledGameQueues.includes(queue.id)) continue;
+            const enabledQueueExceptions = [2400]; // ARAM: Mayhem is not included in EnabledGameQueues
+            if (queue.queueAvailability !== "Available" || (!this.enabledGameQueues.includes(queue.id) && !enabledQueueExceptions.includes(queue.id))) continue;
 
             const key = queue.mapId + "-" + queue.gameMode;
             if (!ret[key]) ret[key] = [];
@@ -177,6 +178,7 @@ export default class CreateLobby extends Vue {
             "10-CLASSIC": "tt",
             "11-CLASSIC": "sr",
             "12-ARAM": "ha",
+            "12-KIWI": "ha",
             "22-TFT": "tft"
         })[section] || "rgm";
 

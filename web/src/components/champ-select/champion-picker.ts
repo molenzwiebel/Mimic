@@ -20,6 +20,9 @@ export default class ChampionPicker extends Vue {
     // List of champions that the current user can ban. Includes already banned champions.
     bannableChampions: number[] = [];
 
+    // Subset of champions for ARAM selection (2-3 champions to pick from).
+    subsetChampions: number[] = [];
+
     searchTerm = "";
 
     created() {
@@ -32,6 +35,11 @@ export default class ChampionPicker extends Vue {
         this.$root.observe("/lol-champ-select/v1/bannable-champion-ids", result => {
             this.bannableChampions = (result.status === 200 ? result.content : this.bannableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
             this.bannableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
+        });
+
+        this.$root.observe("/lol-lobby-team-builder/champ-select/v1/subset-champion-list", result => {
+            this.subsetChampions = result.status === 200 && Array.isArray(result.content) ? result.content : [];
+            this.subsetChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
         });
     }
 
@@ -48,6 +56,7 @@ export default class ChampionPicker extends Vue {
     destroyed() {
         this.$root.unobserve("/lol-champ-select/v1/pickable-champion-ids");
         this.$root.unobserve("/lol-champ-select/v1/bannable-champion-ids");
+        this.$root.unobserve("/lol-lobby-team-builder/champ-select/v1/subset-champion-list");
     }
 
     /**
@@ -55,6 +64,14 @@ export default class ChampionPicker extends Vue {
      */
     get selectableChampions(): number[] {
         if (!this.state) return [];
+
+        // When a subset list is active (ARAM), show only those champions without ban filtering.
+        if (this.subsetChampions.length > 0) {
+            return this.subsetChampions
+                .filter(x => this.$parent.championDetails[x] && this.$parent.championDetails[x].name.toLowerCase().includes(this.searchTerm.toLowerCase()))
+                .sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
+        }
+
         const isCurrentlyBanning = this.$parent.currentTurn && this.$parent.currentTurn.filter(x => x.type === "ban" && x.actorCellId === this.state.localPlayerCellId && !x.completed).length > 0;
 
         const allActions = (<ChampSelectAction[]>[]).concat(...this.state.actions);

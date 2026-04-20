@@ -5,10 +5,10 @@
             <div class="header">Reroll Bench</div>
 
             <div class="content">
-                <a class="bench-champion" v-for="championId in state.benchChampionIds" @click="swapWithChampion(championId)">
-                    <div class="background" :style="getChampionBackground(championId)"></div>
+                <a class="bench-champion" v-for="champ in state.benchChampions" @click="swapWithChampion(champ.championId)">
+                    <div class="background" :style="getChampionBackground(champ.championId)"></div>
                     <div class="darken"></div>
-                    <div class="name">{{ getChampionName(championId) }}</div>
+                    <div class="name">{{ getChampionName(champ.championId) }}</div>
                 </a>
             </div>
         </div>
