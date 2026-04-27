@@ -1,19 +1,19 @@
-let _ddragon: string | undefined;
-export function ddragon() {
-    if (_ddragon) return _ddragon;
+let ddragonPromise: Promise<string> | undefined;
+export async function loadDdragon(): Promise<string> {
+    if (ddragonPromise) return ddragonPromise;
 
-    // Load ddragon async.
-    const req = new XMLHttpRequest();
-    req.onreadystatechange = () => {
-        if (req.status !== 200 || !req.responseText || req.readyState !== 4) return;
-        const versions: string[] = JSON.parse(req.responseText);
-        _ddragon = versions[0]; // newest patch is first in the list
-    };
-    req.open("GET", "https://ddragon.leagueoflegends.com/api/versions.json", true);
-    req.send();
-
-    // Return default until we've loaded.
-    return "9.11.1";
+    return ddragonPromise = new Promise((resolve, reject) => {
+        // Load ddragon async.
+        const req = new XMLHttpRequest();
+        req.onreadystatechange = () => {
+            if (req.readyState !== 4) return;
+            if (req.status !== 200 || !req.responseText) return reject();
+            const versions: string[] = JSON.parse(req.responseText);
+            resolve(versions[0]);
+        };
+        req.open("GET", "https://ddragon.leagueoflegends.com/api/versions.json", true);
+        req.send();
+    });
 }
 
 export const POSITION_NAMES: { [key: string]: string } = {
@@ -46,6 +46,7 @@ export const GAMEMODE_NAMES: { [key: string]: string } = {
     "18-starguardian": "Invasion",
     "11-doombotsteemo": "Doom Bots of Doom",
     "11-practicetool": "Practice Tool",
+    "22-tft": "Teamfight Tactics"
 };
 
 import RoleUnselected from "./static/roles/role-unselected.png";
@@ -72,6 +73,7 @@ export function roleImage(role: Role) {
 import HABackground from "./static/backgrounds/bg-ha.jpg";
 import TTBackground from "./static/backgrounds/bg-tt.jpg";
 import SRBackground from "./static/backgrounds/bg-sr.jpg";
+import TFTBackground from "./static/backgrounds/bg-tft.jpg";
 import MagicBackground from "./static/magic-background.jpg";
 
 export function mapBackground(mapId: number) {
@@ -79,5 +81,6 @@ export function mapBackground(mapId: number) {
     if (mapId === 10) return "background-image: url(" + TTBackground + ");";
     if (mapId === 11) return "background-image: url(" + SRBackground + ");";
     if (mapId === 12) return "background-image: url(" + HABackground + ");";
+    if (mapId === 22) return "background-image: url(" + TFTBackground + ");";
     return "background-image: url(" + MagicBackground + ");";
 }

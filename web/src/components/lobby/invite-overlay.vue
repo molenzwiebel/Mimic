@@ -1,11 +1,11 @@
 <template>
     <transition enter-active-class="fadeInUp" leave-active-class="fadeOutDown">
         <div class="invite-overlay" v-show="show">
-            <i class="ion-minus close" @click="$emit('close')"></i>
+            <highlightable><i class="ion-minus close" @click="$emit('close')"></i></highlightable>
             <div class="header">Invites</div>
 
             <div class="invite-summoner">
-                <input v-model="inviteName" type="text" autocomplete="off" spellcheck="false" placeholder="Summoner Name" maxlength="24" autocorrect="off" autocapitalize="off">
+                <input ref="inviteField" v-model="inviteName" type="text" autocomplete="off" spellcheck="false" placeholder="Summoner Name" maxlength="24" autocorrect="off" autocapitalize="off">
                 <div class="circular-button" @click="inviteManually"><i class="ion-plus"></i></div>
             </div>
 
@@ -20,8 +20,10 @@
             <span class="section-header">Suggested</span>
             <div class="content">
                 <div class="invite" v-for="suggestion in suggestions" @click="invite(suggestion.summonerId)">
-                    <i class="ion-plus"></i>
-                    <span>{{ suggestion.summonerName }}</span>
+                    <highlightable>
+                        <i class="ion-plus"></i>
+                        <span>{{ suggestion.summonerName }}</span>
+                    </highlightable>
                 </div>
             </div>
         </div>
@@ -93,7 +95,7 @@
         margin 20px 10px 20px 20px
         -webkit-appearance none
         outline none
-        border-radius 0px
+        border-radius 0
         color #f0e6d2
         font-size 40px
         font-family "LoL Body"

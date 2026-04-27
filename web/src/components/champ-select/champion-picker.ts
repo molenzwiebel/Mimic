@@ -2,7 +2,6 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { ChampSelectAction, ChampSelectState, default as ChampSelect } from "./champ-select";
 import Root from "../root/root";
-import { ddragon } from "../../constants";
 
 @Component
 export default class ChampionPicker extends Vue {
@@ -21,22 +20,34 @@ export default class ChampionPicker extends Vue {
     // List of champions that the current user can ban. Includes already banned champions.
     bannableChampions: number[] = [];
 
+    searchTerm = "";
+
     created() {
         // Observe the list of pickable and bannable champions. The list is sorted by name.
-        this.$root.observe("/lol-champ-select/v1/pickable-champions", result => {
-            this.pickableChampions = (result.status === 200 ? result.content.championIds : this.pickableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
+        this.$root.observe("/lol-champ-select/v1/pickable-champion-ids", result => {
+            this.pickableChampions = (result.status === 200 ? result.content : this.pickableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
             this.pickableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
         });
 
-        this.$root.observe("/lol-champ-select/v1/bannable-champions", result => {
-            this.bannableChampions = (result.status === 200 ? result.content.championIds : this.bannableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
+        this.$root.observe("/lol-champ-select/v1/bannable-champion-ids", result => {
+            this.bannableChampions = (result.status === 200 ? result.content : this.bannableChampions).filter((x: number) => !!this.$parent.championDetails[x]);
             this.bannableChampions.sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
         });
     }
 
+    mounted() {
+        (<any>this.$refs.searchInput).addEventListener("focus", () => {
+            document.body.classList.add("in-input");
+        });
+
+        (<any>this.$refs.searchInput).addEventListener("blur", () => {
+            document.body.classList.remove("in-input");
+        });
+    }
+
     destroyed() {
-        this.$root.unobserve("/lol-champ-select/v1/pickable-champions");
-        this.$root.unobserve("/lol-champ-select/v1/bannable-champions");
+        this.$root.unobserve("/lol-champ-select/v1/pickable-champion-ids");
+        this.$root.unobserve("/lol-champ-select/v1/bannable-champion-ids");
     }
 
     /**
@@ -48,7 +59,11 @@ export default class ChampionPicker extends Vue {
 
         const allActions = (<ChampSelectAction[]>[]).concat(...this.state.actions);
         const bannedChamps = allActions.filter(x => x.type === "ban" && x.completed).map(x => x.championId);
-        return (isCurrentlyBanning ? this.bannableChampions : this.pickableChampions).filter(x => bannedChamps.indexOf(x) === -1);
+        const selectable = (isCurrentlyBanning ? this.bannableChampions : this.pickableChampions).filter(x => bannedChamps.indexOf(x) === -1);
+
+        return selectable
+            .filter(x => this.$parent.championDetails[x].name.toLowerCase().includes(this.searchTerm.toLowerCase()))
+            .sort((a, b) => this.$parent.championDetails[a].name.localeCompare(this.$parent.championDetails[b].name));
     }
 
     /**
@@ -56,7 +71,7 @@ export default class ChampionPicker extends Vue {
      */
     get header(): string {
         const act = this.$parent.getActions(this.state.localPlayer);
-        if (!act && this.firstUncompletedPickAction) return "Declare your Champion!";
+        if (!act && this.firstUncompletedPickAction) return "Declare Your Champion!";
         if (!act || act.type !== "ban") return "Pick a Champion";
         return "Ban a Champion";
     }
@@ -134,7 +149,10 @@ export default class ChampionPicker extends Vue {
      */
     completeAction() {
         const act = this.$parent.getActions(this.state.localPlayer)!;
-        this.$root.request("/lol-champ-select/v1/session/actions/" + act.id + "/complete", "POST");
+        this.$root.request("/lol-champ-select/v1/session/actions/" + act.id, "PATCH", JSON.stringify({
+        championId: act.championId,
+        completed: true
+    }));
         this.$emit("close");
     }
 
@@ -144,6 +162,14 @@ export default class ChampionPicker extends Vue {
     getChampionImage(id: number) {
         if (!this.$parent.championDetails[id]) return "";
 
-        return "https://ddragon.leagueoflegends.com/cdn/" + ddragon() + "/img/champion/" + this.$parent.championDetails[id].id + ".png";
+        return `https://ddragon.leagueoflegends.com/cdn/${this.$root.ddragonVersion}/img/champion/${this.$parent.championDetails[id].id}.png`;
+    }
+
+    /**
+     * @returns the name for the specified champion
+     */
+    championName(id: number) {
+        const entry = this.$parent.championDetails[id];
+        return entry ? entry.name : "???";
     }
 }

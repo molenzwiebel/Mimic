@@ -20,13 +20,18 @@
         </div>
 
         <div class="right" v-if="showPositions && member.isLocalMember">
-            <img
+            <highlightable>
+                <img
                     @click="$emit('roles', true)"
                     :src="roleImage(member.firstPositionPreference)">
-            <img
+            </highlightable>
+
+            <highlightable>
+                <img
                     v-if="member.firstPositionPreference !== 'FILL'"
                     @click="$emit('roles', false)"
                     :src="roleImage(member.secondPositionPreference)">
+            </highlightable>
         </div>
     </div>
 </template>
@@ -35,10 +40,13 @@
     import Vue from "vue";
     import { Component, Prop } from "vue-property-decorator";
     import { LobbyMember } from "./lobby";
-    import { ddragon, POSITION_NAMES, roleImage as constantRoleImage } from "../../constants";
+    import { POSITION_NAMES, roleImage as constantRoleImage } from "../../constants";
+    import Root from "../root/root";
 
     @Component
     export default class LobbyMemberComponent extends Vue {
+        $root: Root;
+
         @Prop()
         member: LobbyMember;
 
@@ -49,7 +57,7 @@
         showModeration: boolean;
 
         get summonerIcon(): string {
-            return `https://ddragon.leagueoflegends.com/cdn/${ddragon()}/img/profileicon/${this.member.summoner.profileIconId}.png`;
+            return `https://ddragon.leagueoflegends.com/cdn/${this.$root.ddragonVersion}/img/profileicon/${this.member.summoner.profileIconId}.png`;
         }
 
         get positions(): string {

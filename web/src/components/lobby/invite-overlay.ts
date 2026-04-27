@@ -28,6 +28,14 @@ export default class InviteOverlay extends Vue {
         this.$root.observe("/lol-suggested-players/v1/suggested-players", result => {
             this.suggestions = result.status === 200 ? result.content : [];
         });
+
+        (<any>this.$refs.inviteField).addEventListener("focus", () => {
+            document.body.classList.add("in-input");
+        });
+
+        (<any>this.$refs.inviteField).addEventListener("blur", () => {
+            document.body.classList.remove("in-input");
+        });
     }
 
     destroyed() {
